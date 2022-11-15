@@ -1,0 +1,16 @@
+Server: 
+  Servers are uniquely identified by their name, which has a maximum
+   length of sixty three (63) characters.
+
+Clients:
+   For each client all servers MUST have the following information: a
+   netwide unique identifier (whose format depends on the type of
+   client) and the server which introduced the client.
+
+
+Channel:
+it SHALL NOT contain
+   any spaces (' '), a control G (^G or ASCII 7), a comma (',').  Space
+   is used as parameter separator and command is used as a list item
+   separator by the protocol).  A colon (':') can also be used as a
+   delimiter for the channel mask. Channel names are case insensitive.
