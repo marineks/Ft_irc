@@ -1,0 +1,39 @@
+Sources:
+https://www.codingninjas.com/codestudio/library/learning-socket-programming-in-c
+https://www.geeksforgeeks.org/socket-programming-cc/
+https://www.bogotobogo.com/cplusplus/sockets_server_client.php
+https://www.linuxhowtos.org/C_C++/socket.htm
+
+Le principe : 
+"One socket (node) listens on a particular port at an IP, while the other socket reaches out to the other to form a connection. 
+The server forms the listener socket while the client reaches out to the server."
+"A socket connection means the two machines have information about each other, including network location (IP address) and TCP port. "
+
+
+Cheat sheet :
+Socket: Create a new communication
+Bind: Attach a local address to a socket
+Listen: Announce willingness to accept connections
+Accept: Block caller until a connection request arrives
+Connect: Actively attempt to establish a connection
+Send: Send some data over a connection
+Receive: Receive some data over a connection
+Close: Release the connection
+
+Autre façon de résumer le process :
+Server Socket
+1. create a socket - Get the file descriptor!
+2. bind to an address -What port am I on?
+3. listen on a port, and wait for a connection to be established.
+4. accept the connection from a client.
+5. send/recv - the same way we read and write for a file.
+6. shutdown to end read/write.
+7. close to releases data.
+
+Client Socket
+1. create a socket.
+2. bind* - this is probably be unnecessary because you're the client, not the server.
+3. connect to a server.
+4. send/recv - repeat until we have or receive data
+5. shutdown to end read/write.
+6. close to releases data.
