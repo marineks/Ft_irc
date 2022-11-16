@@ -1,0 +1,39 @@
+Plusieurs étapes dans le projet:
+
+I. Partie "Logging"
+
+=> A) Parser la 1ère cmd du user (./ircserv <port> <pwd>)
+
+=> B) Check et connexion au serveur
+      - Regarder si un serveur existe sous ces params
+      - Demander au user ses ids (name, nickname, statut, permissions)
+      - Connecter le user au serveur (vraisemblablement grâce aux sockets et à la fonction poll() )
+
+II. Partie "Channel"
+
+=> A) Différents types de "Channel"
+       - Un channel "exclusif" à deux users, aka le private messaging
+       - Un channel "collectif", aka un vrai chan avec 2 ou plus users qui communiquent entre eux
+       => Est-ce que l'on ne partirait pas d'une classe abstraite AChannel et on déclinerait les deux? (nb de users, cmds spécifiques...)
+
+=> B) Décomposer le messaging
+      - Parser un message:
+          ° Taille max: 512 (\r\n inclus)
+          ° Format: CMD + PARAMS (avec 15 params max)
+          ° Exemples de messages valides :
+              * PRIVMSG rory :Hey Rory...
+              * :borja!borja@polaris.cs.uchicago.edu PRIVMSG #cmsc23300 :Hello everybody
+
+      - Organiser l'échange de ces messages:
+          ° Regarder du côté TCP/IP ?
+              
+III. Partie "Utils"
+
+=> A) Commandes
+      - Il y aura forcément un moment où l'on devra recoder les commandes existantes:
+        ° JOIN
+        ° NICK
+        ° QUIT
+        ° MODE
+        ° WHOIS
+        ° PRVMSG
