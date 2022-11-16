@@ -1,0 +1,41 @@
+Sources:
+https://www.tecmint.com/best-irc-clients-for-linux/
+https://techcult.com/best-irc-client-for-mac-and-linux/
+https://www.slant.co/topics/1323/~best-irc-clients-for-linux
+
+Hexchat :
+"It is feature-rich including the following:
+
+Easy to use and highly customizable
+Highly scriptable with Perl and Python
+Fully open-source and actively developed
+Translated in several languages
+Multi-network with auto-connect, join and identify functionalities
+Support for spelling check, proxies, SASL, DCC plus many more"
+
+Irssi:
+"It has some amazing features and these include:
+
+Autologging
+Supports themes and formats
+Configurable keybindings
+Paste detection
+Support for Perl scripting
+Irssi proxy plugin
+Easy upgrades without losing connections"
+
+WeeChat :
+"is considered to be on the list of the most powerful and fast IRC client because of the following reasons as detailed below:
+
+It is a fast, lightweight, and free-to-use Internet Relay Chat client.
+Its user interface is C language enabled.
+it also supports a wide range of plug-ins written in Python, Ruby, and Perl.
+It enables dynamic loading/unloading of these plug-ins in real-time.
+Its user interface uses an array of 256 colors.
+It permits a fully navigational advantage through the use of keyboard shortcuts.
+It supports multiple servers and many other unique add-on features.
+It has an in-built scripts manager.
+It enables mobile support and you can connect to the Weechat IRC client.
+It enables remote connectivity or interfaces."
+
+
