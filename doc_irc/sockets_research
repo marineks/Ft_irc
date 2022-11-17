@@ -151,6 +151,9 @@ that supports the sockets API
 Order of these system calls :
 1) getaddrinfo()
 2) socket() => get the file descriptor
+
+  int socket(int domain, int type, int protocol);
+  int socket(IPv4, SOCK_STREAM, tcp);
 3) bind() => what port am i on?
 4) connect()
 5) listen()
