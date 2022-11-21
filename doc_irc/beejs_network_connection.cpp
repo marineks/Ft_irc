@@ -25,10 +25,10 @@ int	main(void)
 		exit(1);
 	}
 
-	//  2) SOCKET()
+	//  2) SOCKET() - get tthe file descriptor !
 	int s;
 
 	freeaddrinfo(servinfo);
-	
+
 	return 0;
 }
