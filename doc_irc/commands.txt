@@ -1,0 +1,73 @@
+/list
+/join
+/msg
+
+register 
+
+USER: The USER command is used at the beginning of connection to specify
+   the username, hostname and realname of a new user.
+syntaxe:
+	<username> <hostname> <servername> <realname>
+	USER <user> <mode> <unused> <realname>
+
+*sert a ignorer un champ.
+
+exemple:
+	USER qn_yosa ** :Dimitri Youla S (on va ignorer le champ hostname et le servername)
+
+
+/*==================================================================================================*/
+NICK <nickname> [<hopcount>] 
+NICK <nickname>
+
+exemple:
+	NICK dim
+
+to message someone
+	/MSG /PRIVMSG
+	To send a message to a specific nick, a user must send a PRIVMSG to the server. 
+	The figure above shows two users, with nicks amy and rory, exchanging three messages.
+	In message 1, user amy sends a message to rory. 
+	The parameters for PRIVMSG are very simple: 
+	the first parameter is the nick of the user the message is intended for,
+	and the second parameter is the message itself.
+	
+	When the server receives that message, and assuming there is a rory user,
+	it will forward the message to the IRC client that is registered with that nick. 
+	This is done in message 2, and notice how it is simply a verbatim copy of message 1,
+	but prefixed with amy’s full client identifier 
+
+MSG
+<nickname | channel> <nessage>
+
+
+LIST 
+
+JOIN
+
+PASS:
+La commande /pass te permet d'indiquer le mot de passe de ton
+nickname au serveur. 
+utilises la commande /pass, sinon change de nickname via la commande /nick 
+(sinon tu seras déconnecté du réseau au bout de quelques secondes, Killed).
+
+	Syntaxe : /pass <motdepasse>
+	Exemple : /pass NewNick
+
+
+WHO
+
+WHOIS
+
+TOPIC   - Change the channel topic in a mode +t channel
+
+PING ?
+
+PONG ?
+
+QUIT
+   A client session is terminated with a quit message.  The server
+   acknowledges this by sending an ERROR message to the client.
+
+	Exemple:
+	QUIT	:Gone to have lunch

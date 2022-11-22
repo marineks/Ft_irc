@@ -1,0 +1,40 @@
+Difference server irc et reseau irc
+un serveur peut se connecter a un autre 
+
+
+Operators
+https://fr.wikipedia.org/wiki/IrcOp
+en gros ce sont les admins
+locaux ou globaux 
+fonctions 
+	forcer la deco avec kill
+	ban users du server ou des serveurs 
+	gerer la configuration du reseau 
+
+Un K-line interdit l'accès à un certain serveur du réseau, et ce de manière temporaire ou permanente.
+
+Un G-line agit de la même manière que le K-line, mais celui s'applique sur l'ensemble des serveurs d'un réseau IRC.
+
+Le Z-line est une interdiction globale qui est effectuée sur l'adresse IP d'un utilisateur plutôt que sur son « hostmask ». Ce type d'interdiction est souvent permanent.
+
+La particularité du D-line est que l'utilisateur affecté ne pourra même pas se connecter au serveur, alors que le K-line déconnectera.
+
+
+channel 
+ Un canal est défini par une liste d’utilisateurs connectés sur celui-ci.
+
+Pour entrer dans un canal ou pour créer un canal s’il n’existe pas, l’utilisateur utilise la commande join.
+
+
+differents modes
+i		Invisible : en dehors de la participation commune à un canal, l'utilisateur n'est pas visible par les autres.
+s		Reçoit toutes les notifications du serveur.
+w		Reçoit tous les messages envoyés par la commande « wallop ».
+o		L'utilisateur est un opérateur IRC (à ne pas confondre avec le mode de canal « o »).
+
+Une commande IRC est toujours définie par le caractère « / » placée en début de ligne. Cette commande peut être une commande définie par la RFC ou une commande liée au client, ou encore au serveur. Si une ligne ne débute pas par « / », elle est envoyée comme message au canal actif.
+
+Par exemple, pour rejoindre un canal, un utilisateur doit effectuer /join #canal.
+
+
+s. Additionally, clients can run commands to query the server’s state (e.g., to obtain a list of connected users, or to obtain additional details about a specific nick). I
