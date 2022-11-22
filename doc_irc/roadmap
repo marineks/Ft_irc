@@ -1,0 +1,54 @@
+Plusieurs étapes dans le projet:
+
+I. Partie "Logging"
+
+=> A) Parser la 1ère cmd du user (./ircserv <port> <pwd>)
+
+=> B) Check et connexion au serveur
+      - Regarder si un serveur existe sous ces params
+      - Demander au user ses ids (name, nickname, statut, permissions) grâce aux commandes NICK et USER
+            ° Checker que ces ids sont valides et disponibles (notamment pour le nickname)
+      - Connecter le user au serveur (vraisemblablement grâce aux sockets et à la fonction poll() ) 
+            ° Envoyer de la part du serveur une RPL_REPLY
+
+II. Partie "Channel"
+
+=> A) Différents types de "Channel"
+       - Un channel "exclusif" à deux users, aka le private messaging (cmd PRIVMSG + nickname)
+       - Un channel "collectif", aka un vrai chan avec 2 ou plus users qui communiquent entre eux (cmd PRIVMSG + channel name)
+       => Est-ce que l'on ne partirait pas d'une classe abstraite AChannel et on déclinerait les deux? (nb de users, cmds spécifiques...)
+          En mode c'est le proto de PRIVMSG + arg avec l'argument arg qui changerait.
+       "  The difference is that the server will relay the message to all the users in the channel, instead of just a single user."
+
+=> B) Décomposer le messaging
+      - Parser un message:
+          ° Taille max: 512 (\r\n inclus)
+          ° Format: CMD + PARAMS (avec 15 params max)
+          ° Exemples de messages valides :
+              * PRIVMSG rory :Hey Rory...
+              * :borja!borja@polaris.cs.uchicago.edu PRIVMSG #cmsc23300 :Hello everybody
+                  => La 1ère partie est un "full client identifier" (<nick>!<user>@<host>)
+
+      - Organiser l'échange de ces messages:
+          ° Regarder du côté TCP/IP ?
+          ° A savoir qu'un message envoyé, in fine, c'est une commande; 
+            et que quand une commande est envoyée du client au serveur, 
+            le serveur va répondre avec une reply (pour acknowledge la cmd, donner des infos, indiquer une erreur...)
+              
+III. Partie "Utils"
+
+=> A) Commandes
+      - Il y aura forcément un moment où l'on devra recoder les commandes existantes:
+        ° JOIN
+        ° NICK
+        ° QUIT
+        ° MODE
+        ° WHOIS
+        ° PRVMSG
+       
+=> B) Travailler sur une bonne nomenclature de nos enums:
+      - le @ devant un operateur
+      - le * pour parler d'un nickname qui n'a pas encore été setup
+      - etc.
+      - C'est important car notre serveur irc va devoir renvoyer des replies, 
+        donc selon la requête faite par un client, il faut qu'on puisse renvoyer une reply adéquate

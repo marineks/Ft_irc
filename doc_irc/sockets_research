@@ -1,0 +1,165 @@
+Sources:
+https://www.codingninjas.com/codestudio/library/learning-socket-programming-in-c
+https://www.geeksforgeeks.org/socket-programming-cc/
+https://www.bogotobogo.com/cplusplus/sockets_server_client.php
+https://www.linuxhowtos.org/C_C++/socket.htm
+
+Le principe : 
+"One socket (node) listens on a particular port at an IP, while the other socket reaches out to the other to form a connection. 
+The server forms the listener socket while the client reaches out to the server."
+"A socket connection means the two machines have information about each other, including network location (IP address) and TCP port. "
+
+
+Cheat sheet :
+Socket: Create a new communication
+Bind: Attach a local address to a socket
+Listen: Announce willingness to accept connections
+Accept: Block caller until a connection request arrives
+Connect: Actively attempt to establish a connection
+Send: Send some data over a connection
+Receive: Receive some data over a connection
+Close: Release the connection
+
+Autre façon de résumer le process :
+Server Socket
+1. create a socket - Get the file descriptor!
+2. bind to an address -What port am I on?
+3. listen on a port, and wait for a connection to be established.
+4. accept the connection from a client.
+5. send/recv - the same way we read and write for a file.
+6. shutdown to end read/write.
+7. close to releases data.
+
+Client Socket
+1. create a socket.
+2. bind* - this is probably be unnecessary because you're the client, not the server.
+3. connect to a server.
+4. send/recv - repeat until we have or receive data
+5. shutdown to end read/write.
+6. close to releases data.
+
+----------------------------------------------------------------------
+Source: Beejs' Guide to Network Programming
+
+On layered models ( cf. how the data is physically transmitted) :
+
+Data < TFTP < UDP < IP < Ethernet
+
+Pratical application of a layered model :
+Application Layer (telnet, ftp, etc.)
+Host-to-Host Transport Layer (TCP, UDP)
+Internet Layer (IP and routing)
+Network Access Layer (Ethernet, wi-fi, or whatever)
+
+
+About building a simple packet : " All you have to do for stream sockets is send() the data out."
+
+
+Host byte Order : sur les ordis parfois les valeurs sont stored à l'envers (cf. little Endian avec Intel - vs Big Endian). 
+Pour être sûrs que tout rentre dans l'ordre : h(ost) to n(etwork) s(hort)
+=> la htons() fonction s'occupe de tout convertir dans le bon ordre!
+
+"Basically, you’ll want to convert the numbers to Network Byte Order before they go out
+on the wire, and convert them to Host Byte Order as they come in off the wire."
+---------------------------------------------------------
+Structs
+
+int Socket descriptor; 
+
+1) struct addrinfo {
+  int ai_flags; // AI_PASSIVE, AI_CANONNAME, etc.
+  int ai_family; // AF_INET, AF_INET6, AF_UNSPEC
+  int ai_socktype; // SOCK_STREAM, SOCK_DGRAM
+  int ai_protocol; // use 0 for "any"
+  size_t ai_addrlen; // size of ai_addr in bytes
+  struct sockaddr *ai_addr; // struct sockaddr_in or _in6
+  char *ai_canonname; // full canonical hostname
+  struct addrinfo *ai_next; // linked list, next node
+};
+
+getaddrinfo() = returns a pointer to a new linked list of the struct addrinfo filled out.
+
+Inside the struct addrinfo, there is the struct sockaddr:
+2) struct sockaddr {
+  unsigned short sa_family; // address family, AF_xxx
+  char sa_data[14]; // 14 bytes of protocol
+  address
+};
+
+sa_data contains a destination address and port number for the socket.
+
+To deal with Ipv4:
+3) struct sockaddr_in {
+  short int sin_family; // Address family, AF_INET
+  unsigned short int sin_port; // Port number
+  struct in_addr sin_addr; // Internet address
+  unsigned char sin_zero[8]; // Same size as struct
+  sockaddr
+};
+
+=> "So even though connect() wants a struct sockaddr*, 
+you can still use a struct sockaddr_in and cast it at the last minute!"
+
+More details on the struct:
+sin_zero should be set to all 0 using memset()
+sin_familiy corresponds to sa_family in sockaddr and should be set to AF_INET
+sin_port must be in Network Byte Order using htons()
+
+sin_addr is a struct in_addr, which is :
+4) struct in_addr {
+  uint32_t s_addr; // that's a 32-bit int (4 bytes)
+};
+
+5) struct sockaddr_storage that is
+designed to be large enough to hold both IPv4 and IPv6 structures.
+"See, for some calls,
+sometimes you don’t know in advance if it’s going to fill out your struct sockaddr
+with an IPv4 or IPv6 address. So you pass in this parallel structure, very similar to
+struct sockaddr except larger, and then cast it to the type you need " (struct sockaddr_in for IPv4 for intstance)
+
+struct sockaddr_storage {
+  sa_family_t ss_family; // address family
+  
+  // all this is padding, implementation specific, ignore it:
+  char __ss_pad1[_SS_PAD1SIZE];
+  int64_t __ss_align;
+  char __ss_pad2[_SS_PAD2SIZE];
+};
+
+------------------------------------------------------------------------
+IP Adresses
+
+inet_pton() => converts an IP address in numbers into a struct in(6)_addr 
+- pton => printable to network -
+
+Example : 
+struct sockaddr_in sa;
+inet_pton(AF_INET, "10.12.110.57", &(sa.sin_addr));
+
+Pour les conversions inverses, il faut utiliser inet_ntop().
+
+char ip4[INET_ADDRSTRLEN];
+struct sockaddr_in sa; 
+inet_ntop(AF_INET, &(sa.sin_addr), ip4, INET_ADDRSTRLEN);
+
+--------------------------------------------------------------------------
+
+Systems calls
+= we get into the ones that allow you to access the network functionality of any box
+that supports the sockets API
+
+Order of these system calls :
+1) getaddrinfo()
+2) socket() => get the file descriptor
+
+  int socket(int domain, int type, int protocol);
+  int socket(IPv4, SOCK_STREAM, tcp);
+3) bind() => what port am i on?
+4) connect()
+5) listen()
+6) accept()
+7) send() et recv()
+8) close() et shutdown()
+9) getpeername()
+10) gethostname()
+
