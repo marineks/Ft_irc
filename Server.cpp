@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-Server::Server() : _servinfo(NULL), _socketFd(0)
+Server::Server() : _servinfo(NULL), _serverSocketFd(0)
 {
 	std::cout << "Server Constructor\n";
 	memset(&_hints, 0, sizeof(_hints));
@@ -30,21 +30,28 @@ int		Server::fillServinfo(char *port)
 
 int		Server::launchServer()
 {
-	_socketFd = socket(_servinfo->ai_family, _servinfo->ai_socktype, _servinfo->ai_protocol);
-	if (_socketFd == FAILURE)
+	_serverSocketFd = socket(_servinfo->ai_family, _servinfo->ai_socktype, _servinfo->ai_protocol);
+	if (_serverSocketFd == FAILURE)
 	{
 		std::cerr << "Flop de la socket :(\n";
 		return (FAILURE);
 	}
-	if (bind(_socketFd, _servinfo->ai_addr, _servinfo->ai_addrlen) == FAILURE)
+	char optvalue = '1';
+	if (setsockopt(_serverSocketFd, SOL_SOCKET, SO_REUSEADDR, &optvalue, sizeof(optvalue)) == FAILURE)
+	{
+		std::cerr << "Impossible to reuse\n";
+		return (FAILURE);
+	}
+	if (bind(_serverSocketFd, _servinfo->ai_addr, _servinfo->ai_addrlen) == FAILURE)
 	{
 		std::cerr << "Bind failed\n";
 		return (FAILURE);
 	}
-	if (listen(_socketFd, BACKLOG) == FAILURE)
+	if (listen(_serverSocketFd, BACKLOG) == FAILURE)
 	{
 		std::cerr << "listen failed\n";
 		return (FAILURE);
 	}
 	return (SUCCESS);
 }
+
