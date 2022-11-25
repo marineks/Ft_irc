@@ -36,7 +36,7 @@ int		Server::launchServer()
 		std::cerr << "Flop de la socket :(\n";
 		return (FAILURE);
 	}
-	char optvalue = '1';
+	int optvalue = 1; // enables the re-use of a port if the IP address is different
 	if (setsockopt(_serverSocketFd, SOL_SOCKET, SO_REUSEADDR, &optvalue, sizeof(optvalue)) == FAILURE)
 	{
 		std::cerr << "Impossible to reuse\n";
