@@ -9,13 +9,12 @@ class Server
 	private:
 		struct addrinfo		_hints;
 		struct addrinfo		*_servinfo;
-		// struct addrinfo	*_res;
 		std::vector<Client>	_clients;
 		int					_serverSocketFd;
 	public:
-		Server(/* args */);
+		Server();
 		~Server();
-		void	setHints(void);
+		void	setHints();
 		int		fillServinfo(char *port);
 		int		launchServer();
 		int		manageServerLoop();

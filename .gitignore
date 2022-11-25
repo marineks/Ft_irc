@@ -33,4 +33,4 @@
 
 # VSCode
 *.json
-.vscode/*.json
+/.vscode
