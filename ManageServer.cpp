@@ -14,6 +14,7 @@ static void	addClient(int client_socket, std::vector<pollfd> pollFds)
 	client_pollfd.events = POLLIN;
 	pollFds.push_back(client_pollfd);
 	// print ?
+	std::cout << "ADD CLIENT SUCCESSED" << std::endl;
 }
 
 static void	tooManyClients(int client_socket)
