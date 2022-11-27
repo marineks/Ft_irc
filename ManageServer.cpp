@@ -44,13 +44,13 @@ static void	print(std::string type, int client_socket, char *message)
 			  << RESET << client_socket << " " \
 			  << inet_ntoa(client.sin_addr) << " " \
 			  << ntohs(client.sin_port) \
-			  << BLUE << message << RESET;
+			  << BLUE << (message == NULL ? "\n" : message) << RESET;
 }
 
 static void	delClient(std::vector<pollfd> poll_fds, std::vector<pollfd>::iterator it)
 {
 	poll_fds.erase(it);
-	print("Deconnection of client : ", it->fd, "\n");
+	print("Deconnection of client : ", it->fd, NULL);
 	close(it->fd);
 	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
 }
