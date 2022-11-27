@@ -8,7 +8,7 @@ static int	acceptSocket(int listenSocket)
 	return (accept(listenSocket, (sockaddr *)&client, &addr_size));
 }
 
-static void	addClient(int client_socket, std::vector<pollfd> poll_fds)
+static void	addClient(int client_socket, std::vector<pollfd> &poll_fds)
 {
 	pollfd	client_pollfd;
 	client_pollfd.fd = client_socket;
@@ -16,6 +16,7 @@ static void	addClient(int client_socket, std::vector<pollfd> poll_fds)
 	poll_fds.push_back(client_pollfd);
 	// print ?
 	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
+	send(client_socket, "Welcome\r\n" , 10 ,0);
 }
 
 static void	tooManyClients(int client_socket)
@@ -47,7 +48,7 @@ static void	print(std::string type, int client_socket, char *message)
 			  << BLUE << (message == NULL ? "\n" : message) << RESET;
 }
 
-static void	delClient(std::vector<pollfd> poll_fds, std::vector<pollfd>::iterator it)
+static void	delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator it)
 {
 	poll_fds.erase(it);
 	print("Deconnection of client : ", it->fd, NULL);
@@ -75,6 +76,7 @@ int		Server::manageServerLoop()
 		std::vector<pollfd>::iterator	end = poll_fds.end();
 		for (it = poll_fds.begin(); it != end; it++)
 		{
+			std::cout << "it->fd : " << it->fd << std::endl;
 			if (it->revents & POLLIN)
 			{
 				if (it->fd == _server_socket_fd)
@@ -114,6 +116,11 @@ int		Server::manageServerLoop()
 				else
 					delClient(poll_fds, it);
 			}
+			std::cout << "Je suis a la fin de la boucle : " << it->fd << std::endl;
+			std::vector<pollfd>::iterator	it1;
+			std::vector<pollfd>::iterator	end1 = poll_fds.end();
+			for (it1 = poll_fds.begin(); it1 != end1; it1++)
+				std::cout << YELLOW << "Fd = " << it1->fd << RESET << std::endl;
 		}
 	}
 	return (SUCCESS);
