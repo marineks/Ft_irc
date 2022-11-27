@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "Colors.hpp"
 
 static int	acceptSocket(int listenSocket)
 {
@@ -14,12 +15,12 @@ static void	addClient(int client_socket, std::vector<pollfd> poll_fds)
 	client_pollfd.events = POLLIN;
 	poll_fds.push_back(client_pollfd);
 	// print ?
-	std::cout << "ADDED CLIENT SUCCESSFULLY" << std::endl;
+	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
 }
 
 static void	tooManyClients(int client_socket)
 {
-	std::cout << ERR_FULL_SERV << std::endl;
+	std::cout << RED << ERR_FULL_SERV << RESET << std::endl;
 	send(client_socket, ERR_FULL_SERV, strlen(ERR_FULL_SERV) + 1, 0);
 	close(client_socket);
 }
@@ -30,7 +31,7 @@ static sockaddr_in	getClientAddress(int socket)
 	socklen_t addrSize = sizeof(struct sockaddr_in);
 	if (getpeername(socket, (struct sockaddr*)&client, &addrSize) != SUCCESS)
 	{
-		std::cerr << "Get Client Address Error\n";
+		std::cerr << RED << "Get Client Address Error" << RESET << std::endl;
 		throw ;
 	}
 	return (client);
@@ -39,19 +40,19 @@ static sockaddr_in	getClientAddress(int socket)
 static void	print(std::string type, int client_socket, char *message)
 {
 	sockaddr_in client = getClientAddress(client_socket);
-	std::cout << type \
-			  << client_socket << " " \
+	std::cout << PURPLE << type \
+			  << RESET << client_socket << " " \
 			  << inet_ntoa(client.sin_addr) << " " \
 			  << ntohs(client.sin_port) \
-			  << message;
+			  << BLUE << message << RESET;
 }
 
 static void	delClient(std::vector<pollfd> poll_fds, std::vector<pollfd>::iterator it)
 {
 	poll_fds.erase(it);
-	print("Deconnection : ", it->fd, "\n");
+	print("Deconnection of client : ", it->fd, "\n");
 	close(it->fd);
-	std::cout << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << std::endl;
+	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
 }
 
 int		Server::manageServerLoop()
@@ -67,7 +68,7 @@ int		Server::manageServerLoop()
 	{
 		if (poll((pollfd *)&poll_fds[0], (unsigned int)poll_fds.size(), -1) <= SUCCESS) // -1 == no timeout
 		{
-			std::cerr << "poll error\n";
+			std::cerr << RED << "Poll error" << RESET << std::endl;;
 			return (FAILURE);
 		}
 		std::vector<pollfd>::iterator	it;
@@ -81,7 +82,7 @@ int		Server::manageServerLoop()
 					int	client_sock = acceptSocket(_server_socket_fd);
 					if (client_sock == -1)
 					{
-						std::cerr << "Accept failed\n";
+						std::cerr << RED << "Accept failed" << RESET << std::endl;
 						continue;
 					}
 					if (poll_fds.size() - 1 < MAX_CLIENT_NB)
@@ -107,7 +108,7 @@ int		Server::manageServerLoop()
 			{
 				if (it->fd == _server_socket_fd)
 				{
-					std::cerr << "Lister socket error\n";
+					std::cerr << RED << "Lister socket error" << RESET << std::endl;
 					return (FAILURE);
 				}
 				else
