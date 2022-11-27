@@ -6,9 +6,9 @@
 class Client
 {
 	private:
-		pollfd	_clientPollFd;
+		pollfd	_client_poll_fd;
 	public:
-		Client(pollfd clientPollFd);
+		Client(pollfd client_poll_fd);
 		~Client();
 };
 

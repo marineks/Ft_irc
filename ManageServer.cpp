@@ -7,14 +7,14 @@ static int	acceptSocket(int listenSocket)
 	return (accept(listenSocket, (sockaddr *)&client, &addr_size));
 }
 
-static void	addClient(int client_socket, std::vector<pollfd> pollFds)
+static void	addClient(int client_socket, std::vector<pollfd> poll_fds)
 {
 	pollfd	client_pollfd;
 	client_pollfd.fd = client_socket;
 	client_pollfd.events = POLLIN;
-	pollFds.push_back(client_pollfd);
+	poll_fds.push_back(client_pollfd);
 	// print ?
-	std::cout << "ADD CLIENT SUCCESSED" << std::endl;
+	std::cout << "ADDED CLIENT SUCCESSFULLY" << std::endl;
 }
 
 static void	tooManyClients(int client_socket)
@@ -46,55 +46,55 @@ static void	print(std::string type, int client_socket, char *message)
 			  << message;
 }
 
-static void	delClient(std::vector<pollfd> pollFds, std::vector<pollfd>::iterator it)
+static void	delClient(std::vector<pollfd> poll_fds, std::vector<pollfd>::iterator it)
 {
-	pollFds.erase(it);
+	poll_fds.erase(it);
 	print("Deconnection : ", it->fd, "\n");
 	close(it->fd);
-	std::cout << "Client deleted \nTotal Client is now: " << (unsigned int)(pollFds.size() - 1) << std::endl;
+	std::cout << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << std::endl;
 }
 
 int		Server::manageServerLoop()
 {
-	pollfd	serverPollFd;
+	pollfd	server_poll_fd;
 	
-	serverPollFd.fd = _serverSocketFd;
-	serverPollFd.events = POLLIN;
-	std::vector<pollfd>	pollFds;
-	pollFds.push_back(serverPollFd);
+	server_poll_fd.fd = _server_socket_fd;
+	server_poll_fd.events = POLLIN;
+	std::vector<pollfd>	poll_fds;
+	poll_fds.push_back(server_poll_fd);
 
 	while (1)
 	{
-		if (poll((pollfd *)&pollFds[0], (unsigned int)pollFds.size(), -1) <= SUCCESS) // -1 == no timeout
+		if (poll((pollfd *)&poll_fds[0], (unsigned int)poll_fds.size(), -1) <= SUCCESS) // -1 == no timeout
 		{
 			std::cerr << "poll error\n";
 			return (FAILURE);
 		}
 		std::vector<pollfd>::iterator	it;
-		std::vector<pollfd>::iterator	end = pollFds.end();
-		for (it = pollFds.begin(); it != end; it++)
+		std::vector<pollfd>::iterator	end = poll_fds.end();
+		for (it = poll_fds.begin(); it != end; it++)
 		{
 			if (it->revents & POLLIN)
 			{
-				if (it->fd == _serverSocketFd)
+				if (it->fd == _server_socket_fd)
 				{
-					int	clientSock = acceptSocket(_serverSocketFd);
-					if (clientSock == -1)
+					int	client_sock = acceptSocket(_server_socket_fd);
+					if (client_sock == -1)
 					{
 						std::cerr << "Accept failed\n";
 						continue;
 					}
-					if (pollFds.size() - 1 < MAX_CLIENT_NB)
-						addClient(clientSock, pollFds);
+					if (poll_fds.size() - 1 < MAX_CLIENT_NB)
+						addClient(client_sock, poll_fds);
 					else
-						tooManyClients(_serverSocketFd);
+						tooManyClients(_server_socket_fd);
 				}
 				else
 				{
 					// client echo message
 					char	message[BUF_SIZE_MSG];
 					if (recv(it->fd, message, BUF_SIZE_MSG, 0) <= FAILURE)
-						delClient(pollFds, it);
+						delClient(poll_fds, it);
 					else
 					{
 						print("Recv : ", it->fd, message); // si affichage incoherent regarder ici 
@@ -105,13 +105,13 @@ int		Server::manageServerLoop()
 			}
 			else if (it->revents & POLLERR)
 			{
-				if (it->fd == _serverSocketFd)
+				if (it->fd == _server_socket_fd)
 				{
 					std::cerr << "Lister socket error\n";
 					return (FAILURE);
 				}
 				else
-					delClient(pollFds, it);
+					delClient(poll_fds, it);
 			}
 		}
 	}

@@ -12,4 +12,5 @@
 
 /*		MESSAGE		*/
 #define ERR_FULL_SERV "Server already full"
+
 #endif

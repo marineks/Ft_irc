@@ -10,7 +10,7 @@ class Server
 		struct addrinfo		_hints;
 		struct addrinfo		*_servinfo;
 		std::vector<Client>	_clients;
-		int					_serverSocketFd;
+		int					_server_socket_fd;
 	public:
 		Server();
 		~Server();
