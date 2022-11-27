@@ -36,7 +36,7 @@ static sockaddr_in	getClientAddress(int socket)
 	return (client);
 }
 
-static void	printRecv(std::string type, int client_socket, char *message)
+static void	print(std::string type, int client_socket, char *message)
 {
 	sockaddr_in client = getClientAddress(client_socket);
 	std::cout << type \
@@ -49,7 +49,7 @@ static void	printRecv(std::string type, int client_socket, char *message)
 static void	delClient(std::vector<pollfd> pollFds, std::vector<pollfd>::iterator it)
 {
 	pollFds.erase(it);
-	// Marine fera le ternaire.
+	print("Deconnection : ", it->fd, "\n");
 	close(it->fd);
 	std::cout << "Client deleted \nTotal Client is now: " << (unsigned int)(pollFds.size() - 1) << std::endl;
 }
@@ -62,6 +62,7 @@ int		Server::manageServerLoop()
 	serverPollFd.events = POLLIN;
 	std::vector<pollfd>	pollFds;
 	pollFds.push_back(serverPollFd);
+
 	while (1)
 	{
 		if (poll((pollfd *)&pollFds[0], (unsigned int)pollFds.size(), -1) <= SUCCESS) // -1 == no timeout
@@ -96,9 +97,9 @@ int		Server::manageServerLoop()
 						delClient(pollFds, it);
 					else
 					{
-						printRecv("Recv : ", it->fd, message); // si affichage incoherent regarder ici 
+						print("Recv : ", it->fd, message); // si affichage incoherent regarder ici 
 						send(it->fd, message, strlen(message) + 1, 0);
-						printRecv("Send : ", it->fd, message);
+						print("Send : ", it->fd, message);
 					}
 				}
 			}
