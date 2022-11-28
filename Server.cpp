@@ -11,13 +11,23 @@ Server::~Server()
 	std::cout << YELLOW << "Server destructor" << RESET << std::endl;
 }
 
+/**
+ * @brief Attributes the correct parameters to the structure Hints.
+ * 
+ */
 void	Server::setHints()
 {
-	_hints.ai_family = AF_INET;
-	_hints.ai_socktype = SOCK_STREAM;
-	_hints.ai_flags = AI_PASSIVE; // on sera sur le localhost par default
+	_hints.ai_family = AF_INET; // We choose Ipv4
+	_hints.ai_socktype = SOCK_STREAM; // We choose to work with TCP stream sockets
+	_hints.ai_flags = AI_PASSIVE; // We'll be on localhost by default
 }
 
+/**
+ * @brief Helps set up the structs 'hints' and 'servinfo' of our Server class
+ * 
+ * @param port Value given by the user (e.g. "6667")
+ * @return int Returns SUCCESS or FAILURE whether getaddrinfo works or not
+ */
 int		Server::fillServinfo(char *port)
 {
 	if (getaddrinfo(NULL, port, &_hints, &_servinfo) < 0)
@@ -28,6 +38,17 @@ int		Server::fillServinfo(char *port)
 	return (SUCCESS);
 }
 
+/**
+ * @brief This function follows step by step the required function calls to launch the server:
+ * 
+ * 		1) socket() => get the server socket file descriptor
+ * 		2) setsocktop() => enable the configuration of said socket (here, we wanted
+ * 							to allow the re-use of a port if the IP address is different)
+ * 		3) bind() => Associate the socket with a specific port (here, the one given by the user)
+ * 		4) listen() => Wait for any incoming connections to our server socket
+ * 
+ * @return int 0 for SUCCESS and -1 for FAILURE
+ */
 int		Server::launchServer()
 {
 	_server_socket_fd = socket(_servinfo->ai_family, _servinfo->ai_socktype, _servinfo->ai_protocol);
