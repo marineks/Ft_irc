@@ -10,7 +10,6 @@ int main (void)
 	server.launchServer();
 	try
 	{
-		std::cout << PURPLE << "Je suis dans le try" << RESET << std::endl;
 		if (server.manageServerLoop() == FAILURE)
 			throw;
 	}

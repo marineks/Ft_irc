@@ -8,7 +8,7 @@
 
 #define BACKLOG 10
 #define MAX_CLIENT_NB 4
-#define BUF_SIZE_MSG 512
+#define BUF_SIZE_MSG 4096
 
 /*		MESSAGE		*/
 #define ERR_FULL_SERV "Server already full"
