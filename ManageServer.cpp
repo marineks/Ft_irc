@@ -16,7 +16,7 @@ static void	addClient(int client_socket, std::vector<pollfd> &poll_fds)
 	poll_fds.push_back(client_pollfd);
 	// print ?
 	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
-	send(client_socket, "Welcome\r\n" , 10 ,0);
+	// send(client_socket, "Welcome\r\n" , 10 ,0);
 }
 
 static void	tooManyClients(int client_socket)
@@ -76,9 +76,9 @@ int		Server::manageServerLoop()
 		std::vector<pollfd>::iterator	end = poll_fds.end();
 		for (it = poll_fds.begin(); it != end; it++)
 		{
-			std::cout << "it->fd : " << it->fd << std::endl;
 			if (it->revents & POLLIN)
 			{
+				std::cout << GREEN << "debut if POLLIN : " << it->fd << RESET << "\n";
 				if (it->fd == _server_socket_fd)
 				{
 					int	client_sock = acceptSocket(_server_socket_fd);
@@ -101,7 +101,9 @@ int		Server::manageServerLoop()
 					else
 					{
 						print("Recv : ", it->fd, message); // si affichage incoherent regarder ici 
-						send(it->fd, message, strlen(message) + 1, 0);
+						// parsing 
+						send(it->fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 64, 0);
+						// send(it->fd, message, strlen(message) + 1, 0);
 						print("Send : ", it->fd, message);
 					}
 				}
