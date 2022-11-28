@@ -14,9 +14,7 @@ static void	addClient(int client_socket, std::vector<pollfd> &poll_fds)
 	client_pollfd.fd = client_socket;
 	client_pollfd.events = POLLIN;
 	poll_fds.push_back(client_pollfd);
-	// print ?
 	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
-	send(client_socket, "Welcome\r\n" , 10 ,0);
 }
 
 static void	tooManyClients(int client_socket)
@@ -44,8 +42,8 @@ static void	print(std::string type, int client_socket, char *message)
 	std::cout << PURPLE << type \
 			  << RESET << client_socket << " " \
 			  << inet_ntoa(client.sin_addr) << " " \
-			  << ntohs(client.sin_port) \
-			  << BLUE << (message == NULL ? "\n" : message) << RESET;
+			  << ntohs(client.sin_port) << std::endl \
+			  << BLUE << (message == NULL ? "\n" : message) << RESET << std::endl;
 }
 
 static void	delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator it)
@@ -76,7 +74,6 @@ int		Server::manageServerLoop()
 		std::vector<pollfd>::iterator	end = poll_fds.end();
 		for (it = poll_fds.begin(); it != end; it++)
 		{
-			std::cout << "it->fd : " << it->fd << std::endl;
 			if (it->revents & POLLIN)
 			{
 				if (it->fd == _server_socket_fd)
@@ -96,12 +93,15 @@ int		Server::manageServerLoop()
 				{
 					// client echo message
 					char	message[BUF_SIZE_MSG];
+					memset(message, 0, sizeof(message));
 					if (recv(it->fd, message, BUF_SIZE_MSG, 0) <= FAILURE)
 						delClient(poll_fds, it);
 					else
 					{
 						print("Recv : ", it->fd, message); // si affichage incoherent regarder ici 
-						send(it->fd, message, strlen(message) + 1, 0);
+						// parsing 
+						send(it->fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 64, 0);
+						// send(it->fd, message, strlen(message) + 1, 0);
 						print("Send : ", it->fd, message);
 					}
 				}
@@ -116,7 +116,6 @@ int		Server::manageServerLoop()
 				else
 					delClient(poll_fds, it);
 			}
-			std::cout << "Je suis a la fin de la boucle : " << it->fd << std::endl;
 			std::vector<pollfd>::iterator	it1;
 			std::vector<pollfd>::iterator	end1 = poll_fds.end();
 			for (it1 = poll_fds.begin(); it1 != end1; it1++)
