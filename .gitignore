@@ -34,3 +34,6 @@
 # VSCode
 *.json
 /.vscode
+.nfs*
+**/.vscode/
+!.vscode/settings.json
