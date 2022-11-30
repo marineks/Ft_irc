@@ -1,0 +1,35 @@
+https://gcc.gnu.org/
+
+-MMD
+-MP
+
+creation du graphe de dependance 
+
+-include 
+https://www.gnu.org/software/make/manual/html_node/Include.html
+
+
+$<  = premiere dependance. 
+
+$^ = toutes les dependances 
+
+$@	= nom de la regle 
+	${NAME} : ${OBJS}
+	${CXX} ${OBJS} -o ${NAME}
+	ici ce sera ${NAME}
+
+-I	= cherchera le dossier include
+	https://learn.microsoft.com/en-us/cpp/preprocessor/hash-include-directive-c-cpp?view=msvc-170
+
+@D = variable automatique/implicite correspondant au dossier de la target
+	ici ${OBJS}%.o
+
+https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
+
+https://gl.developpez.com/tutoriel/outil/makefile/#LII-B
+
+-r = regarder man rm 
+
+make un peu  lent ? make -j
+
+https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html

@@ -79,13 +79,13 @@ class Channel
 
 class Message
 {
-private:
-	/* data */
-	std::string		_sender;
-public:
-	std::string		getSender();
-	Message(/* args */);
-	~Message();
+	private:
+		/* data */
+		std::string		_sender;
+	public:
+		std::string		getSender();
+		Message(/* args */);
+		~Message();
 };
 
 
