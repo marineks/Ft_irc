@@ -85,7 +85,7 @@ int		Server::manageServerLoop()
 		std::vector<pollfd>::iterator	it;
 		for (it = poll_fds.begin(); it != poll_fds.end();)
 		{
-			std::cout << GREEN << "it->fd au debut du for :" << it->fd << RESET << std::endl;
+			// std::cout << GREEN << "it->fd au debut du for :" << it->fd << RESET << std::endl;
 			if (it->revents & POLLIN)
 			{
 				if (it->fd == _server_socket_fd)
@@ -134,7 +134,7 @@ int		Server::manageServerLoop()
 					}
 				}
 			}
-			else if (it->revents & POLLERR)
+			else if (it->revents & POLLERR) // voir si il faut it++ ?
 			{
 				std::cout << "je suis dans le POLLERR\n";
 				if (it->fd == _server_socket_fd)
@@ -152,10 +152,10 @@ int		Server::manageServerLoop()
 			{
 				// send(it->fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0);
 				// TODO flush buffer in client
-				++it;
+				it++;
 			}
 			else
-				++it;
+				it++;
 			// std::vector<pollfd>::iterator	it1;
 			// std::vector<pollfd>::iterator	end1 = poll_fds.end();
 			// for (it1 = poll_fds.begin(); it1 != end1; it1++)
