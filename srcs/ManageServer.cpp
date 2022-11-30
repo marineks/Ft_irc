@@ -97,15 +97,10 @@ int		Server::manageServerLoop()
 						continue;
 					}
 					if (poll_fds.size() - 1 < MAX_CLIENT_NB)
-					{
 						addClient(client_sock, new_pollfds); // Beware, here we push the new client_socket in NEW_pollfds
-						it++;
-					}
 					else
-					{
 						tooManyClients(client_sock);
-						it++;
-					}	
+					it++;
 				}
 				else // => If the dedicated fd for the Client/Server connection already exists
 				{
@@ -129,17 +124,11 @@ int		Server::manageServerLoop()
 					{
 						print("Recv : ", it->fd, message); // si affichage incoherent regarder ici 
 						// parsing 
-						send(it->fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0);
+						// send(it->fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0);
 						// print("Send : ", it->fd, message);
 						it++;
 					}
 				}
-			}
-			else if (it->revents & POLLOUT) // => If the event that occured is a POLLOUT (aka "I can send() data to this socket without blocking")
-			{
-				// send(it->fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0);
-				// TODO flush buffer in client
-				it++;
 			}
 			else if (it->revents & POLLERR) // voir si il faut it++ ?
 			{
