@@ -50,18 +50,18 @@ static void	delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterat
 {
 	std::cout << "je suis dans le del\n";
 	print("Deconnection of client : ", it->fd, NULL);
-	// std::vector<pollfd>::iterator		iterator;
-	// for (iterator = poll_fds.begin(); iterator != poll_fds.end(); iterator++)
-	// {
-	// 	if (iterator->fd == it->fd)
-	// 	{
-	// 		close(it->fd);
-	// 		poll_fds.erase(iterator);
-	// 		break;
-	// 	}
-	// }
-	close(it->fd);
-	poll_fds.erase(it);
+	std::vector<pollfd>::iterator		iterator;
+	for (iterator = poll_fds.begin(); iterator != poll_fds.end(); iterator++)
+	{
+		if (iterator->fd == it->fd)
+		{
+			close(it->fd);
+			poll_fds.erase(iterator);
+			break;
+		}
+	}
+	// close(it->fd);
+	// poll_fds.erase(it);
 	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
 }
 
@@ -85,7 +85,7 @@ int		Server::manageServerLoop()
 		std::vector<pollfd>::iterator	it;
 		for (it = poll_fds.begin(); it != poll_fds.end();)
 		{
-			// std::cout << GREEN << "it->fd au debut du for :" << it->fd << RESET << std::endl;
+			std::cout << GREEN << "it->fd au debut du for :" << it->fd << RESET << std::endl;
 			if (it->revents & POLLIN)
 			{
 				if (it->fd == _server_socket_fd)
