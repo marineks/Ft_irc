@@ -60,37 +60,37 @@ static void	delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterat
 			break;
 		}
 	}
-	// close(it->fd);
-	// poll_fds.erase(it);
 	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
 }
 
 int		Server::manageServerLoop()
 {
-	pollfd	server_poll_fd;
-	
+	std::vector<pollfd>	poll_fds;
+	pollfd				server_poll_fd;
+
 	server_poll_fd.fd = _server_socket_fd;
 	server_poll_fd.events = POLLIN;
-	std::vector<pollfd>	poll_fds;
+
 	poll_fds.push_back(server_poll_fd);
+
 	while (1)
 	{
-		std::vector<pollfd> new_pollfds;
+		std::vector<pollfd> new_pollfds; // tmp struct hosting potential newly-created fds
 
 		if (poll((pollfd *)&poll_fds[0], (unsigned int)poll_fds.size(), -1) <= SUCCESS) // -1 == no timeout
 		{
 			std::cerr << RED << "Poll error" << RESET << std::endl;;
 			return (FAILURE);
 		}
-		std::vector<pollfd>::iterator	it;
-		for (it = poll_fds.begin(); it != poll_fds.end();)
+
+		std::vector<pollfd>::iterator	it = poll_fds.begin();
+		while (it != poll_fds.end())
 		{
-			// std::cout << GREEN << "it->fd au debut du for :" << it->fd << RESET << std::endl;
-			if (it->revents & POLLIN)
+			if (it->revents & POLLIN) // => If the event that occured is a POLLIN (aka "data is ready to recv() on this socket")
 			{
 				if (it->fd == _server_socket_fd)
 				{
-					int	client_sock = acceptSocket(_server_socket_fd);
+					int	client_sock = acceptSocket(_server_socket_fd); // Accepts the socket and returns a dedicated fd for this new Client-Server connexion
 					if (client_sock == -1)
 					{
 						std::cerr << RED << "Accept failed" << RESET << std::endl;
@@ -98,29 +98,30 @@ int		Server::manageServerLoop()
 					}
 					if (poll_fds.size() - 1 < MAX_CLIENT_NB)
 					{
-						addClient(client_sock, new_pollfds);
+						addClient(client_sock, new_pollfds); // Beware, here we push the new client_socket in NEW_pollfds
 						it++;
 					}
 					else
-						tooManyClients(_server_socket_fd);
+					{
+						tooManyClients(client_sock);
+						it++;
+					}	
 				}
-				else
+				else // => If the dedicated fd for the Client/Server connection already exists
 				{
-					// client echo message
 					char	message[BUF_SIZE_MSG];
-					int res;
+					int		read_count;
 
 					memset(message, 0, sizeof(message));
-					res = recv(it->fd, message, BUF_SIZE_MSG, 0);
+					read_count = recv(it->fd, message, BUF_SIZE_MSG, 0); // Retrieves the Client's message
 
-					if (res <= FAILURE)
+					if (read_count <= FAILURE) // when recv returns an error
 					{
-						std::cout << "456 recv failed\n";
+						std::cerr << RED << "Recv() failed [456]" << RESET << std::endl;
 						delClient(poll_fds, it);
 					}
-					else if (res == 0)
+					else if (read_count == 0) // when a client disconnects
 					{
-						// disconnect
 						delClient(poll_fds, it);
 						std::cout << "Disconnected\n";
 					}
@@ -134,12 +135,18 @@ int		Server::manageServerLoop()
 					}
 				}
 			}
+			else if (it->revents & POLLOUT) // => If the event that occured is a POLLOUT (aka "I can send() data to this socket without blocking")
+			{
+				// send(it->fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0);
+				// TODO flush buffer in client
+				it++;
+			}
 			else if (it->revents & POLLERR) // voir si il faut it++ ?
 			{
 				std::cout << "je suis dans le POLLERR\n";
 				if (it->fd == _server_socket_fd)
 				{
-					std::cerr << RED << "Lister socket error" << RESET << std::endl;
+					std::cerr << RED << "Listen socket error" << RESET << std::endl;
 					return (FAILURE);
 				}
 				else
@@ -148,12 +155,6 @@ int		Server::manageServerLoop()
 					delClient(poll_fds, it);
 				}
 			}
-			else if (it->revents & POLLOUT)
-			{
-				// send(it->fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0);
-				// TODO flush buffer in client
-				it++;
-			}
 			else
 				it++;
 			// std::vector<pollfd>::iterator	it1;
@@ -161,7 +162,7 @@ int		Server::manageServerLoop()
 			// for (it1 = poll_fds.begin(); it1 != end1; it1++)
 			// 	std::cout << YELLOW << "Fd = " << it1->fd << RESET << std::endl;
 		}
-		poll_fds.insert(poll_fds.end(), new_pollfds.begin(), new_pollfds.end());
+		poll_fds.insert(poll_fds.end(), new_pollfds.begin(), new_pollfds.end()); // Add the range of NEW_pollfds in poll_fds (helps recalculating poll_fds.end() in the for loop)
 	}
 	return (SUCCESS);
 }
