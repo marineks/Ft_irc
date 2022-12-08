@@ -12,7 +12,7 @@ static void	addClient(int client_socket, std::vector<pollfd> &poll_fds)
 {
 	pollfd	client_pollfd;
 	client_pollfd.fd = client_socket;
-	client_pollfd.events = POLLIN | POLLOUT;
+	client_pollfd.events = POLLIN;
 	poll_fds.push_back(client_pollfd);
 	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
 }
@@ -97,15 +97,10 @@ int		Server::manageServerLoop()
 						continue;
 					}
 					if (poll_fds.size() - 1 < MAX_CLIENT_NB)
-					{
 						addClient(client_sock, new_pollfds); // Beware, here we push the new client_socket in NEW_pollfds
-						it++;
-					}
 					else
-					{
 						tooManyClients(client_sock);
-						it++;
-					}	
+					it++;
 				}
 				else // => If the dedicated fd for the Client/Server connection already exists
 				{
@@ -129,17 +124,11 @@ int		Server::manageServerLoop()
 					{
 						print("Recv : ", it->fd, message); // si affichage incoherent regarder ici 
 						// parsing 
-						// send(it->fd, message, strlen(message) + 1, 0);
+						// send(it->fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0);
 						// print("Send : ", it->fd, message);
 						it++;
 					}
 				}
-			}
-			else if (it->revents & POLLOUT) // => If the event that occured is a POLLOUT (aka "I can send() data to this socket without blocking")
-			{
-				// send(it->fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0);
-				// TODO flush buffer in client
-				it++;
 			}
 			else if (it->revents & POLLERR) // voir si il faut it++ ?
 			{
@@ -157,10 +146,6 @@ int		Server::manageServerLoop()
 			}
 			else
 				it++;
-			// std::vector<pollfd>::iterator	it1;
-			// std::vector<pollfd>::iterator	end1 = poll_fds.end();
-			// for (it1 = poll_fds.begin(); it1 != end1; it1++)
-			// 	std::cout << YELLOW << "Fd = " << it1->fd << RESET << std::endl;
 		}
 		poll_fds.insert(poll_fds.end(), new_pollfds.begin(), new_pollfds.end()); // Add the range of NEW_pollfds in poll_fds (helps recalculating poll_fds.end() in the for loop)
 	}

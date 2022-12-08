@@ -30,7 +30,11 @@
 *.exe
 *.out
 *.app
+ircserv
 
 # VSCode
 *.json
 /.vscode
+.nfs*
+**/.vscode/
+!.vscode/settings.json
