@@ -10,6 +10,7 @@ class Client
 		std::string		_nickname;
 		std::string		_fullname;
 		std::string		_realname;
+		std::string		_mdp; // boolean ? ex : _mdpvalid = TRUE / FALSE
 	
 	public:
 		Client(int client_fd);
