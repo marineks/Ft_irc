@@ -8,12 +8,18 @@ static int	acceptSocket(int listenSocket)
 	return (accept(listenSocket, (sockaddr *)&client, &addr_size));
 }
 
-static void	addClient(int client_socket, std::vector<pollfd> &poll_fds)
+// Should be a member function of Server Class
+static void	addClient(int client_socket, std::vector<pollfd> &poll_fds, std::map<const int, Client>	&clients_list)
 {
 	pollfd	client_pollfd;
+	Client	client(client_socket);
+
 	client_pollfd.fd = client_socket;
 	client_pollfd.events = POLLIN;
 	poll_fds.push_back(client_pollfd);
+	
+	clients_list.insert(std::pair<int, Client>(client_socket, client)); // insert a new nod in client map with the fd as key
+	
 	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
 }
 
@@ -46,7 +52,8 @@ static void	print(std::string type, int client_socket, char *message)
 			  << BLUE << (message == NULL ? "\n" : message) << RESET << std::endl;
 }
 
-static void	delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it)
+// Should be a member function of Server Class
+static void	delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it, std::map<const int, Client>	&clients_list)
 {
 	std::cout << "je suis dans le del\n";
 	print("Deconnection of client : ", it->fd, NULL);
@@ -57,6 +64,7 @@ static void	delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterat
 		{
 			close(it->fd);
 			poll_fds.erase(iterator);
+			clients_list.erase(it->fd);
 			break;
 		}
 	}
@@ -97,7 +105,7 @@ int		Server::manageServerLoop()
 						continue;
 					}
 					if (poll_fds.size() - 1 < MAX_CLIENT_NB)
-						addClient(client_sock, new_pollfds); // Beware, here we push the new client_socket in NEW_pollfds
+						addClient(client_sock, new_pollfds, _clients); // Beware, here we push the new client_socket in NEW_pollfds
 					else
 						tooManyClients(client_sock);
 					it++;
@@ -113,11 +121,11 @@ int		Server::manageServerLoop()
 					if (read_count <= FAILURE) // when recv returns an error
 					{
 						std::cerr << RED << "Recv() failed [456]" << RESET << std::endl;
-						delClient(poll_fds, it);
+						delClient(poll_fds, it, _clients);
 					}
 					else if (read_count == 0) // when a client disconnects
 					{
-						delClient(poll_fds, it);
+						delClient(poll_fds, it, _clients);
 						std::cout << "Disconnected\n";
 					}
 					else
@@ -141,13 +149,20 @@ int		Server::manageServerLoop()
 				else
 				{
 					std::cout << "dans le else\n";
-					delClient(poll_fds, it);
+					delClient(poll_fds, it, _clients);
 				}
 			}
 			else
 				it++;
 		}
 		poll_fds.insert(poll_fds.end(), new_pollfds.begin(), new_pollfds.end()); // Add the range of NEW_pollfds in poll_fds (helps recalculating poll_fds.end() in the for loop)
+		std::cout << "j'ai insert\n" << std::endl;
+		// print list of our client
+		std::map<const int, Client>::iterator it_map;
+		for (it_map = _clients.begin(); it_map != _clients.end(); it_map++)
+		{
+			it_map->second.printClient();
+		}
 	}
 	return (SUCCESS);
 }

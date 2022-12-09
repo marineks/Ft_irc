@@ -22,6 +22,11 @@ void	Server::setHints()
 	_hints.ai_flags = AI_PASSIVE; // We'll be on localhost by default
 }
 
+std::string	Server::getMdp() 
+{ 
+	return (_mdp);
+}
+
 /**
  * @brief Helps set up the structs 'hints' and 'servinfo' of our Server class
  * 

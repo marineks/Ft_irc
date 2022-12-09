@@ -7,17 +7,20 @@
 class Server
 {
 	private:
-		struct addrinfo		_hints;
-		struct addrinfo		*_servinfo;
-		// std::map<Client>	_clients;
-		int					_server_socket_fd;
+		struct addrinfo				_hints;
+		struct addrinfo				*_servinfo;
+		int							_server_socket_fd;
+		std::map<const int, Client>	_clients;
+		std::string					_mdp = "pantoufle";
+	
 	public:
 		Server();
 		~Server();
-		void	setHints();
-		int		fillServinfo(char *port);
-		int		launchServer();
-		int		manageServerLoop();
+		void		setHints();
+		std::string	getMdp();
+		int			fillServinfo(char *port);
+		int			launchServer();
+		int			manageServerLoop();
 };
 
 #endif
