@@ -90,15 +90,8 @@ void	Server::addClient(int client_socket, std::vector<pollfd> &poll_fds)
 	client_pollfd.events = POLLIN;
 	poll_fds.push_back(client_pollfd);
 	
-	_clients.insert(std::pair<int, Client>(client_socket, new_client)); // insert a new nod in client map with the fd as key
+	_clients.insert(std::pair<int, Client>(client_socket, new_client));		// insert a new nod in client map with the fd as key
 	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
-	std::cout << "Map size : " << _clients.size() << std::endl;
-	std::map<const int, Client>::iterator it_map;
-	for (it_map = _clients.begin(); it_map != _clients.end(); it_map++)
-	{
-		std::cout << "Key : " << it_map->first << std::endl;
-		it_map->second.printClient();
-	}
 }
 
 void	Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it)
@@ -118,13 +111,6 @@ void	Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::itera
 		}
 	}
 	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
-	std::cout << "Map size : " << _clients.size() << std::endl;
-	std::map<const int, Client>::iterator it_map;
-	for (it_map = _clients.begin(); it_map != _clients.end(); it_map++)
-	{
-		std::cout << "Key : " << it_map->first << std::endl;
-		it_map->second.printClient();
-	}
 }
 
 
