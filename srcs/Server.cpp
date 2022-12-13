@@ -81,3 +81,50 @@ int		Server::launchServer()
 	return (SUCCESS);
 }
 
+void	Server::addClient(int client_socket, std::vector<pollfd> &poll_fds)
+{
+	pollfd	client_pollfd;
+	Client	new_client(client_socket);
+
+	client_pollfd.fd = client_socket;
+	client_pollfd.events = POLLIN;
+	poll_fds.push_back(client_pollfd);
+	
+	_clients.insert(std::pair<int, Client>(client_socket, new_client)); // insert a new nod in client map with the fd as key
+	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
+	std::cout << "Map size : " << _clients.size() << std::endl;
+	std::map<const int, Client>::iterator it_map;
+	for (it_map = _clients.begin(); it_map != _clients.end(); it_map++)
+	{
+		std::cout << "Key : " << it_map->first << std::endl;
+		it_map->second.printClient();
+	}
+}
+
+void	Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it)
+{
+	std::cout << "je suis dans le del\n";
+	std::cout << "Deconnection of client : " << it->fd << std::endl;
+	int key = it->fd;
+	std::vector<pollfd>::iterator		iterator;
+	for (iterator = poll_fds.begin(); iterator != poll_fds.end(); iterator++)
+	{
+		if (iterator->fd == it->fd)
+		{
+			close(it->fd);
+			poll_fds.erase(iterator);
+			_clients.erase(key);
+			break;
+		}
+	}
+	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
+	std::cout << "Map size : " << _clients.size() << std::endl;
+	std::map<const int, Client>::iterator it_map;
+	for (it_map = _clients.begin(); it_map != _clients.end(); it_map++)
+	{
+		std::cout << "Key : " << it_map->first << std::endl;
+		it_map->second.printClient();
+	}
+}
+
+

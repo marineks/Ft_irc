@@ -18,9 +18,13 @@ class Server
 		~Server();
 		void		setHints();
 		std::string	getMdp();
+
 		int			fillServinfo(char *port);
 		int			launchServer();
 		int			manageServerLoop();
+		void		addClient(int client_socket, std::vector<pollfd> &poll_fds);
+		void		delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it);
+
 };
 
 #endif
