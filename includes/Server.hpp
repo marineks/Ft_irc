@@ -3,6 +3,7 @@
 
 #include "Irc.hpp"
 #include "Client.hpp"
+#include "Commands.hpp"
 
 class Server
 {
@@ -11,6 +12,7 @@ class Server
 		struct addrinfo				*_servinfo;
 		int							_server_socket_fd;
 		std::map<const int, Client>	_clients;
+		Commands					_cmd;
 		std::string					_mdp = "pantoufle";
 	
 	public:
@@ -28,6 +30,7 @@ class Server
 		// Manage Clients functions
 		void		addClient(int client_socket, std::vector<pollfd> &poll_fds);
 		void		delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it);
+		void		fillClients(std::map<const int, Client> &client_list, int client_fd, std::vector<std::string> cmds);
 		// Parsing & Commands functions
 		void		parseMessage(const int client_fd, std::string message);
 		void		execCommand(int const client_fd, std::string cmd_line);

@@ -113,6 +113,31 @@ void	Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::itera
 	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
 }
 
+void	Server::fillClients(std::map<const int, Client> &client_list, int client_fd, std::vector<std::string> cmds)
+{
+	std::map<const int, Client>::iterator it;
+	
+	it = client_list.find(client_fd);
+	for (size_t i = 0; i != cmds.size(); i++)
+	{
+		if (cmds[i].find("NICK") != std::string::npos)
+		{
+			cmds[i].erase(cmds[i].find("NICK"), 4);
+			it->second.setNickname(cmds[i]);
+		}
+		else if (cmds[i].find("USER") != std::string::npos)
+		{
+			cmds[i].erase(cmds[i].find("USER "), 5);
+			it->second.setUsername(cmds[i].substr(cmds[i].find(" "), cmds[i].find(" ") + 1));
+			it->second.setRealname(cmds[i].substr(cmds[i].find(":") + 1, cmds[i].length() - cmds[i].find(":") + 1));
+		}
+	}
+	if (it->second.is_valid() == SUCCESS)
+		send(client_fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0);
+	// else
+		// TODO : DelClient soit on le gere en renvoyant une exception et on del dans ManageServerloop (plus simple)
+}
+
 static void	splitMessage(std::vector<std::string> &cmds, std::string msg)
 {
 	int 		pos = 0;
@@ -132,15 +157,16 @@ void	Server::parseMessage(int const client_fd, std::string message)
 	std::vector<std::string> cmds;
 
 	splitMessage(cmds, message);
-	for (size_t i = 0; i != cmds.size(); i++)
-		execCommand(client_fd, cmds[i]);
+	if (cmds[0].find("CAP LS") != std::string::npos)
+	{
+		fillClients(_clients, client_fd, cmds);
+	}
+	else
+	{
+		for (size_t i = 0; i != cmds.size(); i++)
+			execCommand(client_fd, cmds[i]);
+	}
 }
-
-static int	parseCommand(std::string cmd_line, cmd_struct &cmd_infos)
-{
-	return (SUCCESS);
-}
-
 
 void Server::execCommand(int const client_fd, std::string cmd_line)
 {
@@ -148,12 +174,11 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	
 	int			i = 0;
 	cmd_struct	cmd_infos;
-	std::string	validCmds[2] = {"NICK", 
-								"USER"};
 	
-	// parseCommand(cmd_line, cmd_infos);
-	
-	// while (i < 2 && validCmds[i] != cmd_infos.name)
+	_cmd.parseCommand(cmd_line, cmd_infos);
+
+	// TODO: Trouver comment faire un switch par rapport à des mots
+	// while (i < 3 && _cmd.validCmds[i] != cmd_infos.name)
 	// 	i++;
 
 	// switch (i) 

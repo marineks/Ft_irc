@@ -56,7 +56,8 @@ void	Client::printClient()const
 
 }
 
-int	Client::is_valid()const
+// TODO : a compléter
+int	Client::is_valid() const
 {
 	if (_fullname.empty())
 		return (FAILURE);
