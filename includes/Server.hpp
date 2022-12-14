@@ -14,16 +14,23 @@ class Server
 		std::string					_mdp = "pantoufle";
 	
 	public:
+		// Constructor & destructor
 		Server();
 		~Server();
+		// Accessors
 		void		setHints();
 		std::string	getMdp();
 
+		// Running Server functions
 		int			fillServinfo(char *port);
 		int			launchServer();
 		int			manageServerLoop();
+		// Manage Clients functions
 		void		addClient(int client_socket, std::vector<pollfd> &poll_fds);
 		void		delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it);
+		// Parsing & Commands functions
+		void		parseMessage(const int client_fd, std::string message);
+		void		execCommand(int const client_fd, std::string cmd_line);
 
 };
 

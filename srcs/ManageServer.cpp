@@ -8,21 +8,6 @@ static int	acceptSocket(int listenSocket)
 	return (accept(listenSocket, (sockaddr *)&client, &addr_size));
 }
 
-// Should be a member function of Server Class
-// static void	addClient(int client_socket, std::vector<pollfd> &poll_fds, std::map<const int, Client>	&clients_list)
-// {
-// 	pollfd	client_pollfd;
-// 	Client	client(client_socket);
-
-// 	client_pollfd.fd = client_socket;
-// 	client_pollfd.events = POLLIN;
-// 	poll_fds.push_back(client_pollfd);
-	
-// 	clients_list.insert(std::pair<int, Client>(client_socket, client)); // insert a new nod in client map with the fd as key
-	
-// 	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
-// }
-
 static void	tooManyClients(int client_socket)
 {
 	std::cout << RED << ERR_FULL_SERV << RESET << std::endl;
@@ -51,25 +36,6 @@ static void	print(std::string type, int client_socket, char *message)
 			  << ntohs(client.sin_port) << std::endl \
 			  << BLUE << (message == NULL ? "\n" : message) << RESET << std::endl;
 }
-
-// Should be a member function of Server Class
-// static void	delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it, std::map<const int, Client>	&clients_list)
-// {
-// 	std::cout << "je suis dans le del\n";
-// 	print("Deconnection of client : ", it->fd, NULL);
-// 	std::vector<pollfd>::iterator		iterator;
-// 	for (iterator = poll_fds.begin(); iterator != poll_fds.end(); iterator++)
-// 	{
-// 		if (iterator->fd == it->fd)
-// 		{
-// 			close(it->fd);
-// 			poll_fds.erase(iterator);
-// 			clients_list.erase(it->fd);
-// 			break;
-// 		}
-// 	}
-// 	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
-// }
 
 int		Server::manageServerLoop()
 {
@@ -131,7 +97,7 @@ int		Server::manageServerLoop()
 					else
 					{
 						print("Recv : ", it->fd, message); // si affichage incoherent regarder ici 
-						// parsing
+						parseMessage(it->fd, message);
 						// TODO : récup la fonction fillClient de Dim et la décomposer :
 						// TODO : - split le message
 						// TODO : - fill le client qui a deja été add avec les infos du message

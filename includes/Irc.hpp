@@ -16,4 +16,12 @@
 # include "Macro.hpp"
 # include "Colors.hpp"
 // #include "Server.hpp" // atttention toi on te surveille
+
+struct cmd_struct
+{
+	std::string	prefix;
+	std::string	name;
+	std::string	message;
+};
+
 #endif

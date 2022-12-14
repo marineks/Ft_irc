@@ -113,4 +113,54 @@ void	Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::itera
 	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
 }
 
+static void	splitMessage(std::vector<std::string> &cmds, std::string msg)
+{
+	int 		pos = 0;
+	std::string	delimiter = "\n";
+	std::string	substr;
+	
+	while ((pos = msg.find(delimiter)) != static_cast<int>(std::string::npos))
+	{
+		substr = msg.substr(0, pos);
+		cmds.push_back(substr);
+		msg.erase(0, pos + delimiter.length());
+	}
+}
 
+void	Server::parseMessage(int const client_fd, std::string message)
+{
+	std::vector<std::string> cmds;
+
+	splitMessage(cmds, message);
+	for (size_t i = 0; i != cmds.size(); i++)
+		execCommand(client_fd, cmds[i]);
+}
+
+static int	parseCommand(std::string cmd_line, cmd_struct &cmd_infos)
+{
+	return (SUCCESS);
+}
+
+
+void Server::execCommand(int const client_fd, std::string cmd_line)
+{
+	std::cout << "cmd line : " << cmd_line << std::endl;
+	
+	int			i = 0;
+	cmd_struct	cmd_infos;
+	std::string	validCmds[2] = {"NICK", 
+								"USER"};
+	
+	// parseCommand(cmd_line, cmd_infos);
+	
+	// while (i < 2 && validCmds[i] != cmd_infos.name)
+	// 	i++;
+
+	// switch (i) 
+	// {
+	// 	case 0: nick(); break;
+	// 	case 1: user(); break;
+	// 	default: std::cout << "Not a valid cmd" << std::endl;
+	// }
+
+}
