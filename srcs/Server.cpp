@@ -133,7 +133,7 @@ void	Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 		}
 	}
 	if (it->second.is_valid() == SUCCESS)
-		send(client_fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0);
+		send(client_fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0); // TODO: need a function to have a dynamic welcome message
 	// else
 		// TODO : DelClient soit on le gere en renvoyant une exception et on del dans ManageServerloop (plus simple)
 }

@@ -98,13 +98,6 @@ int		Server::manageServerLoop()
 					{
 						print("Recv : ", it->fd, message); // si affichage incoherent regarder ici 
 						parseMessage(it->fd, message);
-						// TODO : récup la fonction fillClient de Dim et la décomposer :
-						// TODO : - split le message
-						// TODO : - fill le client qui a deja été add avec les infos du message
-						// TODO : - check en plus du mdp
-						// TODO : Normalement le premier message du client fini par USER... 
-						// TODO : donc le check si le client est bon peut se faire à ce moment la car on est censé avoir recu le MDP et le NICK avant
-						// send(it->fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0);
 						// print("Send : ", it->fd, message);
 						it++;
 					}
@@ -129,6 +122,7 @@ int		Server::manageServerLoop()
 		}
 		poll_fds.insert(poll_fds.end(), new_pollfds.begin(), new_pollfds.end()); // Add the range of NEW_pollfds in poll_fds (helps recalculating poll_fds.end() in the for loop)
 		std::cout << "j'ai insert\n" << std::endl;
+		
 		// print list of our client
 		std::cout << "Map size : " << _clients.size() << std::endl;
 		std::cout << "print list of our client" << std::endl;
