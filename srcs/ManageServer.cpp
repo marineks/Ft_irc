@@ -8,15 +8,6 @@ static int	acceptSocket(int listenSocket)
 	return (accept(listenSocket, (sockaddr *)&client, &addr_size));
 }
 
-static void	addClient(int client_socket, std::vector<pollfd> &poll_fds)
-{
-	pollfd	client_pollfd;
-	client_pollfd.fd = client_socket;
-	client_pollfd.events = POLLIN;
-	poll_fds.push_back(client_pollfd);
-	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
-}
-
 static void	tooManyClients(int client_socket)
 {
 	std::cout << RED << ERR_FULL_SERV << RESET << std::endl;
@@ -44,23 +35,6 @@ static void	print(std::string type, int client_socket, char *message)
 			  << inet_ntoa(client.sin_addr) << " " \
 			  << ntohs(client.sin_port) << std::endl \
 			  << BLUE << (message == NULL ? "\n" : message) << RESET << std::endl;
-}
-
-static void	delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it)
-{
-	std::cout << "je suis dans le del\n";
-	print("Deconnection of client : ", it->fd, NULL);
-	std::vector<pollfd>::iterator		iterator;
-	for (iterator = poll_fds.begin(); iterator != poll_fds.end(); iterator++)
-	{
-		if (iterator->fd == it->fd)
-		{
-			close(it->fd);
-			poll_fds.erase(iterator);
-			break;
-		}
-	}
-	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
 }
 
 int		Server::manageServerLoop()
@@ -123,7 +97,13 @@ int		Server::manageServerLoop()
 					else
 					{
 						print("Recv : ", it->fd, message); // si affichage incoherent regarder ici 
-						// parsing 
+						parseMessage(it->fd, message);
+						// TODO : récup la fonction fillClient de Dim et la décomposer :
+						// TODO : - split le message
+						// TODO : - fill le client qui a deja été add avec les infos du message
+						// TODO : - check en plus du mdp
+						// TODO : Normalement le premier message du client fini par USER... 
+						// TODO : donc le check si le client est bon peut se faire à ce moment la car on est censé avoir recu le MDP et le NICK avant
 						// send(it->fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0);
 						// print("Send : ", it->fd, message);
 						it++;
@@ -148,6 +128,16 @@ int		Server::manageServerLoop()
 				it++;
 		}
 		poll_fds.insert(poll_fds.end(), new_pollfds.begin(), new_pollfds.end()); // Add the range of NEW_pollfds in poll_fds (helps recalculating poll_fds.end() in the for loop)
+		std::cout << "j'ai insert\n" << std::endl;
+		// print list of our client
+		std::cout << "Map size : " << _clients.size() << std::endl;
+		std::cout << "print list of our client" << std::endl;
+		std::map<const int, Client>::iterator it_map;
+		for (it_map = _clients.begin(); it_map != _clients.end(); it_map++)
+		{
+			std::cout << "Key : " << it_map->first << std::endl;
+			it_map->second.printClient();
+		}
 	}
 	return (SUCCESS);
 }

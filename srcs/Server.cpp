@@ -22,6 +22,11 @@ void	Server::setHints()
 	_hints.ai_flags = AI_PASSIVE; // We'll be on localhost by default
 }
 
+std::string	Server::getMdp() 
+{ 
+	return (_mdp);
+}
+
 /**
  * @brief Helps set up the structs 'hints' and 'servinfo' of our Server class
  * 
@@ -76,3 +81,111 @@ int		Server::launchServer()
 	return (SUCCESS);
 }
 
+void	Server::addClient(int client_socket, std::vector<pollfd> &poll_fds)
+{
+	pollfd	client_pollfd;
+	Client	new_client(client_socket);
+
+	client_pollfd.fd = client_socket;
+	client_pollfd.events = POLLIN;
+	poll_fds.push_back(client_pollfd);
+	
+	_clients.insert(std::pair<int, Client>(client_socket, new_client));		// insert a new nod in client map with the fd as key
+	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
+}
+
+void	Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it)
+{
+	std::cout << "je suis dans le del\n";
+	std::cout << "Deconnection of client : " << it->fd << std::endl;
+	int key = it->fd;
+	std::vector<pollfd>::iterator		iterator;
+	for (iterator = poll_fds.begin(); iterator != poll_fds.end(); iterator++)
+	{
+		if (iterator->fd == it->fd)
+		{
+			close(it->fd);
+			poll_fds.erase(iterator);
+			_clients.erase(key);
+			break;
+		}
+	}
+	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
+}
+
+void	Server::fillClients(std::map<const int, Client> &client_list, int client_fd, std::vector<std::string> cmds)
+{
+	std::map<const int, Client>::iterator it;
+	
+	it = client_list.find(client_fd);
+	for (size_t i = 0; i != cmds.size(); i++)
+	{
+		if (cmds[i].find("NICK") != std::string::npos)
+		{
+			cmds[i].erase(cmds[i].find("NICK"), 4);
+			it->second.setNickname(cmds[i]);
+		}
+		else if (cmds[i].find("USER") != std::string::npos)
+		{
+			cmds[i].erase(cmds[i].find("USER "), 5);
+			it->second.setUsername(cmds[i].substr(cmds[i].find(" "), cmds[i].find(" ") + 1));
+			it->second.setRealname(cmds[i].substr(cmds[i].find(":") + 1, cmds[i].length() - cmds[i].find(":") + 1));
+		}
+	}
+	if (it->second.is_valid() == SUCCESS)
+		send(client_fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0);
+	// else
+		// TODO : DelClient soit on le gere en renvoyant une exception et on del dans ManageServerloop (plus simple)
+}
+
+static void	splitMessage(std::vector<std::string> &cmds, std::string msg)
+{
+	int 		pos = 0;
+	std::string	delimiter = "\n";
+	std::string	substr;
+	
+	while ((pos = msg.find(delimiter)) != static_cast<int>(std::string::npos))
+	{
+		substr = msg.substr(0, pos);
+		cmds.push_back(substr);
+		msg.erase(0, pos + delimiter.length());
+	}
+}
+
+void	Server::parseMessage(int const client_fd, std::string message)
+{
+	std::vector<std::string> cmds;
+
+	splitMessage(cmds, message);
+	if (cmds[0].find("CAP LS") != std::string::npos)
+	{
+		fillClients(_clients, client_fd, cmds);
+	}
+	else
+	{
+		for (size_t i = 0; i != cmds.size(); i++)
+			execCommand(client_fd, cmds[i]);
+	}
+}
+
+void Server::execCommand(int const client_fd, std::string cmd_line)
+{
+	std::cout << "cmd line : " << cmd_line << std::endl;
+	
+	int			i = 0;
+	cmd_struct	cmd_infos;
+	
+	_cmd.parseCommand(cmd_line, cmd_infos);
+
+	// TODO: Trouver comment faire un switch par rapport à des mots
+	// while (i < 3 && _cmd.validCmds[i] != cmd_infos.name)
+	// 	i++;
+
+	// switch (i) 
+	// {
+	// 	case 0: nick(); break;
+	// 	case 1: user(); break;
+	// 	default: std::cout << "Not a valid cmd" << std::endl;
+	// }
+
+}
