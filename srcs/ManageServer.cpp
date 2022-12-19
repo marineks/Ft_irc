@@ -1,46 +1,46 @@
 #include "Server.hpp"
 #include "Colors.hpp"
 
-static int	acceptSocket(int listenSocket)
+static int acceptSocket(int listenSocket)
 {
-	sockaddr_in	client;
-	socklen_t	addr_size = sizeof(sockaddr_in);
+	sockaddr_in client;
+	socklen_t addr_size = sizeof(sockaddr_in);
 	return (accept(listenSocket, (sockaddr *)&client, &addr_size));
 }
 
-static void	tooManyClients(int client_socket)
+static void tooManyClients(int client_socket)
 {
 	std::cout << RED << ERR_FULL_SERV << RESET << std::endl;
 	send(client_socket, ERR_FULL_SERV, strlen(ERR_FULL_SERV) + 1, 0);
 	close(client_socket);
 }
 
-static sockaddr_in	getClientAddress(int socket)
+static sockaddr_in getClientAddress(int socket)
 {
 	sockaddr_in client;
 	socklen_t addrSize = sizeof(struct sockaddr_in);
-	if (getpeername(socket, (struct sockaddr*)&client, &addrSize) != SUCCESS)
+	if (getpeername(socket, (struct sockaddr *)&client, &addrSize) != SUCCESS)
 	{
 		std::cerr << RED << "Get Client Address Error" << RESET << std::endl;
-		throw ;
+		throw;
 	}
 	return (client);
 }
 
-static void	print(std::string type, int client_socket, char *message)
+static void print(std::string type, int client_socket, char *message)
 {
 	sockaddr_in client = getClientAddress(client_socket);
-	std::cout << PURPLE << type \
-			  << RESET << client_socket << " " \
-			  << inet_ntoa(client.sin_addr) << " " \
-			  << ntohs(client.sin_port) << std::endl \
+	std::cout << PURPLE << type
+			  << RESET << client_socket << " "
+			  << inet_ntoa(client.sin_addr) << " "
+			  << ntohs(client.sin_port) << std::endl
 			  << BLUE << (message == NULL ? "\n" : message) << RESET << std::endl;
 }
 
-int		Server::manageServerLoop()
+int Server::manageServerLoop()
 {
-	std::vector<pollfd>	poll_fds;
-	pollfd				server_poll_fd;
+	std::vector<pollfd> poll_fds;
+	pollfd server_poll_fd;
 
 	server_poll_fd.fd = _server_socket_fd;
 	server_poll_fd.events = POLLIN;
@@ -53,18 +53,19 @@ int		Server::manageServerLoop()
 
 		if (poll((pollfd *)&poll_fds[0], (unsigned int)poll_fds.size(), -1) <= SUCCESS) // -1 == no timeout
 		{
-			std::cerr << RED << "Poll error" << RESET << std::endl;;
+			std::cerr << RED << "Poll error" << RESET << std::endl;
+			;
 			return (FAILURE);
 		}
 
-		std::vector<pollfd>::iterator	it = poll_fds.begin();
+		std::vector<pollfd>::iterator it = poll_fds.begin();
 		while (it != poll_fds.end())
 		{
 			if (it->revents & POLLIN) // => If the event that occured is a POLLIN (aka "data is ready to recv() on this socket")
 			{
 				if (it->fd == _server_socket_fd)
 				{
-					int	client_sock = acceptSocket(_server_socket_fd); // Accepts the socket and returns a dedicated fd for this new Client-Server connexion
+					int client_sock = acceptSocket(_server_socket_fd); // Accepts the socket and returns a dedicated fd for this new Client-Server connexion
 					if (client_sock == -1)
 					{
 						std::cerr << RED << "Accept failed" << RESET << std::endl;
@@ -78,8 +79,8 @@ int		Server::manageServerLoop()
 				}
 				else // => If the dedicated fd for the Client/Server connection already exists
 				{
-					char	message[BUF_SIZE_MSG];
-					int		read_count;
+					char message[BUF_SIZE_MSG];
+					int read_count;
 
 					memset(message, 0, sizeof(message));
 					read_count = recv(it->fd, message, BUF_SIZE_MSG, 0); // Retrieves the Client's message
@@ -96,7 +97,7 @@ int		Server::manageServerLoop()
 					}
 					else
 					{
-						print("Recv : ", it->fd, message); // si affichage incoherent regarder ici 
+						print("Recv : ", it->fd, message); // si affichage incoherent regarder ici
 						parseMessage(it->fd, message);
 						// print("Send : ", it->fd, message);
 						it++;
@@ -121,8 +122,9 @@ int		Server::manageServerLoop()
 				it++;
 		}
 		poll_fds.insert(poll_fds.end(), new_pollfds.begin(), new_pollfds.end()); // Add the range of NEW_pollfds in poll_fds (helps recalculating poll_fds.end() in the for loop)
-		std::cout << "j'ai insert\n" << std::endl;
-		
+		std::cout << "j'ai insert\n"
+				  << std::endl;
+
 		// print list of our client
 		std::cout << "Map size : " << _clients.size() << std::endl;
 		std::cout << "print list of our client" << std::endl;

@@ -12,6 +12,8 @@
 # include <map>
 # include <poll.h>
 # include <unistd.h>
+# include <sstream>
+# include <string>
 
 # include "Macro.hpp"
 # include "Colors.hpp"

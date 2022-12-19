@@ -113,6 +113,58 @@ void	Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::itera
 	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
 }
 
+/**
+ * @brief 
+ * 		001    RPL_WELCOME
+ *      "Welcome to the Internet Relay Network
+ *       <nick>!<user>@<host>"
+ * @param client_list 
+ * @param client_fd 
+ */
+std::string getWelcomeReply(std::map<const int, Client>::iterator it) 
+{
+	// std::string rpl_welcome;
+	std::string host = ":127.0.0.1";
+	std::string space = " ";
+	std::string welcome = " :Welcome ";
+	std::string rpl_code = "001";
+	std::string user_id = it->second.getNickname() + "!" + it->second.getUsername() + "@" + host;
+	std::string end = "\n";
+
+	// std::cout << "Test user ID: " << GREEN << user_id << RESET << std::endl;
+	// std::cout << "TEST" << host << " " << rpl_code << " " << it->second.getNickname() << " :Welcome " << user_id << std::endl;
+
+	// rpl_welcome.clear();
+	// rpl_welcome = host + " " + rpl_code + " " + it->second.getNickname() + " :Welcome " + user_id + end;
+	
+	std::stringstream rpl_welcome;
+
+	rpl_welcome.str(std::string()); // flush the stringstream
+	// rpl_welcome << "ca me fait iech";
+	
+	rpl_welcome << "test de ses morts" << welcome << rpl_code << it->second.getNickname();
+	rpl_welcome << host;
+
+	// rpl_welcome << host << space << rpl_code << space << it->second.getNickname() << welcome \
+			<< it->second.getNickname() << "!" << it->second.getUsername() << "@" << host << end;
+
+	// rpl_welcome.append(":127.0.0.1 001 ");
+	// rpl_welcome.append(it->second.getNickname());
+	// rpl_welcome.append(" :Welcome ");
+	// rpl_welcome.append(it->second.getNickname());
+	// rpl_welcome.append("!");
+	// rpl_welcome.append(it->second.getUsername());
+	// rpl_welcome.append("@");
+	// rpl_welcome.append("127.0.0.1");
+	// rpl_welcome.append("\r\n");
+	std::cout << CYAN << "FUCKING RES" << std::endl;
+	// std::cout << rpl_welcome << RESET << std::endl;
+
+	std::string res = rpl_welcome.str();
+	std::cout << res << RESET << std::endl;
+	return (res);
+}
+
 void	Server::fillClients(std::map<const int, Client> &client_list, int client_fd, std::vector<std::string> cmds)
 {
 	std::map<const int, Client>::iterator it;
@@ -133,7 +185,10 @@ void	Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 		}
 	}
 	if (it->second.is_valid() == SUCCESS)
-		send(client_fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0); // TODO: need a function to have a dynamic welcome message
+	{
+		send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
+	}
+		// send(client_fd, ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n", 62, 0);
 	// else
 		// TODO : DelClient soit on le gere en renvoyant une exception et on del dans ManageServerloop (plus simple)
 }
@@ -168,24 +223,44 @@ void	Server::parseMessage(int const client_fd, std::string message)
 	}
 }
 
+// TODO : Faire passer dans exec_cmds tous les Clients fds ? (cf. PRIVMSG() )
 void Server::execCommand(int const client_fd, std::string cmd_line)
 {
-	std::cout << "cmd line : " << cmd_line << std::endl;
+	// std::cout << "cmd line : " << cmd_line << std::endl;
 	
-	int			i = 0;
 	cmd_struct	cmd_infos;
+	int			index = 0;
 	
 	_cmd.parseCommand(cmd_line, cmd_infos);
 
-	// TODO: Trouver comment faire un switch par rapport à des mots
-	// while (i < 3 && _cmd.validCmds[i] != cmd_infos.name)
-	// 	i++;
+	while (index < VALID_LEN)
+	{
+		if (cmd_infos.name == _cmd.validCmds[index])
+			break;
+		index++;
+	}
 
-	// switch (i) 
-	// {
-	// 	case 0: nick(); break;
-	// 	case 1: user(); break;
-	// 	default: std::cout << "Not a valid cmd" << std::endl;
-	// }
+	switch (index) 
+	{
+		// case 0: _cmd.cap(&cmd_infos); break;
+		// case 1: _cmd.invite(client_fd, &cmd_infos); break;
+		// case 2: _cmd.join(&cmd_infos); break;
+		// case 3: _cmd.kick(&cmd_infos); break;
+		// case 4: _cmd.kill(&cmd_infos); break;
+		// case 5: _cmd.list(&cmd_infos); break;
+		// case 6: _cmd.mdp(&cmd_infos); break;
+		// case 7: _cmd.mode(&cmd_infos); break;
+		// case 8: _cmd.nick(&cmd_infos); break;
+		// case 9: _cmd.part(&cmd_infos); break;
+		// case 10: _cmd.ping(&cmd_infos); break;
+		// case 11: _cmd.pong(&cmd_infos); break;
+		// case 12: _cmd.privmsg(&cmd_infos); break;
+		// case 13: _cmd.topic(&cmd_infos); break;
+		// case 14: _cmd.user(&cmd_infos); break;
+		// case 15: _cmd.who(&cmd_infos); break;
+		// case 16: _cmd.whois(&cmd_infos); break;
+		// case 17: _cmd.whowas(&cmd_infos); break;
+		default: std::cout << PURPLE << "This command is not supported by our services." << RESET << std::endl;
+	}
 
 }
