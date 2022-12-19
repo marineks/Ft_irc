@@ -3,14 +3,13 @@
 
 #include "Irc.hpp"
 
-# define VALID_LEN 18
+# define VALID_LEN 17
 class Commands
 {
 	private:
 		/* data */
 	public:
 		std::string	validCmds[VALID_LEN] = {
-		"CAP LS",
 		"INVITE",
 		"JOIN",
 		"KICK",
