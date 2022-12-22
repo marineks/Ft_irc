@@ -17,8 +17,8 @@ int	Client::getClientFd()const
 
 void	Client::setNickname(std::string const &nickname)
 {
-	_nickname = nickname;
-	// limiter la size comme sur un irc classique
+	// If the nickname has more than 9 characters, it must be truncated
+	_nickname = (_nickname.size() > 9) ? nickname.substr(0, 9) : nickname;
 }
 
 std::string		Client::getNickname()const
