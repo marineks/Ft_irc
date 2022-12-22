@@ -34,6 +34,11 @@ class Server
 		// Parsing & Commands functions
 		void		parseMessage(const int client_fd, std::string message);
 		void		execCommand(int const client_fd, std::string cmd_line);
+		// Custom exceptions
+		class InvalidClientException : public std::exception {
+			public :
+					const char *	what (void) const throw();
+		};
 
 };
 
