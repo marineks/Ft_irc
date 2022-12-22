@@ -34,7 +34,7 @@ class Commands
 
 		int	parseCommand(std::string cmd_line, cmd_struct &cmd_infos);
 		// Command list functions
-
+		int	ping(int const client_fd, cmd_struct &cmd);
 };
 
 #endif
