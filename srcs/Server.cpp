@@ -11,6 +11,12 @@ Server::~Server()
 	std::cout << YELLOW << "Server destructor" << RESET << std::endl;
 }
 
+const char * 	Server::InvalidClientException::what (void) const throw() 
+{
+	return "The information given by the client are invalid.";
+}
+
+
 /**
  * @brief Attributes the correct parameters to the structure Hints.
  *
@@ -173,8 +179,8 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 	}
 	if (it->second.is_valid() == SUCCESS)
 		send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
-	// else
-	// TODO : DelClient soit on le gere en renvoyant une exception et on del dans ManageServerloop (plus simple)
+	else
+		throw Server::InvalidClientException();
 }
 
 static void splitMessage(std::vector<std::string> &cmds, std::string msg)

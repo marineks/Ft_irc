@@ -98,25 +98,25 @@ int Server::manageServerLoop()
 					else
 					{
 						print("Recv : ", it->fd, message); // si affichage incoherent regarder ici
-						parseMessage(it->fd, message);
-						// print("Send : ", it->fd, message);
+						try { parseMessage(it->fd, message); }
+						catch(const std::exception& e) 
+						{ 
+							std::cerr << e.what() << std::endl;
+							delClient(poll_fds, it);
+						}
 						it++;
 					}
 				}
 			}
 			else if (it->revents & POLLERR) // voir si il faut it++ ?
 			{
-				std::cout << "je suis dans le POLLERR\n";
 				if (it->fd == _server_socket_fd)
 				{
 					std::cerr << RED << "Listen socket error" << RESET << std::endl;
 					return (FAILURE);
 				}
 				else
-				{
-					std::cout << "dans le else\n";
 					delClient(poll_fds, it);
-				}
 			}
 			else
 				it++;
