@@ -62,7 +62,7 @@ int	Commands::ping(int const client_fd, cmd_struct &cmd)
 	
 	// renvoyer un PONG avec le même TOKEN
 	std::string pong_reply = "PONG" + cmd.message + "\r\n";
-	std::cout << "Pong reply looks like this :" << pong_reply << std::endl;
 	send(client_fd, pong_reply.c_str(), pong_reply.size(), 0);
+	
 	return (SUCCESS);
 }
