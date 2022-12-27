@@ -6,6 +6,7 @@
  * @brief The OPER command is used by a normal user to obtain IRC operator privileges. 
  * 	Both parameters are required for the command to be successful.
  * 
+ *  Command: OPER
  *  Parameters: <name> <password>
  * 
  * Numeric Replies:
