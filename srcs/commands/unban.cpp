@@ -12,9 +12,9 @@ void	unban(Server server, cmd_struct cmd_infos)
 
 	std::map<std::string, Channel>::iterator it;
 	it = server.getChannels().find(channel_name); // TODO: prévoir cas où Channel n'existe pas
-	if (it->second.doesClientExist(name_to_unban) == SUCCESS)
+	if (it->second.doesClientExist(name_to_unban) == true)
 	{
-		if (it->second.isOperator(operator_name) == FAILURE)
+		if (it->second.isOperator(operator_name) == false)
 		{
 			std::cout << operator_name << " is not admin on " << channel_name << std::endl;
 			return ;

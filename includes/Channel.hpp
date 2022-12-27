@@ -19,7 +19,7 @@ class Channel
 		/* Accessors */
 		std::string						getName()const;
 		std::map <std::string, Client>	getClientList()const;
-		int								doesClientExist(std::string &clientName);
+		bool							doesClientExist(std::string &clientName);
 		/* Manage client in Channel */
 		void							addClientToChannel(Client &client);
 		void							printClientList();

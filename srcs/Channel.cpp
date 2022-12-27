@@ -26,12 +26,12 @@ std::map <std::string, Client>	Channel::getClientList() const
 	return (_clientList);
 }
 
-int		Channel::doesClientExist(std::string &clientName)
+bool		Channel::doesClientExist(std::string &clientName)
 {
 	std::map <std::string, Client>::iterator it = _clientList.find(clientName);
 	if (it == _clientList.end())
-		return (FAILURE);
-	return (SUCCESS);
+		return (false);
+	return (true);
 }
 
 /*
