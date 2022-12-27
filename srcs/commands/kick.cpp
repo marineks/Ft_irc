@@ -45,6 +45,6 @@ void	kick(Server server, cmd_struct cmd_infos)
 		it->second.removeClientFromChannel(client_name);
 		std::cout << client_name << " has been kicked from " << channel_name << " by " << operator_name <<std::endl; 
 	}
-	// TODO: prevoir ERR 441, 442 si User n'est pas dans chan ou inexistant
+	// TODO: prevoir ERR 441, 442 si User n'est pas dans chan ou user inexistant
 	// NOTE: on print l'output de notre action coté server mais je crois qu'il faut SEND un message au client aussi
 }
