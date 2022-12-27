@@ -12,5 +12,6 @@ struct cmd_struct
 
 void	ban(Server server, cmd_struct cmd_infos);
 int		ping(int const client_fd, cmd_struct &cmd);
+void	unban(Server server, cmd_struct cmd_infos);
 
 #endif
