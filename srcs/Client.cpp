@@ -1,5 +1,11 @@
 #include "Client.hpp"
 
+
+/*
+*				################################
+*				###	CONSTRUCTOR & DESTRUCTOR ###
+*				################################
+*/
 Client::Client(int client_fd) : _client_fd(client_fd)
 {
 	std::cout << YELLOW << "Client constructor" << RESET << std::endl;
@@ -10,10 +16,15 @@ Client::~Client()
 	std::cout << YELLOW << "Client destructor" << RESET << std::endl;
 }
 
-int	Client::getClientFd()const
-{
-	return (_client_fd);
-}
+/*
+*					#################
+*					###	ACCESSORS ###
+*					#################
+*/
+int				Client::getClientFd()const { return (_client_fd); }
+std::string		Client::getNickname()const { return (_nickname); }
+std::string 	Client::getUsername()const { return (_fullname); }
+std::string		Client::getRealname()const {return (_realname); }
 
 void	Client::setNickname(std::string const &nickname)
 {
@@ -21,19 +32,9 @@ void	Client::setNickname(std::string const &nickname)
 	_nickname = (_nickname.size() > 9) ? nickname.substr(0, 9) : nickname;
 }
 
-std::string		Client::getNickname()const
-{
-	return (_nickname);
-}
-
 void	Client::setUsername(std::string const &username)
 {
 	_fullname = username;
-}
-
-std::string 	Client::getUsername()const
-{
-	return (_fullname);
 }
 
 void	Client::setRealname(std::string const &realname)
@@ -41,10 +42,11 @@ void	Client::setRealname(std::string const &realname)
 	_realname = realname;
 }
 
-std::string	Client::getRealname()const
-{
-	return (_realname);
-}
+/*
+*					##############################
+*					### OTHER MEMBER FUNCTIONS ###
+*					##############################
+*/
 
 void	Client::printClient()const
 {
@@ -56,7 +58,6 @@ void	Client::printClient()const
 
 }
 
-// TODO : a compléter
 int	Client::is_valid() const
 {
 	if (_fullname.empty())
