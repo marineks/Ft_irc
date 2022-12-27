@@ -37,7 +37,7 @@ static void print(std::string type, int client_socket, char *message)
 			  << BLUE << (message == NULL ? "\n" : message) << RESET << std::endl;
 }
 
-int Server::manageServerLoop()
+int Server::manageServerLoop(Server *server)
 {
 	std::vector<pollfd> poll_fds;
 	pollfd server_poll_fd;
@@ -104,7 +104,7 @@ int Server::manageServerLoop()
 						print("Recv : ", it->fd, message); // si affichage incoherent regarder ici
 						try 
 						{
-							parseMessage(it->fd, message);
+							parseMessage(server, it->fd, message);
 						}
 						catch(const std::exception& e) 
 						{ 

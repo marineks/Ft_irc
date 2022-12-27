@@ -27,9 +27,14 @@ void Server::setHints()
 	_hints.ai_flags = AI_PASSIVE;	  // We'll be on localhost by default
 }
 
-std::string Server::getMdp()
+std::string Server::getMdp() const
 {
 	return (_mdp);
+}
+
+std::map<std::string, Channel>	Server::getChannels() const
+{
+	return (_channels);
 }
 
 /**
@@ -196,7 +201,7 @@ static void splitMessage(std::vector<std::string> &cmds, std::string msg)
 	}
 }
 
-void Server::parseMessage(int const client_fd, std::string message)
+void Server::parseMessage(Server *server, int const client_fd, std::string message)
 {
 	std::vector<std::string> cmds;
 
@@ -208,12 +213,12 @@ void Server::parseMessage(int const client_fd, std::string message)
 	else
 	{
 		for (size_t i = 0; i != cmds.size(); i++)
-			execCommand(client_fd, cmds[i]);
+			execCommand(server, client_fd, cmds[i]);
 	}
 }
 
 // TODO : Faire passer dans exec_cmds tous les Clients fds ? (cf. PRIVMSG() )
-void Server::execCommand(int const client_fd, std::string cmd_line)
+void Server::execCommand(Server *server, int const client_fd, std::string cmd_line)
 {
 	std::string	validCmds[VALID_LEN] = {
 		"INVITE",
@@ -259,7 +264,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	// case 8: nick(cmd_infos); break;
 	// case 9: part(cmd_infos); break;
 	case 10: ping(client_fd, cmd_infos); break;
-	// case 11: pong(cmd_infos); break; // TODO: un pong nest qu'une reaction à un ping. à enlever
+	case 11: ban(server, cmd_infos); break;
 	// case 12: privmsg(cmd_infos); break;
 	// case 13: topic(cmd_infos); break;
 	// case 14: user(cmd_infos); break;
