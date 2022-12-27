@@ -1,6 +1,5 @@
 #include "Client.hpp"
 
-
 /*
 *				################################
 *				###	CONSTRUCTOR & DESTRUCTOR ###
@@ -21,10 +20,10 @@ Client::~Client()
 *					###	ACCESSORS ###
 *					#################
 */
-int				Client::getClientFd()const { return (_client_fd); }
-std::string		Client::getNickname()const { return (_nickname); }
-std::string 	Client::getUsername()const { return (_fullname); }
-std::string		Client::getRealname()const {return (_realname); }
+int				Client::getClientFd() const { return (_client_fd); }
+std::string		Client::getNickname() const { return (_nickname); }
+std::string 	Client::getUsername() const { return (_fullname); }
+std::string		Client::getRealname() const { return (_realname); }
 
 void	Client::setNickname(std::string const &nickname)
 {

@@ -215,37 +215,57 @@ void Server::parseMessage(int const client_fd, std::string message)
 // TODO : Faire passer dans exec_cmds tous les Clients fds ? (cf. PRIVMSG() )
 void Server::execCommand(int const client_fd, std::string cmd_line)
 {
+	std::string	validCmds[VALID_LEN] = {
+		"INVITE",
+		"JOIN",
+		"KICK",
+		"KILL",
+		"LIST",
+		"MDP",
+		"MODE",
+		"NICK",
+		"PART",
+		"PING",
+		"PONG",
+		"PRIVMSG",
+		"TOPIC",
+		"USER",
+		"WHO",
+		"WHOIS",
+		"WHOWAS"
+		};
+
 	cmd_struct cmd_infos;
 	int index = 0;
 
-	_cmd.parseCommand(cmd_line, cmd_infos);
+	parseCommand(cmd_line, cmd_infos);
 
 	while (index < VALID_LEN)
 	{
-		if (cmd_infos.name == _cmd.validCmds[index])
+		if (cmd_infos.name == validCmds[index])
 			break;
 		index++;
 	}
 
 	switch (index + 1)
 	{
-	// case 1: _cmd.invite(client_fd, cmd_infos); break;
-	// case 2: _cmd.join(cmd_infos); break;
-	// case 3: _cmd.kick(cmd_infos); break;
-	// case 4: _cmd.kill(cmd_infos); break;
-	// case 5: _cmd.list(cmd_infos); break;
-	// case 6: _cmd.mdp(cmd_infos); break;
-	// case 7: _cmd.mode(cmd_infos); break;
-	// case 8: _cmd.nick(cmd_infos); break;
-	// case 9: _cmd.part(cmd_infos); break;
-	case 10: _cmd.ping(client_fd, cmd_infos); break;
-	// case 11: _cmd.pong(cmd_infos); break; // TODO: un pong nest qu'une reaction à un ping. à enlever
-	// case 12: _cmd.privmsg(cmd_infos); break;
-	// case 13: _cmd.topic(cmd_infos); break;
-	// case 14: _cmd.user(cmd_infos); break;
-	// case 15: _cmd.who(cmd_infos); break;
-	// case 16: _cmd.whois(cmd_infos); break;
-	// case 17: _cmd.whowas(cmd_infos); break;
+	// case 1: invite(client_fd, cmd_infos); break;
+	// case 2: join(cmd_infos); break;
+	// case 3: kick(cmd_infos); break;
+	// case 4: kill(cmd_infos); break;
+	// case 5: list(cmd_infos); break;
+	// case 6: mdp(cmd_infos); break;
+	// case 7: mode(cmd_infos); break;
+	// case 8: nick(cmd_infos); break;
+	// case 9: part(cmd_infos); break;
+	case 10: ping(client_fd, cmd_infos); break;
+	// case 11: pong(cmd_infos); break; // TODO: un pong nest qu'une reaction à un ping. à enlever
+	// case 12: privmsg(cmd_infos); break;
+	// case 13: topic(cmd_infos); break;
+	// case 14: user(cmd_infos); break;
+	// case 15: who(cmd_infos); break;
+	// case 16: whois(cmd_infos); break;
+	// case 17: whowas(cmd_infos); break;
 	default:
 		std::cout << PURPLE << "This command is not supported by our services." << RESET << std::endl;
 	}

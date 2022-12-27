@@ -12,7 +12,7 @@ class Server
 		struct addrinfo				*_servinfo;
 		int							_server_socket_fd;
 		std::map<const int, Client>	_clients;
-		Commands					_cmd;
+		// Commands					_cmd;
 		std::string					_mdp = "pantoufle";
 	
 	public:
