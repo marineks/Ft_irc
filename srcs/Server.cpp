@@ -16,7 +16,6 @@ const char * 	Server::InvalidClientException::what (void) const throw()
 	return "The information given by the client are invalid.";
 }
 
-
 /**
  * @brief Attributes the correct parameters to the structure Hints.
  *
@@ -240,7 +239,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	// case 8: _cmd.nick(cmd_infos); break;
 	// case 9: _cmd.part(cmd_infos); break;
 	case 10: _cmd.ping(client_fd, cmd_infos); break;
-	// case 11: _cmd.pong(cmd_infos); break;
+	// case 11: _cmd.pong(cmd_infos); break; // TODO: un pong nest qu'une reaction à un ping. à enlever
 	// case 12: _cmd.privmsg(cmd_infos); break;
 	// case 13: _cmd.topic(cmd_infos); break;
 	// case 14: _cmd.user(cmd_infos); break;
