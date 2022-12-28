@@ -22,13 +22,12 @@
  * 
  * Server's Response: " Command to kick John from #Finnish using "Speaking English" 
  * 						as the reason (comment)."
- *                                  
- * @param server 
+ *
+ * @param server
  * @param cmd_infos Structure w/ prefix, command name and message
  */
 void	kick(Server server, cmd_struct cmd_infos)
 {
-	// TODO: coder le parsing du command.message pour arriver à operator name, channelName et clientName
 	std::string operator_name;
 	std::string channel_name;
 	std::string client_name;
