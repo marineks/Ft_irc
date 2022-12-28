@@ -16,7 +16,6 @@ const char * 	Server::InvalidClientException::what (void) const throw()
 	return "The information given by the client are invalid.";
 }
 
-
 /**
  * @brief Attributes the correct parameters to the structure Hints.
  *
@@ -28,9 +27,14 @@ void Server::setHints()
 	_hints.ai_flags = AI_PASSIVE;	  // We'll be on localhost by default
 }
 
-std::string Server::getMdp()
+std::string Server::getMdp() const
 {
 	return (_mdp);
+}
+
+std::map<std::string, Channel>	Server::getChannels() const
+{
+	return (_channels);
 }
 
 /**
@@ -216,37 +220,59 @@ void Server::parseMessage(int const client_fd, std::string message)
 // TODO : Faire passer dans exec_cmds tous les Clients fds ? (cf. PRIVMSG() )
 void Server::execCommand(int const client_fd, std::string cmd_line)
 {
+	std::string	validCmds[VALID_LEN] = {
+		"INVITE",
+		"JOIN",
+		"KICK",
+		"KILL",
+		"LIST",
+		"MDP",
+		"MODE",
+		"NICK",
+		"PART",
+		"PING",
+		"OPER",
+		"PRIVMSG",
+		"QUIT",
+		"TOPIC",
+		"USER",
+		"WHO",
+		"WHOIS",
+		"WHOWAS"
+		}; // BUG : recalculer valid len
+
 	cmd_struct cmd_infos;
 	int index = 0;
 
-	_cmd.parseCommand(cmd_line, cmd_infos);
+	parseCommand(cmd_line, cmd_infos);
 
 	while (index < VALID_LEN)
 	{
-		if (cmd_infos.name == _cmd.validCmds[index])
+		if (cmd_infos.name == validCmds[index])
 			break;
 		index++;
 	}
 
 	switch (index + 1)
 	{
-	// case 1: _cmd.invite(client_fd, cmd_infos); break;
-	// case 2: _cmd.join(cmd_infos); break;
-	// case 3: _cmd.kick(cmd_infos); break;
-	// case 4: _cmd.kill(cmd_infos); break;
-	// case 5: _cmd.list(cmd_infos); break;
-	// case 6: _cmd.mdp(cmd_infos); break;
-	// case 7: _cmd.mode(cmd_infos); break;
-	// case 8: _cmd.nick(cmd_infos); break;
-	// case 9: _cmd.part(cmd_infos); break;
-	case 10: _cmd.ping(client_fd, cmd_infos); break;
-	// case 11: _cmd.pong(cmd_infos); break;
-	// case 12: _cmd.privmsg(cmd_infos); break;
-	// case 13: _cmd.topic(cmd_infos); break;
-	// case 14: _cmd.user(cmd_infos); break;
-	// case 15: _cmd.who(cmd_infos); break;
-	// case 16: _cmd.whois(cmd_infos); break;
-	// case 17: _cmd.whowas(cmd_infos); break;
+	// case 1: invite(client_fd, cmd_infos); break;
+	case 2: join(this, client_fd, cmd_infos); break;
+	case 3: kick(this, cmd_infos); break;
+	// case 4: kill(cmd_infos); break;
+	// case 5: list(cmd_infos); break;
+	// case 6: mdp(cmd_infos); break;
+	// case 7: mode(cmd_infos); break;
+	// case 8: nick(cmd_infos); break;
+	// case 9: part(cmd_infos); break;
+	case 10: ping(client_fd, cmd_infos); break;
+	case 11: oper(this, cmd_infos); break;
+	case 12: quit(this, cmd_infos); break;
+	// case 12: privmsg(cmd_infos); break;
+	// case 13: topic(cmd_infos); break;
+	// case 14: user(cmd_infos); break;
+	// case 15: who(cmd_infos); break;
+	// case 16: whois(cmd_infos); break;
+	// case 17: whowas(cmd_infos); break;
 	default:
 		std::cout << PURPLE << "This command is not supported by our services." << RESET << std::endl;
 	}

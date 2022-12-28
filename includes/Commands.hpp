@@ -1,40 +1,21 @@
-#ifndef	COMMANDS_HPP
+#ifndef COMMANDS_HPP
 #define COMMANDS_HPP
 
-#include "Irc.hpp"
-
 # define VALID_LEN 17
-class Commands
+
+struct cmd_struct
 {
-	private:
-		/* data */
-	public:
-		std::string	validCmds[VALID_LEN] = {
-		"INVITE",
-		"JOIN",
-		"KICK",
-		"KILL",
-		"LIST",
-		"MDP",
-		"MODE",
-		"NICK",
-		"PART",
-		"PING",
-		"PONG",
-		"PRIVMSG",
-		"TOPIC",
-		"USER",
-		"WHO",
-		"WHOIS",
-		"WHOWAS"
-		};
-
-		Commands(/* args */);
-		~Commands();
-
-		int	parseCommand(std::string cmd_line, cmd_struct &cmd_infos);
-		// Command list functions
-		int	ping(int const client_fd, cmd_struct &cmd);
+	std::string	prefix;
+	std::string	name;
+	std::string	message;
 };
+
+void	ban(Server server, cmd_struct cmd_infos);
+void	join(Server server, int const client_fd, cmd_struct cmd_infos);
+void	kick(Server server, cmd_struct cmd_infos);
+void	oper(Server server, cmd_struct cmd_infos);
+int		ping(int const client_fd, cmd_struct &cmd);
+void	quit(Server server, cmd_struct cmd_infos);
+void	unban(Server server, cmd_struct cmd_infos);
 
 #endif
