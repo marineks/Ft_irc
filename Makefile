@@ -1,6 +1,6 @@
 NAME		= ircserv
 
-SRCS		= main.cpp Client.cpp ManageServer.cpp Server.cpp parsing.cpp commands/ping.cpp
+SRCS		= main.cpp Client.cpp ManageServer.cpp Server.cpp parsing.cpp commands/join.cpp
 
 DIR_SRCS	= srcs/
 

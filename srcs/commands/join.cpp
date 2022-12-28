@@ -39,17 +39,17 @@ void	printChannel(std::string &channelName);
  * 	[CLIENT]  JOIN #foo,#bar fubar,foobar
  * 	[SERVER]; join channel #foo using key "fubar" and channel #bar using key "foobar".
  */
-void	join(Server server, Client &client, cmd_struct cmd_infos)
+void	join(Server server, int const client_fd, cmd_struct cmd_infos)
 {
 	// TODO: coder le parsing du cmd.message pour arriver à channelName
-	// TODO: ATTENTION parsing, plus complique, on peut rajouter plrs chans en meme tps
 	std::string channelName;
-
+	// TODO recuperer le Client client grace au client fd
 	std::map<std::string, Channel>			 channels = server.getChannels();
 	std::map<std::string, Channel>::iterator it = channels.find(channelName);
 	if (it == channels.end())
 		addChannel(server, channelName);
-	if (it->second.isBanned(client.getNickname()) == SUCCESS) // BUG : comprends pas pq ca compile pas
+	std::string client_nickname = client.getNickname();
+	if (it->second.isBanned(client_nickname) == SUCCESS)
 	{
 		std::cout << client.getNickname() << " is banned from " << channelName << std::endl; 
 		return ;
@@ -81,7 +81,8 @@ void	addClientToChannel(Server server, std::string &channelName, Client &client)
 	std::map<std::string, Channel>			 channels = server.getChannels();
 	std::map<std::string, Channel>::iterator it;
 	it = channels.find(channelName);
-	if (it->second.doesClientExist(client.getNickname()) == false) // BUG : comprends pas pq ca compile pas
+	std::string client_nickname = client.getNickname();
+	if (it->second.doesClientExist(client_nickname) == false)
 	{
 		it->second.addClientToChannel(client);
 	}

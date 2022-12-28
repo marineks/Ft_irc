@@ -12,6 +12,7 @@ class Channel
 		std::vector<std::string>		_banned_users;
 		std::vector<std::string>		_operators;
 		std::string 					_name;
+		std::string						_operatorPassword;
 	public:
 		Channel(std::string const &name);
 		~Channel();

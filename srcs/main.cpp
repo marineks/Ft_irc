@@ -14,7 +14,7 @@ int main (void)
 	// Below, the main loop for server/client connection
 	try
 	{
-		if (server.manageServerLoop(&server) == FAILURE)
+		if (server.manageServerLoop() == FAILURE)
 			throw;
 	}
 	catch(const std::exception& e) { std::cerr << e.what() << '\n'; }

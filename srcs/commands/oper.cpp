@@ -27,15 +27,15 @@ void oper(Server server, cmd_struct cmd_infos)
 	std::string operatorName;
 	std::string password;
 
-	if (password != _operatorPassword) // NOTE: devrait etre une fonction membre d'un channel, pas du server
+	std::map<std::string, Channel> channels = server.getChannels();
+	std::map<std::string, Channel>::iterator it;
+	it = channels.find(channelName);
+
+	if (password != it.getOperatorPassword()) // TODO: getter de opPwd à coder
 	{
 		std::cout << "Wrong Password\n";
 		return;
 	}
-
-	std::map<std::string, Channel> channels = server.getChannels();
-	std::map<std::string, Channel>::iterator it;
-	it = channels.find(channelName);
 	if (it == channels.end())
 	{
 		std::cout << "That channel doesn't exist\n";

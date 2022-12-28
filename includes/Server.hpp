@@ -29,14 +29,14 @@ class Server
 		// Running Server functions
 		int			fillServinfo(char *port);
 		int			launchServer();
-		int			manageServerLoop(Server *server);
+		int			manageServerLoop();
 		// Manage Clients functions
 		void		addClient(int client_socket, std::vector<pollfd> &poll_fds);
 		void		delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it);
 		void		fillClients(std::map<const int, Client> &client_list, int client_fd, std::vector<std::string> cmds);
 		// Parsing & Commands functions
-		void		parseMessage(Server *server, const int client_fd, std::string message);
-		void		execCommand(Server *server, int const client_fd, std::string cmd_line);
+		void		parseMessage(const int client_fd, std::string message);
+		void		execCommand(int const client_fd, std::string cmd_line);
 		// Display functions
 		void		printChannel(std::string &channelName);
 		void		printOper(std::string &channelName);
