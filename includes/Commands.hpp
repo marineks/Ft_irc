@@ -1,7 +1,7 @@
 #ifndef COMMANDS_HPP
 #define COMMANDS_HPP
 
-# define VALID_LEN 17
+# define VALID_LEN 18
 
 struct cmd_struct
 {
