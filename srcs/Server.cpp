@@ -239,7 +239,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		"WHO",
 		"WHOIS",
 		"WHOWAS"
-		}; // BUG : recalculer valid len
+		};
 
 	cmd_struct cmd_infos;
 	int index = 0;
@@ -266,8 +266,8 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	// case 9: part(cmd_infos); break;
 	case 10: ping(client_fd, cmd_infos); break;
 	case 11: oper(this, cmd_infos); break;
-	case 12: quit(this, cmd_infos); break;
 	// case 12: privmsg(cmd_infos); break;
+	case 13: quit(this, cmd_infos); break;
 	// case 13: topic(cmd_infos); break;
 	// case 14: user(cmd_infos); break;
 	// case 15: who(cmd_infos); break;
