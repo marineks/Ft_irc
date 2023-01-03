@@ -2,6 +2,7 @@
 #include "Channel.hpp"
 #include "Server.hpp"
 
+bool			containsAtLeastOneAlphaChar(std::string str);
 std::string		getChannelName(std::string msg_to_parse);
 void			addChannel(Server server, std::string const &channelName);
 void			addClientToChannel(Server server, std::string &channelName, Client &client);
@@ -69,47 +70,58 @@ void	join(Server server, int const client_fd, cmd_struct cmd_infos)
 	// TODO: Attention, cest pas fini quand qqun est add au chan, il y a plein d'infos à lui fournir
 }
 
-// VERSION COMPLETE A TESTER
-void	join(Server server, int const client_fd, cmd_struct cmd_infos)
-{
-	while (cmd_infos.message.empty() == false)
-	{
-		// Pour l'instant, on ne teste que les inputs faciles type "JOIN #foo"
-		std::string channelName = getChannelName(cmd_infos.message);
+// VERSION COMPLETE A TESTER SI LA VERSION BASIQUE MARCHE
+// Logique pour l'output 2 : on erase les channels (avec leur keys quand elles en ont) au fur et à mesure qu'on join
+// void	join(Server server, int const client_fd, cmd_struct cmd_infos)
+// {
+// 	std::string channelName;
 
-		// erase de la string le channel
+// 	while (containsAtLeastOneAlphaChar(cmd_infos.message) == false)
+// 	{
+// 		channelName.clear();
+// 		channelName = getChannelName(cmd_infos.message);
 
-		// Récupérer le Client client grace au client fd
-		std::map<const int, Client>	client_list = server.getClients();
-		std::map<const int, Client>::iterator it_client = client_list.find(client_fd);
-		Client client = it_client->second;
+// 		// erase de la string le channel = "#foo,#bar" devient "#,#bar"
+// 		cmd_infos.message.erase(cmd_infos.message.find(channelName), channelName.length()); 
 
-		// Récupérer le bon channel grâce au channel name
-		std::map<std::string, Channel>			 channels = server.getChannels();
-		std::map<std::string, Channel>::iterator it = channels.find(channelName);
-		if (it == channels.end()) // si on ne le trouve pas, créer le channel
-			addChannel(server, channelName);
+// 		// Récupérer le Client client grace au client fd
+// 		std::map<const int, Client>	client_list = server.getClients();
+// 		std::map<const int, Client>::iterator it_client = client_list.find(client_fd);
+// 		Client client = it_client->second;
+
+// 		// Récupérer le bon channel grâce au channel name
+// 		std::map<std::string, Channel>			 channels = server.getChannels();
+// 		std::map<std::string, Channel>::iterator it = channels.find(channelName);
+// 		if (it == channels.end()) // si on ne le trouve pas, créer le channel
+// 			addChannel(server, channelName);
 		
-		// vérifier si le client est banned avant de le join au channel
-		std::string client_nickname = client.getNickname();
-		if (it->second.isBanned(client_nickname) == SUCCESS) {
-			std::cout << client.getNickname() << " is banned from " << channelName << std::endl; 
-			return ;
-		} 
-		else {
-			addClientToChannel(server, channelName, client);
-			// if le channel a pas d'operateur :
-			if (it->second.getOperators().empty())
-				it->second.addFirstOperator(client.getNickname());
-		}
-		// TODO : prevoir check de la key; tester key et erase key du cmd_infos.msg
-		// TODO: Attention, cest pas fini quand qqun est add au chan, il y a plein d'infos à lui fournir
-		}
+// 		// vérifier si le client est banned avant de le join au channel
+// 		std::string client_nickname = client.getNickname();
+// 		if (it->second.isBanned(client_nickname) == SUCCESS) {
+// 			std::cout << client.getNickname() << " is banned from " << channelName << std::endl; 
+// 			return ;
+// 		} 
+// 		else {
+// 			addClientToChannel(server, channelName, client);
+// 			// if le channel a pas d'operateur :
+// 			if (it->second.getOperators().empty())
+// 				it->second.addFirstOperator(client.getNickname());
+// 		}
+// 		// TODO : prevoir check de la key; tester key et erase key du cmd_infos.msg
+// 		// TODO: Attention, cest pas fini quand qqun est add au chan, il y a plein d'infos à lui fournir
+// 		}
 	
+// }
+
+bool		containsAtLeastOneAlphaChar(std::string str)
+{
+	for (size_t i = 0; i < str.size(); i++)
+	{
+		if (isalpha(str[i]))
+			return (true);
+	}
+	return (false);
 }
-
-
-
 
 std::string	getChannelName(std::string msg_to_parse)
 {
@@ -117,14 +129,12 @@ std::string	getChannelName(std::string msg_to_parse)
 	// Expected output : | #foobar|
 	// Expected output 2 : | #foo,#bar fubar,foobar|
 
-	// Logique pour l'output 2 : on erase les channels (avec leur keys quand elles en ont) au fur et à mesure qu'on join
-
 	std::string channel_name;
-	for (size_t i = 0; i < msg_to_parse.size(); i++)
-	{
-		if (isalpha(msg_to_parse[i]))
-			channel_name += msg_to_parse[i];
-	}
+	size_t i = 0;
+	while (!isalpha(msg_to_parse[i]))
+		i++;
+	while (isalpha(msg_to_parse[i])) // as soon as there is a space or comma, it means the word is finished
+		channel_name += msg_to_parse[i++];
 	std::cout << "The channel name is : |" << channel_name << "|" << std::endl;
 	return (channel_name);
 }
