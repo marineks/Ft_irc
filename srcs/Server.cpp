@@ -37,6 +37,11 @@ std::map<std::string, Channel>	Server::getChannels() const
 	return (_channels);
 }
 
+std::map<const int, Client>		Server::getClients() const
+{
+	return (_clients);
+}
+
 /**
  * @brief Helps set up the structs 'hints' and 'servinfo' of our Server class
  *
