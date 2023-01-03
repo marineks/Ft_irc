@@ -2,10 +2,10 @@
 #include "Channel.hpp"
 #include "Server.hpp"
 
-void	addChannel(Server server, Client &client,cmd_struct cmd_infos);
-void	addClientToChannel(std::string &channelName, Client &client);
-void	printChannel(std::string &channelName);
-
+std::string		getChannelName(std::string msg_to_parse);
+void			addChannel(Server server, std::string const &channelName);
+void			addClientToChannel(Server server, std::string &channelName, Client &client);
+void			printChannel(Server server, std::string &channelName);
 /**
  * @brief The JOIN command indicates that the client wants to join the given channel(s), 
  * 	each channel using the given key for it. The server receiving the command checks 
@@ -41,23 +41,49 @@ void	printChannel(std::string &channelName);
  */
 void	join(Server server, int const client_fd, cmd_struct cmd_infos)
 {
-	// TODO: coder le parsing du cmd.message pour arriver à channelName
-	std::string channelName;
-	// TODO recuperer le Client client grace au client fd
+	// Pour l'instant, on ne teste que les inputs faciles type "JOIN #foo"
+	std::string channelName = getChannelName(cmd_infos.message);
+
+	// Récupérer le Client client grace au client fd
+	std::map<const int, Client>::iterator it_client = client_list.find(client_fd);
+	Client client = it_client->second;
+
+	// Récupérer le bon channel grâce au channel name
 	std::map<std::string, Channel>			 channels = server.getChannels();
 	std::map<std::string, Channel>::iterator it = channels.find(channelName);
-	if (it == channels.end())
+	if (it == channels.end()) // si on ne le trouve pas, créer le channel
 		addChannel(server, channelName);
+	
+	// vérifier si le client est banned avant de le join au channel
 	std::string client_nickname = client.getNickname();
-	if (it->second.isBanned(client_nickname) == SUCCESS)
-	{
+	if (it->second.isBanned(client_nickname) == SUCCESS) {
 		std::cout << client.getNickname() << " is banned from " << channelName << std::endl; 
 		return ;
+	} 
+	else {
+		addClientToChannel(server, channelName, client);
+		it->second.addFirstOperator(client.getNickname()); // FIXME: pourquoi le rajouter en oper par défaut au channel ?
 	}
-	addClientToChannel(server, channelName, client);
-	it->second.addFirstOperator(client.getNickname());
 
 	// TODO: Attention, cest pas fini quand qqun est add au chan, il y a plein d'infos à lui fournir
+}
+
+std::string	getChannelName(std::string msg_to_parse)
+{
+	std::cout << "The msg_to_parse looks like this : |" << msg_to_parse << "|" << std::endl;
+	// Expected output : | #foobar|
+	// Expected output 2 : | #foo,#bar fubar,foobar|
+
+	// Logique pour l'output 2 : on erase les channels (avec leur keys quand elles en ont) au fur et à mesure qu'on join
+
+	std::string channel_name;
+	for (size_t i = 0; i < msg_to_parse.size(); i++)
+	{
+		if (isalpha(msg_to_parse[i]))
+			channel_name.append(msg_to_parse[i]);
+	}
+	std::cout << "The channel name is : |" << channel_name << "|" << std::endl;
+	return (channel_name);
 }
 
 
