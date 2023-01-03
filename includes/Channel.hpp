@@ -19,6 +19,7 @@ class Channel
 
 		/* Accessors */
 		std::string						getName()const;
+		std::vector<std::string>		getOperators() const;
 		std::map <std::string, Client>	getClientList()const;
 		bool							doesClientExist(std::string &clientName);
 		/* Manage client in Channel */

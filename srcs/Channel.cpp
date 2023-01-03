@@ -26,6 +26,11 @@ std::map <std::string, Client>	Channel::getClientList() const
 	return (_clientList);
 }
 
+std::vector<std::string>		Channel::getOperators() const
+{
+	return (_operators);
+}
+
 bool		Channel::doesClientExist(std::string &clientName)
 {
 	std::map <std::string, Client>::iterator it = _clientList.find(clientName);
