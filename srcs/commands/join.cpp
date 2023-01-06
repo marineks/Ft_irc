@@ -61,7 +61,7 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 
 	std::map<std::string, Channel>			 channelss = server->getChannels();
 	std::map<std::string, Channel>::iterator it_chan = channelss.find(channelName);
-	if (it_chan->second.isBanned(client_nickname) == SUCCESS) {
+	if (it_chan->second.isBanned(client_nickname) == true) {
 		std::cout << client.getNickname() << " is banned from " << channelName << std::endl; 
 		return ;
 	} 
@@ -98,7 +98,7 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 		
 // 		// vérifier si le client est banned avant de le join au channel
 // 		std::string client_nickname = client.getNickname();
-// 		if (it->second.isBanned(client_nickname) == SUCCESS) {
+// 		if (it->second.isBanned(client_nickname) == true) {
 // 			std::cout << client.getNickname() << " is banned from " << channelName << std::endl; 
 // 			return ;
 // 		} 
@@ -151,7 +151,6 @@ void	addChannel(Server *server, std::string const &channelName)
 		return ;
 	}
 	Channel	channel(channelName);
-	std::cout << "Taille dans Add Channel : " << channel.getBannedUsers().size() << std::endl;
 	channels.insert(std::pair<std::string, Channel>(channelName, channel));
 	std::cout << RED << "Channel added: " << channelName << RESET << std::endl;
 }
@@ -162,9 +161,12 @@ void	addClientToChannel(Server *server, std::string &channelName, Client &client
 	std::map<std::string, Channel>::iterator it;
 	it = channels.find(channelName);
 	std::string client_nickname = client.getNickname();
-	if (it->second.doesClientExist(client_nickname) == false)
+	if (it->second.doesClientExist(client_nickname) == false) // BUG : tbseen mais resolu grace au cliebtlist.clear de trop
 	{
-		it->second.addClientToChannel(client);
+		std::cout << "ALLOOO" << std::endl;
+		it->second.getClientList().insert(std::pair<std::string, Client>(client.getNickname(), client));
+		// it->second.addClientToChannel(client); // BUG
+		std::cout << "Client successfully joined the channel!" << std::endl;
 	}
 	else 
 		std::cout << YELLOW << client.getNickname() << "already here\n" << RESET;

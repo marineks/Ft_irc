@@ -8,7 +8,7 @@ class	Client;
 class Channel
 {
 	private:
-		std::map <std::string, Client>	_clientList;
+		std::map<std::string, Client>	_clientList;
 		std::vector<std::string>		_banned_users;
 		std::vector<std::string>		_operators;
 		std::string 					_name;
