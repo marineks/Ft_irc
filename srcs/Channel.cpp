@@ -43,11 +43,9 @@ std::vector<std::string>		Channel::getOperators() const
 
 bool		Channel::doesClientExist(std::string &clientName)
 {	
-	// std::cout << "Client list : " << _clientList.size() << std::endl;
 	if (_clientList.size() == 0)
 		return (false);
 
-	// std::cout << "Client name : " << clientName << std::endl;
 	std::map <std::string, Client>::iterator it = _clientList.find(clientName);
 	if (it == _clientList.end())
 		return (false);
@@ -59,19 +57,6 @@ bool		Channel::doesClientExist(std::string &clientName)
 *				### MANAGE CLIENT FUNCTIONS  ###
 *				################################
 */
-
-void	Channel::addClientToChannel(Client &client)
-{
-	std::cout << "Getnickname : " << client.getNickname() << std::endl;
-	// std::pair<std::string, Client>tobeInserted(client.getNickname(), client);
-	// this->_clientList.insert(tobeInserted);
-	std::cout << "Client : " << client.getClientFd() << std::endl;
-
-	std::cout << "size : " << _clientList.size() << std::endl;
-	_clientList.insert(std::pair<std::string, Client>(client.getNickname(), client));
-	std::cout << "size : " << _clientList.size() << std::endl;
-	
-}
 
 void	Channel::printClientList()
 {

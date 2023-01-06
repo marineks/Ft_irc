@@ -161,12 +161,10 @@ void	addClientToChannel(Server *server, std::string &channelName, Client &client
 	std::map<std::string, Channel>::iterator it;
 	it = channels.find(channelName);
 	std::string client_nickname = client.getNickname();
-	if (it->second.doesClientExist(client_nickname) == false) // BUG : tbseen mais resolu grace au cliebtlist.clear de trop
+	if (it->second.doesClientExist(client_nickname) == false)
 	{
-		std::cout << "ALLOOO" << std::endl;
 		it->second.getClientList().insert(std::pair<std::string, Client>(client.getNickname(), client));
-		// it->second.addClientToChannel(client); // BUG
-		std::cout << "Client successfully joined the channel!" << std::endl;
+		std::cout << "Client successfully joined the channel" << channelName << "!" << std::endl;
 	}
 	else 
 		std::cout << YELLOW << client.getNickname() << "already here\n" << RESET;
