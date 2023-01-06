@@ -1,6 +1,7 @@
 #include "Irc.hpp"
 #include "Channel.hpp"
 #include "Server.hpp"
+#include "Commands.hpp"
 
 bool			containsAtLeastOneAlphaChar(std::string str);
 std::string		getChannelName(std::string msg_to_parse);
@@ -66,8 +67,6 @@ void	join(Server server, int const client_fd, cmd_struct cmd_infos)
 		addClientToChannel(server, channelName, client);
 		it->second.addFirstOperator(client.getNickname()); // FIXME: pourquoi le rajouter en oper par défaut au channel ?
 	}
-
-	// TODO: Attention, cest pas fini quand qqun est add au chan, il y a plein d'infos à lui fournir
 }
 
 // VERSION COMPLETE A TESTER SI LA VERSION BASIQUE MARCHE
@@ -152,7 +151,7 @@ void	addChannel(Server server, std::string const &channelName)
 	}
 	Channel	channel(channelName);
 	channels.insert(std::pair<std::string, Channel>(channelName, channel));
-	// std::cout << RED << "Channel added: " << channelName << RESET << std::endl;
+	std::cout << RED << "Channel added: " << channelName << RESET << std::endl;
 }
 
 void	addClientToChannel(Server server, std::string &channelName, Client &client)

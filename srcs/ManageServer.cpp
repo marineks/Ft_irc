@@ -1,5 +1,6 @@
 #include "Server.hpp"
 #include "Colors.hpp"
+#include "Commands.hpp"
 
 static int acceptSocket(int listenSocket)
 {

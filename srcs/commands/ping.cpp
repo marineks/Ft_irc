@@ -1,4 +1,5 @@
 #include "Irc.hpp"
+#include "Commands.hpp"
 
 /**
  * @brief The PING command is sent to check the other side of the connection is still

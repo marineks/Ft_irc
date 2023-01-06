@@ -1,4 +1,5 @@
 #include "Irc.hpp"
+#include "Commands.hpp"
 
 /**
  * @brief 
