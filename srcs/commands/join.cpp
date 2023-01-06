@@ -1,13 +1,12 @@
 #include "Irc.hpp"
 #include "Channel.hpp"
-#include "Server.hpp"
 #include "Commands.hpp"
 
 bool			containsAtLeastOneAlphaChar(std::string str);
 std::string		getChannelName(std::string msg_to_parse);
-void			addChannel(Server server, std::string const &channelName);
-void			addClientToChannel(Server server, std::string &channelName, Client &client);
-void			printChannel(Server server, std::string &channelName);
+void			addChannel(Server *server, std::string const &channelName);
+void			addClientToChannel(Server *server, std::string &channelName, Client &client);
+void			printChannel(Server *server, std::string &channelName);
 /**
  * @brief The JOIN command indicates that the client wants to join the given channel(s), 
  * 	each channel using the given key for it. The server receiving the command checks 
@@ -41,18 +40,18 @@ void			printChannel(Server server, std::string &channelName);
  * 	[CLIENT]  JOIN #foo,#bar fubar,foobar
  * 	[SERVER]; join channel #foo using key "fubar" and channel #bar using key "foobar".
  */
-void	join(Server server, int const client_fd, cmd_struct cmd_infos)
+void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
 	// Pour l'instant, on ne teste que les inputs faciles type "JOIN #foo"
 	std::string channelName = getChannelName(cmd_infos.message);
 
 	// Récupérer le Client client grace au client fd
-	std::map<const int, Client>	client_list = server.getClients();
+	std::map<const int, Client>	client_list = server->getClients();
 	std::map<const int, Client>::iterator it_client = client_list.find(client_fd);
 	Client client = it_client->second;
 
 	// Récupérer le bon channel grâce au channel name
-	std::map<std::string, Channel>			 channels = server.getChannels();
+	std::map<std::string, Channel>			 channels = server->getChannels();
 	std::map<std::string, Channel>::iterator it = channels.find(channelName);
 	if (it == channels.end()) // si on ne le trouve pas, créer le channel
 		addChannel(server, channelName);
@@ -139,10 +138,10 @@ std::string	getChannelName(std::string msg_to_parse)
 }
 
 
-void	addChannel(Server server, std::string const &channelName)
+void	addChannel(Server *server, std::string const &channelName)
 {
 	// check if channel already exists.
-	std::map<std::string, Channel>			 channels = server.getChannels();
+	std::map<std::string, Channel>			 channels = server->getChannels();
 	std::map<std::string, Channel>::iterator it = channels.find(channelName);
 	if (it != channels.end())
 	{
@@ -154,9 +153,9 @@ void	addChannel(Server server, std::string const &channelName)
 	std::cout << RED << "Channel added: " << channelName << RESET << std::endl;
 }
 
-void	addClientToChannel(Server server, std::string &channelName, Client &client)
+void	addClientToChannel(Server *server, std::string &channelName, Client &client)
 {
-	std::map<std::string, Channel>			 channels = server.getChannels();
+	std::map<std::string, Channel>			 channels = server->getChannels();
 	std::map<std::string, Channel>::iterator it;
 	it = channels.find(channelName);
 	std::string client_nickname = client.getNickname();
@@ -169,9 +168,9 @@ void	addClientToChannel(Server server, std::string &channelName, Client &client)
 }
 
 // NOTE: à qui sert cette fonction ? debug ?
-void	printChannel(Server server, std::string &channelName)
+void	printChannel(Server *server, std::string &channelName)
 {
-	std::map<std::string, Channel>			 	channels = server.getChannels();
+	std::map<std::string, Channel>			 	channels = server->getChannels();
 	std::map<std::string, Channel> 				tmp; // NOTE: pourquoi un tmp ?
 	std::map<std::string, Channel>::iterator	it = channels.find(channelName);
 	it->second.printClientList();
