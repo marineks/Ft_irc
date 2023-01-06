@@ -6,7 +6,10 @@
 *				################################
 */
 
-Channel::Channel(std::string const &channelName): _name(channelName) {}
+Channel::Channel(std::string const &channelName): _name(channelName) 
+{
+	_banned_users.clear();
+}
 
 Channel::~Channel() {}
 
@@ -25,6 +28,12 @@ std::map <std::string, Client>	Channel::getClientList() const
 {
 	return (_clientList);
 }
+
+std::vector<std::string>		Channel::getBannedUsers() const
+{
+	return (_banned_users);
+}
+
 
 std::vector<std::string>		Channel::getOperators() const
 {
@@ -114,7 +123,7 @@ void	Channel::removeFromBanned(std::string &banned_name)
 bool	Channel::isBanned(std::string &banned_name)
 {
 	std::vector<std::string>::iterator user;
-	if (_banned_users.empty())
+	if (_banned_users.empty() == true)
 		return (false);
 	for (user = _banned_users.begin(); user != _banned_users.end(); user++)
 	{

@@ -58,7 +58,10 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 	
 	// vérifier si le client est banned avant de le join au channel
 	std::string client_nickname = client.getNickname();
-	if (it->second.isBanned(client_nickname) == SUCCESS) {
+
+	std::map<std::string, Channel>			 channelss = server->getChannels();
+	std::map<std::string, Channel>::iterator it_chan = channelss.find(channelName);
+	if (it_chan->second.isBanned(client_nickname) == SUCCESS) {
 		std::cout << client.getNickname() << " is banned from " << channelName << std::endl; 
 		return ;
 	} 
@@ -137,7 +140,6 @@ std::string	getChannelName(std::string msg_to_parse)
 	return (channel_name);
 }
 
-
 void	addChannel(Server *server, std::string const &channelName)
 {
 	// check if channel already exists.
@@ -149,6 +151,7 @@ void	addChannel(Server *server, std::string const &channelName)
 		return ;
 	}
 	Channel	channel(channelName);
+	std::cout << "Taille dans Add Channel : " << channel.getBannedUsers().size() << std::endl;
 	channels.insert(std::pair<std::string, Channel>(channelName, channel));
 	std::cout << RED << "Channel added: " << channelName << RESET << std::endl;
 }
