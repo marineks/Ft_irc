@@ -13,15 +13,18 @@ class Channel
 		std::vector<std::string>		_operators;
 		std::string 					_name;
 		std::string						_operatorPassword;
+		std::string						_topic;
 	public:
 		Channel(std::string const &name);
 		~Channel();
 
 		/* Accessors */
 		std::string						getName()const;
+		std::string						getTopic() const;
 		std::vector<std::string>		getOperators() const;
 		std::vector<std::string>		getBannedUsers() const;
 		std::map <std::string, Client>	getClientList()const;
+		void							setTopic(std::string newTopic);
 		bool							doesClientExist(std::string &clientName);
 		/* Manage client in Channel */
 		void							addClientToChannel(Client &client);

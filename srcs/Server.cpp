@@ -274,7 +274,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	// case 11: oper(this, cmd_infos); break;
 	// case 12: quit(this, cmd_infos); break;
 	// case 12: privmsg(cmd_infos); break;
-	// case 13: topic(cmd_infos); break;
+	case 14: topic(this, client_fd, cmd_infos); break;
 	// case 14: user(cmd_infos); break;
 	// case 15: who(cmd_infos); break;
 	// case 16: whois(cmd_infos); break;

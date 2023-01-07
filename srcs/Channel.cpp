@@ -10,6 +10,7 @@ Channel::Channel(std::string const &channelName): _name(channelName)
 {
 	_banned_users.clear();
 	_clientList.clear();
+	_topic.clear();
 }
 
 Channel::~Channel() {}
@@ -20,25 +21,16 @@ Channel::~Channel() {}
 *				################################
 */
 
-std::string						Channel::getName() const
-{
-	return (_name);
-}
+std::string						Channel::getName() const 		{ return (_name); }
+std::string						Channel::getTopic() const 		{ return (_topic); }
+std::map <std::string, Client>	Channel::getClientList() const 	{ return (_clientList); }
+std::vector<std::string>		Channel::getBannedUsers() const { return (_banned_users); }
+std::vector<std::string>		Channel::getOperators() const 	{ return (_operators); }
 
-std::map <std::string, Client>	Channel::getClientList() const
+void							Channel::setTopic(std::string newTopic)
 {
-	return (_clientList);
-}
-
-std::vector<std::string>		Channel::getBannedUsers() const
-{
-	return (_banned_users);
-}
-
-
-std::vector<std::string>		Channel::getOperators() const
-{
-	return (_operators);
+	_topic = newTopic; 
+	return ;
 }
 
 bool		Channel::doesClientExist(std::string &clientName)
