@@ -18,7 +18,6 @@ static void	addClient(int client_socket, std::vector<pollfd> &poll_fds)
 }
 
 static void	tooManyClients(int client_socket)
->>>>>>> Stashed changes
 {
 	std::cout << RED << ERR_FULL_SERV << RESET << std::endl;
 	send(client_socket, ERR_FULL_SERV, strlen(ERR_FULL_SERV) + 1, 0);
