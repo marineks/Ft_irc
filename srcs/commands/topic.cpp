@@ -45,9 +45,10 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	channel_name = findChannelName(cmd_infos.message);
 	if (channel_name.empty())
 	{
-		std::cout << "Pas de channel, pas de topic" << std::endl;
+		// std::cout << "Pas de channel, pas de topic" << std::endl;
 		std::string ERR_NEEDMOREPARAMS = " 461 " + client_nickname + " " + cmd_infos.name + " :Not enough parameters.\r\n";
-		send(client_fd, ERR_NEEDMOREPARAMS.c_str(), ERR_NEEDMOREPARAMS.size(), 0);
+		std::cout << ERR_NEEDMOREPARAMS << std::endl;
+		// send(client_fd, ERR_NEEDMOREPARAMS.c_str(), ERR_NEEDMOREPARAMS.size(), 0);
 		return ;
 	}
 	
@@ -58,7 +59,8 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	if (channel == channels.end())
 	{
 		std::cout << "This channel does not exist." << std::endl;
-		std::string ERR_NOSUCHCHANNEL = " 403 " + client_nickname + " " + channel->first + " :No such channel.\r\n";
+		std::string ERR_NOSUCHCHANNEL = " 403 " + client_nickname + " " + channel_name + " :No such channel.\r\n";
+		std::cout << ERR_NOSUCHCHANNEL << std::endl;
 		send(client_fd, ERR_NOSUCHCHANNEL.c_str(), ERR_NOSUCHCHANNEL.size(), 0);
 		return ;
 	}
@@ -66,7 +68,8 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	if (channel->second.doesClientExist(client_nickname) == false)
 	{
 		std::cout << "You are not on the channel you want to see to the topic of." << std::endl;
-		std::string ERR_NOTONCHANNEL = " 442 " + client_nickname + " " + channel->first + " :The user is not on this channel.\r\n";
+		std::string ERR_NOTONCHANNEL = " 442 " + client_nickname + " " + channel_name + " :The user is not on this channel.\r\n";
+		std::cout << ERR_NOTONCHANNEL << std::endl;
 		send(client_fd, ERR_NOTONCHANNEL.c_str(), ERR_NOTONCHANNEL.size(), 0);
 		return ;
 	}
