@@ -23,7 +23,7 @@ class Server
 		// Accessors
 		void							setHints();
 		std::string						getMdp() const;
-		std::map<std::string, Channel>	getChannels() const;
+		std::map<std::string, Channel>& 	getChannels();
 		std::map<const int, Client>		getClients() const;
 		// Running Server functions
 		int			fillServinfo(char *port);
@@ -44,6 +44,8 @@ class Server
 			public :
 					const char *	what (void) const throw();
 		};
+		void	addChannel(std::string &channelName);
+		void	addClientToChannel(std::string &channelName, Client &client);
 
 };
 

@@ -25,7 +25,7 @@ std::string						Channel::getName() const
 	return (_name);
 }
 
-std::map <std::string, Client>	Channel::getClientList() const
+std::map <std::string, Client>&	Channel::getClientList()
 {
 	return (_clientList);
 }
@@ -89,6 +89,11 @@ void	Channel::removeClientFromChannel(std::string &clientName)
 *				################################
 */
 
+void	Channel::addClientToChannel(Client &client)
+{
+	_clientList.insert(std::pair<std::string, Client>(client.getNickname(), client));
+}
+
 void	Channel::addToBanned(std::string &banned_name)
 {
 	std::vector<std::string>::iterator it;
@@ -122,7 +127,7 @@ void	Channel::removeFromBanned(std::string &banned_name)
 bool	Channel::isBanned(std::string &banned_name)
 {
 	std::vector<std::string>::iterator user;
-	if (_banned_users.empty() == true)
+	if (_banned_users.empty() == true) // work
 		return (false);
 	for (user = _banned_users.begin(); user != _banned_users.end(); user++)
 	{
