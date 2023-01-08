@@ -35,6 +35,7 @@ ircserv
 # VSCode
 *.json
 /.vscode
+<<<<<<< Updated upstream
 .nfs*
 **/.vscode/
 !.vscode/settings.json

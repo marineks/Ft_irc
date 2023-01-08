@@ -8,7 +8,17 @@ static int acceptSocket(int listenSocket)
 	return (accept(listenSocket, (sockaddr *)&client, &addr_size));
 }
 
-static void tooManyClients(int client_socket)
+static void	addClient(int client_socket, std::vector<pollfd> &poll_fds)
+{
+	pollfd	client_pollfd;
+	client_pollfd.fd = client_socket;
+	client_pollfd.events = POLLIN | POLLOUT; // A surveiller - pourquoi pollout ?
+	poll_fds.push_back(client_pollfd);
+	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
+}
+
+static void	tooManyClients(int client_socket)
+>>>>>>> Stashed changes
 {
 	std::cout << RED << ERR_FULL_SERV << RESET << std::endl;
 	send(client_socket, ERR_FULL_SERV, strlen(ERR_FULL_SERV) + 1, 0);

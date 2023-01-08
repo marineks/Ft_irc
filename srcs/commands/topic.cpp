@@ -5,6 +5,7 @@
 
 Client		retrieveClient(Server *server, int const client_fd);
 std::string	findChannelName(std::string msg_to_parse);
+std::string	findTopic(std::string msg_to_parse);
 
 /**
  * @brief Command : TOPIC <channel> [<topic>]
@@ -45,10 +46,9 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	channel_name = findChannelName(cmd_infos.message);
 	if (channel_name.empty())
 	{
-		// std::cout << "Pas de channel, pas de topic" << std::endl;
 		std::string ERR_NEEDMOREPARAMS = " 461 " + client_nickname + " " + cmd_infos.name + " :Not enough parameters.\r\n";
 		std::cout << ERR_NEEDMOREPARAMS << std::endl;
-		// send(client_fd, ERR_NEEDMOREPARAMS.c_str(), ERR_NEEDMOREPARAMS.size(), 0);
+		send(client_fd, ERR_NEEDMOREPARAMS.c_str(), ERR_NEEDMOREPARAMS.size(), 0);
 		return ;
 	}
 	
@@ -60,34 +60,43 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	{
 		std::cout << "This channel does not exist." << std::endl;
 		std::string ERR_NOSUCHCHANNEL = " 403 " + client_nickname + " " + channel_name + " :No such channel.\r\n";
-		std::cout << ERR_NOSUCHCHANNEL << std::endl;
 		send(client_fd, ERR_NOSUCHCHANNEL.c_str(), ERR_NOSUCHCHANNEL.size(), 0);
 		return ;
 	}
-	// // [!] Si user pas dans ce chan, renvoyer une erreur
+	// [!] Si user pas dans ce chan, renvoyer une erreur
 	if (channel->second.doesClientExist(client_nickname) == false)
 	{
 		std::cout << "You are not on the channel you want to see to the topic of." << std::endl;
 		std::string ERR_NOTONCHANNEL = " 442 " + client_nickname + " " + channel_name + " :The user is not on this channel.\r\n";
-		std::cout << ERR_NOTONCHANNEL << std::endl;
 		send(client_fd, ERR_NOTONCHANNEL.c_str(), ERR_NOTONCHANNEL.size(), 0);
 		return ;
 	}
 
-	// // Gérer le topic
-	// channel->second.setTopic(findTopic(cmd_infos.message));
-	// if (topic.empty())
-	// {
-	// 	// afficher le topic
-	// }
-	// else if (topic == ":")
-	// {
-	// 	// erase le topic
-	// }
-	// else
-	// {
-	// 	// reattribuer le topic
-	// }
+	// Gérer le topic
+	topic = findTopic(cmd_infos.message);
+	if (topic.empty())
+	{
+		// afficher le topic
+		std::cout << "The topic of this channel is " << topic << std::endl;
+		std::string RPL_TOPIC = " 332 " + client_nickname + " " + channel_name + " " + topic + "\r\n";
+		send(client_fd, RPL_TOPIC.c_str(), RPL_TOPIC.size(), 0);	
+	}
+	else if (topic == ":")
+	{
+		// erase le topic
+		topic.clear();
+		std::string RPL_NOTOPIC = " 331 " + client_nickname + " " + channel_name + ": The topic has been cleared.\r\n";
+		std::cout << RPL_NOTOPIC << std::endl;
+		send(client_fd, RPL_NOTOPIC.c_str(), RPL_NOTOPIC.size(), 0);
+	}
+	else
+	{
+		// reattribuer le topic
+		channel->second.setTopic(topic);
+		std::string RPL_NEWTOPIC = client_nickname + " " + channel_name + " New topic is " + topic + "\r\n";
+		std::cout << RPL_NEWTOPIC << std::endl;
+		send(client_fd, RPL_NEWTOPIC.c_str(), RPL_NEWTOPIC.size(), 0);
+	}
 }
 
 Client	retrieveClient(Server *server, int const client_fd)
@@ -98,17 +107,15 @@ Client	retrieveClient(Server *server, int const client_fd)
 	return (client);
 }
 
+// Possible output : | #test :New topic|
+// Possible output : | test :New topic|		-> gives an error
+// Possible output : | :New topic|			-> gives an error
+// Possible output : | #test|
+// Possible output : | #test hello|
+// Possible output : | :|					-> gives an error
 std::string	findChannelName(std::string msg_to_parse)
 {
-	std::cout << "The msg_to_parse looks like this : |" << msg_to_parse << "|" << std::endl;
-	// Possible output : | #test :New topic|
-	// Possible output : | test :New topic|		-> gives an error
-	// Possible output : | :New topic|			-> gives an error
-	// Possible output : | #test|
-	// Possible output : | #test hello|
-	// Possible output : | :|					-> gives an error
 	std::string channel_name;
-
 	channel_name.clear();
 	
 	if (msg_to_parse.empty() || msg_to_parse.find("#") == msg_to_parse.npos) // Si pas d'arg ou pas de chan (#)
@@ -127,7 +134,21 @@ std::string	findChannelName(std::string msg_to_parse)
 		while (isalpha(msg_to_parse[i]))
 			channel_name += msg_to_parse[i++];
 	}
-	// DEBUG
-	std::cout << "[v] Channel name in TOPIC is : |" << channel_name << "|" << std::endl;
 	return (channel_name);
+}
+
+std::string	findTopic(std::string msg_to_parse)
+{
+	std::string topic;
+	topic.clear();
+
+	if (msg_to_parse.empty() || msg_to_parse.find(":") == msg_to_parse.npos)
+		return (topic);
+	else
+	{
+		topic.append(msg_to_parse, msg_to_parse.find(":"), std::string::npos);
+		topic.erase(topic.find("\r"), 1);
+		std::cout << "The topic is : " << topic << std::endl;
+		return (topic);
+	}
 }
