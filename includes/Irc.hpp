@@ -17,9 +17,8 @@
 
 # include "Macro.hpp"
 # include "Colors.hpp"
-# include "Commands.hpp"
+// # include "Commands.hpp"
 // #include "Server.hpp" // atttention toi on te surveille
 
-int	parseCommand(std::string cmd_line, cmd_struct &cmd_infos);
 
 #endif

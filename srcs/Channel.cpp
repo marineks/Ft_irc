@@ -6,7 +6,12 @@
 *				################################
 */
 
-Channel::Channel(std::string const &channelName): _name(channelName) {}
+Channel::Channel(std::string const &channelName): _name(channelName) 
+{
+	_banned_users.clear();
+	_clientList.clear();
+	_topic.clear();
+}
 
 Channel::~Channel() {}
 
@@ -16,18 +21,23 @@ Channel::~Channel() {}
 *				################################
 */
 
-std::string						Channel::getName() const
-{
-	return (_name);
-}
+std::string						Channel::getName() const 		{ return (_name); }
+std::string						Channel::getTopic() const 		{ return (_topic); }
+std::map <std::string, Client>	Channel::getClientList() const 	{ return (_clientList); }
+std::vector<std::string>		Channel::getBannedUsers() const { return (_banned_users); }
+std::vector<std::string>		Channel::getOperators() const 	{ return (_operators); }
 
-std::map <std::string, Client>	Channel::getClientList() const
+void							Channel::setTopic(std::string newTopic)
 {
-	return (_clientList);
+	_topic = newTopic; 
+	return ;
 }
 
 bool		Channel::doesClientExist(std::string &clientName)
-{
+{	
+	if (_clientList.size() == 0)
+		return (false);
+
 	std::map <std::string, Client>::iterator it = _clientList.find(clientName);
 	if (it == _clientList.end())
 		return (false);
@@ -39,11 +49,6 @@ bool		Channel::doesClientExist(std::string &clientName)
 *				### MANAGE CLIENT FUNCTIONS  ###
 *				################################
 */
-
-void	Channel::addClientToChannel(Client &client)
-{
-	this->_clientList.insert(std::pair<std::string, Client>(client.getNickname(), client));
-}
 
 void	Channel::printClientList()
 {
@@ -109,7 +114,7 @@ void	Channel::removeFromBanned(std::string &banned_name)
 bool	Channel::isBanned(std::string &banned_name)
 {
 	std::vector<std::string>::iterator user;
-	if (_banned_users.empty())
+	if (_banned_users.empty() == true)
 		return (false);
 	for (user = _banned_users.begin(); user != _banned_users.end(); user++)
 	{

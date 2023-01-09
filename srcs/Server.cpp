@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "Commands.hpp"
 
 Server::Server() : _servinfo(NULL), _server_socket_fd(0)
 {
@@ -35,6 +36,11 @@ std::string Server::getMdp() const
 std::map<std::string, Channel>	Server::getChannels() const
 {
 	return (_channels);
+}
+
+std::map<const int, Client>		Server::getClients() const
+{
+	return (_clients);
 }
 
 /**
@@ -257,7 +263,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	{
 	// case 1: invite(client_fd, cmd_infos); break;
 	case 2: join(this, client_fd, cmd_infos); break;
-	case 3: kick(this, cmd_infos); break;
+	// case 3: kick(this, cmd_infos); break;
 	// case 4: kill(cmd_infos); break;
 	// case 5: list(cmd_infos); break;
 	// case 6: mdp(cmd_infos); break;
@@ -265,10 +271,10 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	// case 8: nick(cmd_infos); break;
 	// case 9: part(cmd_infos); break;
 	case 10: ping(client_fd, cmd_infos); break;
-	case 11: oper(this, cmd_infos); break;
+	// case 11: oper(this, cmd_infos); break;
+	// case 12: quit(this, cmd_infos); break;
 	// case 12: privmsg(cmd_infos); break;
-	case 13: quit(this, cmd_infos); break;
-	// case 13: topic(cmd_infos); break;
+	case 14: topic(this, client_fd, cmd_infos); break;
 	// case 14: user(cmd_infos); break;
 	// case 15: who(cmd_infos); break;
 	// case 16: whois(cmd_infos); break;

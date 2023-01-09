@@ -3,7 +3,6 @@
 
 #include "Irc.hpp"
 #include "Client.hpp"
-#include "Commands.hpp"
 #include "Channel.hpp"
 
 class Server
@@ -25,7 +24,7 @@ class Server
 		void							setHints();
 		std::string						getMdp() const;
 		std::map<std::string, Channel>	getChannels() const;
-
+		std::map<const int, Client>		getClients() const;
 		// Running Server functions
 		int			fillServinfo(char *port);
 		int			launchServer();
