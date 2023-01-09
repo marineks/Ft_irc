@@ -25,14 +25,39 @@ static std::string	findAnyChannel(std::string msg_to_parse);
  */
 void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
-	std::string channel_to_display = findAnyChannel(cmd_infos.message);
+	std::string channel_to_display	= findAnyChannel(cmd_infos.message);
+	Client		client 				= retrieveClient(server, client_fd);
+	std::string client_nick 		= client.getNickname();
+	std::string	RPL_LISTSTART		= "321 " + client_nick + " Channel :Users Name\r\n";
+	std::string	RPL_LIST;
+	std::string	RPL_LISTEND 		= "323 " + client_nick + " :End of /LIST\r\n";
 
-	std::cout << "Le channel found est : " << YELLOW << (channel_to_display.empty()? "Y a R!" : channel_to_display) << RESET << std::endl;
-	// if (channel_to_display.empty())
-	// {
-	// 	// list of channels w/ some relevant info
-	// 	return ;
-	// }
+	if (channel_to_display.empty()) // "/LIST" => list all channels
+	{
+		if (server->getChannels().empty()) {
+			send(client_fd, RPL_LISTEND.c_str(), RPL_LISTEND.size(), 0);
+			std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LISTEND << RESET << std::endl;
+		} else {
+			std::stringstream concat;
+			for (std::map<std::string, Channel>::iterator it = server->getChannels().begin(); \
+					it != server->getChannels().end(); \
+					it++)
+			{
+				concat.str(""); // clear le stream
+				RPL_LIST.clear();
+
+				concat << "322 " << client_nick << " " << it->second.getName() << " "  \
+						<< it->second.getClientList().size() \
+						<< (it->second.getTopic().empty() ? " :No topic set for this channel yet."  : it->second.getTopic()) \
+						<< "\r\n";				
+				RPL_LIST = concat.str();
+				send(client_fd, RPL_LIST.c_str(), RPL_LIST.size(), 0);
+				std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LIST << RESET << std::endl;
+			}
+
+		}
+		
+	}
 	// else
 	// {
 	// 	// check if channel found exists
@@ -40,6 +65,7 @@ void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 	// 	// if it exists, display
 	// 	// else, print END of LIST
 	// }
+	return ;
 }
 
 static std::string	findAnyChannel(std::string msg_to_parse)
