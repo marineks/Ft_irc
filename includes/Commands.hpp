@@ -17,6 +17,7 @@ struct cmd_struct
 int		parseCommand(std::string cmd_line, cmd_struct &cmd_infos);
 Client	retrieveClient(Server *server, int const client_fd);
 // void	ban(Server server, cmd_struct cmd_infos);
+void	invite(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	join(Server *server, int const client_fd, cmd_struct cmd_infos);
 // void	kick(Server server, cmd_struct cmd_infos);
 void	list(Server *server, int const client_fd, cmd_struct cmd_infos);
