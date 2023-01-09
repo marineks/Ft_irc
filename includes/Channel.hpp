@@ -19,10 +19,10 @@ class Channel
 		~Channel();
 
 		/* Accessors */
-		std::string						getName()const;
-		std::string						getTopic() const;
-		std::vector<std::string>		getOperators() const;
-		std::vector<std::string>		getBannedUsers() const;
+		std::string&					getName();
+		std::string&					getTopic() ;
+		std::vector<std::string>&		getOperators() ;
+		std::vector<std::string>&		getBannedUsers() ;
 		std::map <std::string, Client>&	getClientList();
 		void							setTopic(std::string newTopic);
 		bool							doesClientExist(std::string &clientName);
