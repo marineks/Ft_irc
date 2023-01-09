@@ -23,7 +23,7 @@ class Channel
 		std::string						getTopic() const;
 		std::vector<std::string>		getOperators() const;
 		std::vector<std::string>		getBannedUsers() const;
-		std::map <std::string, Client>	getClientList()const;
+		std::map <std::string, Client>&	getClientList();
 		void							setTopic(std::string newTopic);
 		bool							doesClientExist(std::string &clientName);
 		/* Manage client in Channel */

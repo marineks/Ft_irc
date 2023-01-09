@@ -51,23 +51,23 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 	Client client = it_client->second;
 
 	// Récupérer le bon channel grâce au channel name
-	std::map<std::string, Channel>			 channels = server->getChannels();
-	std::map<std::string, Channel>::iterator it = channels.find(channelName);
-	if (it == channels.end()) // si on ne le trouve pas, créer le channel
+	std::map<std::string, Channel>::iterator it = server->getChannels().find(channelName);
+	if (it == server->getChannels().end()) // si on ne le trouve pas, créer le channel
 		addChannel(server, channelName);
+		// server->addChannel(channelName);
 	
 	// vérifier si le client est banned avant de le join au channel
 	std::string client_nickname = client.getNickname();
-
-	std::map<std::string, Channel>			 channelss = server->getChannels();
-	std::map<std::string, Channel>::iterator it_chan = channelss.find(channelName);
+	std::map<std::string, Channel>::iterator it_chan = server->getChannels().find(channelName);
 	if (it_chan->second.isBanned(client_nickname) == true) {
 		std::cout << client.getNickname() << " is banned from " << channelName << std::endl; 
 		return ;
 	} 
 	else {
-		addClientToChannel(server, channelName, client);
-		it->second.addFirstOperator(client.getNickname()); // FIXME: pourquoi le rajouter en oper par défaut au channel ?
+		// addClientToChannel(server, channelName, client);
+		server->addClientToChannel(channelName, client);
+		it_chan->second.addFirstOperator(client.getNickname()); // FIXME: pourquoi le rajouter en oper par défaut au channel ?
+		printChannel(server, channelName);
 	}
 }
 
@@ -143,23 +143,22 @@ std::string	getChannelName(std::string msg_to_parse)
 void	addChannel(Server *server, std::string const &channelName)
 {
 	// check if channel already exists.
-	std::map<std::string, Channel>			 channels = server->getChannels();
-	std::map<std::string, Channel>::iterator it = channels.find(channelName);
-	if (it != channels.end())
+	std::map<std::string, Channel>::iterator it = server->getChannels().find(channelName);
+	if (it != server->getChannels().end())
 	{
 		std::cout << "Channel already exists, choose an other name\n";
 		return ;
 	}
 	Channel	channel(channelName);
-	channels.insert(std::pair<std::string, Channel>(channelName, channel));
+	server->getChannels().insert(std::pair<std::string, Channel>(channelName, channel));
 	std::cout << RED << "Channel added: " << channelName << RESET << std::endl;
 }
 
 void	addClientToChannel(Server *server, std::string &channelName, Client &client)
 {
-	std::map<std::string, Channel>			 channels = server->getChannels();
 	std::map<std::string, Channel>::iterator it;
-	it = channels.find(channelName);
+	it = server->getChannels().find(channelName);
+	std::cout << "it->first = " << it->first << std::endl;
 	std::string client_nickname = client.getNickname();
 	if (it->second.doesClientExist(client_nickname) == false)
 	{
@@ -169,6 +168,7 @@ void	addClientToChannel(Server *server, std::string &channelName, Client &client
 	else 
 		std::cout << YELLOW << client.getNickname() << "already here\n" << RESET;
 }
+
 
 // NOTE: à qui sert cette fonction ? debug ?
 void	printChannel(Server *server, std::string &channelName)

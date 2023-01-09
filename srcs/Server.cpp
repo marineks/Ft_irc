@@ -33,7 +33,7 @@ std::string Server::getMdp() const
 	return (_mdp);
 }
 
-std::map<std::string, Channel>	Server::getChannels() const
+std::map<std::string, Channel>&	Server::getChannels()
 {
 	return (_channels);
 }
@@ -282,4 +282,30 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	default:
 		std::cout << PURPLE << "This command is not supported by our services." << RESET << std::endl;
 	}
+}
+
+void	Server::addChannel(std::string &channelName)
+{
+	std::map<std::string, Channel>::iterator it = _channels.find(channelName);
+	if (it != _channels.end())
+	{
+		std::cout << "Channel already exists, choose an other name\n";
+		return ;
+	}
+	Channel	channel(channelName);
+	_channels.insert(std::pair<std::string, Channel>(channel.getName(), channel));
+}
+
+void	Server::addClientToChannel(std::string &channelName, Client &client)
+{
+	std::map<std::string, Channel>::iterator it;
+	it = _channels.find(channelName);
+	std::string client_nickname = client.getNickname();
+	if (it->second.doesClientExist(client_nickname) == false)
+	{
+		it->second.addClientToChannel(client);
+		std::cout << "Client successfully joined the channel" << channelName << "!" << std::endl;
+	}
+	else 
+		std::cout << YELLOW << client.getNickname() << "already here\n" << RESET;
 }
