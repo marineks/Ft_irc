@@ -56,15 +56,29 @@ void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 			}
 
 		}
-		
 	}
-	// else
-	// {
-	// 	// check if channel found exists
+	else
+	{
+		// check if channel found exists
+		std::map<std::string, Channel>			 channels = server->getChannels();
+		std::map<std::string, Channel>::iterator channel = channels.find(channel_to_display);
+		if (channel != channels.end())
+		{
+			std::stringstream concat;
+		
+			concat << "322 " << client_nick << " " << channel->second.getName() << " "  \
+					<< channel->second.getClientList().size() \
+					<< (channel->second.getTopic().empty() ? " :No topic set for this channel yet."  : channel->second.getTopic()) \
+					<< "\r\n";				
+			RPL_LIST = concat.str();
+			send(client_fd, RPL_LIST.c_str(), RPL_LIST.size(), 0);
 
-	// 	// if it exists, display
-	// 	// else, print END of LIST
-	// }
+		} else {
+			std::cout << "[Server] The channel " << channel_to_display << " does not exist." << std::endl;
+			send(client_fd, RPL_LISTEND.c_str(), RPL_LISTEND.size(), 0);
+			std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LISTEND << RESET << std::endl;
+		}
+	}
 	return ;
 }
 
