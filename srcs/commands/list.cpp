@@ -4,6 +4,7 @@
 #include "Commands.hpp"
 
 static std::string	findAnyChannel(std::string msg_to_parse);
+static std::string	getRplList(std::string client_nick, std::map<std::string, Channel>::iterator &channel);
 
 /**
  * @brief If the exact name of a channel is given, the only information about 
@@ -37,40 +38,26 @@ void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 		if (server->getChannels().empty()) {
 			send(client_fd, RPL_LISTEND.c_str(), RPL_LISTEND.size(), 0);
 			std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LISTEND << RESET << std::endl;
-		} else {
-			std::stringstream concat;
-			for (std::map<std::string, Channel>::iterator it = server->getChannels().begin(); \
-					it != server->getChannels().end(); \
-					it++)
+		} 
+		else 
+		{
+			std::map<std::string, Channel>::iterator it = server->getChannels().begin();
+			for (it; it != server->getChannels().end(); it++)
 			{
-				concat.str(""); // clear le stream
 				RPL_LIST.clear();
-
-				concat << "322 " << client_nick << " " << it->second.getName() << " "  \
-						<< it->second.getClientList().size() \
-						<< (it->second.getTopic().empty() ? " :No topic set for this channel yet."  : it->second.getTopic()) \
-						<< "\r\n";				
-				RPL_LIST = concat.str();
+				RPL_LIST = getRplList(client_nick, it);
 				send(client_fd, RPL_LIST.c_str(), RPL_LIST.size(), 0);
 				std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LIST << RESET << std::endl;
 			}
-
 		}
 	}
 	else
 	{
-		// check if channel found exists
 		std::map<std::string, Channel>			 channels = server->getChannels();
 		std::map<std::string, Channel>::iterator channel = channels.find(channel_to_display);
 		if (channel != channels.end())
-		{
-			std::stringstream concat;
-		
-			concat << "322 " << client_nick << " " << channel->second.getName() << " "  \
-					<< channel->second.getClientList().size() \
-					<< (channel->second.getTopic().empty() ? " :No topic set for this channel yet."  : channel->second.getTopic()) \
-					<< "\r\n";				
-			RPL_LIST = concat.str();
+		{	
+			RPL_LIST = getRplList(client_nick, channel);
 			send(client_fd, RPL_LIST.c_str(), RPL_LIST.size(), 0);
 
 		} else {
@@ -98,4 +85,15 @@ static std::string	findAnyChannel(std::string msg_to_parse)
 			channel += msg_to_parse[i++];
 		return (channel);
 	}
+}
+
+static std::string	getRplList(std::string client_nick, std::map<std::string, Channel>::iterator &channel)
+{
+	std::stringstream concat;
+		
+	concat << "322 " << client_nick << " " << channel->second.getName() << " "  \
+			<< channel->second.getClientList().size() \
+			<< (channel->second.getTopic().empty() ? " :No topic set for this channel yet."  : channel->second.getTopic()) \
+			<< "\r\n";
+	return (concat.str());			
 }
