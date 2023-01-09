@@ -24,7 +24,7 @@ class Server
 		void							setHints();
 		std::string						getMdp() const;
 		std::map<std::string, Channel>& 	getChannels();
-		std::map<const int, Client>		getClients() const;
+		std::map<const int, Client>&		getClients();
 		// Running Server functions
 		int			fillServinfo(char *port);
 		int			launchServer();

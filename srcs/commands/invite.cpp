@@ -15,19 +15,68 @@ static std::string	findChannel(std::string msg_to_parse);
  */
 void	invite(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
-	std::string channel = findChannel(cmd_infos.message);
-	std::string nickname = findNickname(cmd_infos.message);
+	Client		client			= retrieveClient(server, client_fd);
+	std::string	client_nickname	= client.getNickname();
+	std::string channel_name	= findChannel(cmd_infos.message);
+	std::string invited_client	= findNickname(cmd_infos.message);
+	std::string	client_reply;
 	
-	// Check if the channel exists (if not = ERR_NOSUCHCHANNEL)
+	if (client_nickname.empty() || channel_name.empty())
+	{
+		std::string ERR_NEEDMOREPARAMS = "461 " + client_nickname + " " + cmd_infos.name + " :Not enough parameters\r\n";
+		client_reply = ERR_NEEDMOREPARAMS;
+		send(client_fd, client_reply.c_str(), client_reply.size(), 0);
+		std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << client_reply << RESET << std::endl;
+		return ;
+	}
 
-	// Check that the person inviting is a member of said channel (if not = ERR_NOTONCHANNEL)
-
+	// Check if the channel exists
+	std::map<std::string, Channel>			 channels = server->getChannels();
+	std::map<std::string, Channel>::iterator channel = channels.find(channel_name);
+	if (channel == channels.end())
+	{
+		std::string ERR_NOSUCHCHANNEL = "403 " + client_nickname + " " + channel_name + " :No such channel\r\n";
+		client_reply = ERR_NOSUCHCHANNEL;
+		send(client_fd, client_reply.c_str(), client_reply.size(), 0);
+		std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << client_reply << RESET << std::endl;
+		return ;
+	}
+	
+	// Check that the person inviting is a member of said channel
+	if (channel->second.doesClientExist(client_nickname) == false)
+	{
+		std::string ERR_NOTONCHANNEL = "442 " + client_nickname + " " + channel_name + " :You're not on that channel\r\n";
+		client_reply = ERR_NOTONCHANNEL;
+		send(client_fd, client_reply.c_str(), client_reply.size(), 0);
+		std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << client_reply << RESET << std::endl;
+		return ;
+	}
+	
 	// Check that, if the channel is on invite-only mode, the user inviting is an operator
+	// TODO: attendre les modes de Dim pour cette condition
 
-	// Check that the invited user is not already on the channel (if not = ERR_USERONCHANNEL)
+	// Check that the invited user is not already on the channel
+	if (channel->second.doesClientExist(invited_client) == true)
+	{
+		std::string ERR_USERONCHANNEL = "442 " + client_nickname + " " + invited_client + " " + channel_name + " :Is already on channel\r\n";
+		client_reply = ERR_USERONCHANNEL;
+		send(client_fd, client_reply.c_str(), client_reply.size(), 0);
+		std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << client_reply << RESET << std::endl;
+		return ;
+	}
 	
-	// If all checks are successful => send a RPL_INVITING to the inviting user 
-	//							   and send an INVITE msg to the invited user
+	// If all checks are successful => send a RPL_INVITING + invite to the inviting user 
+	std::string RPL_INVITING = "442 " + client_nickname + " " + invited_client + " " + channel_name + " :Is invited to a channel!\r\n";
+	client_reply = RPL_INVITING;
+
+	send(client_fd, client_reply.c_str(), client_reply.size(), 0);
+	std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << client_reply << RESET << std::endl;
+
+	std::map<std::string, Client> clients = channel->second.getClientList();
+	std::map<std::string, Client>::iterator invited = clients.find(invited_client);
+	std::string user_id = ":" +	invited->second.getNickname() + "!" + invited->second.getUsername() + "@localhost";
+	std::string invite = user_id + ":Knock knock! You are invited to join the channel #" + channel_name + " by " + client_nickname + " .\r\n";
+	send(invited->second.getClientFd(), invite.c_str(), invite.size(), 0);
 }
 
 // Exemple of user input : "INVITE Wiz #foo_bar"
