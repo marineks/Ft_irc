@@ -3,7 +3,6 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
-Client		retrieveClient(Server *server, int const client_fd);
 std::string	findChannelName(std::string msg_to_parse);
 std::string	findTopic(std::string msg_to_parse);
 
