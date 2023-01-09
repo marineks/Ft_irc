@@ -38,7 +38,7 @@ std::map<std::string, Channel>&	Server::getChannels()
 	return (_channels);
 }
 
-std::map<const int, Client>		Server::getClients() const
+std::map<const int, Client>&	Server::getClients()
 {
 	return (_clients);
 }
@@ -223,7 +223,6 @@ void Server::parseMessage(int const client_fd, std::string message)
 	}
 }
 
-// TODO : Faire passer dans exec_cmds tous les Clients fds ? (cf. PRIVMSG() )
 void Server::execCommand(int const client_fd, std::string cmd_line)
 {
 	std::string	validCmds[VALID_LEN] = {
@@ -261,7 +260,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 
 	switch (index + 1)
 	{
-	// case 1: invite(client_fd, cmd_infos); break;
+	case 1: invite(this, client_fd, cmd_infos); break;
 	case 2: join(this, client_fd, cmd_infos); break;
 	// case 3: kick(this, cmd_infos); break;
 	// case 4: kill(cmd_infos); break;

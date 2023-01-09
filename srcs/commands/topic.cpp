@@ -3,7 +3,6 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
-Client		retrieveClient(Server *server, int const client_fd);
 std::string	findChannelName(std::string msg_to_parse);
 std::string	findTopic(std::string msg_to_parse);
 
@@ -140,15 +139,14 @@ std::string	findChannelName(std::string msg_to_parse)
 std::string	findTopic(std::string msg_to_parse)
 {
 	std::string topic;
-	topic.clear();
+	
 
 	if (msg_to_parse.empty() || msg_to_parse.find(":") == msg_to_parse.npos)
-		return (topic);
+		topic.clear();
 	else
 	{
 		topic.append(msg_to_parse, msg_to_parse.find(":"), std::string::npos);
-		topic.erase(topic.find("\r"), 1);
 		std::cout << "The topic is : " << topic << std::endl;
-		return (topic);
 	}
+	return (topic);
 }

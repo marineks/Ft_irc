@@ -4,7 +4,8 @@ SRCS		= main.cpp Client.cpp ManageServer.cpp Server.cpp parsing.cpp Channel.cpp 
 				commands/join.cpp 	\
 				commands/ping.cpp 	\
 				commands/topic.cpp	\
-				commands/list.cpp 	
+				commands/list.cpp 	\
+				commands/invite.cpp
 
 DIR_SRCS	= srcs/
 
