@@ -265,7 +265,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	case 2: join(this, client_fd, cmd_infos); break;
 	// case 3: kick(this, cmd_infos); break;
 	// case 4: kill(cmd_infos); break;
-	// case 5: list(cmd_infos); break;
+	case 5: list(this, client_fd, cmd_infos); break;
 	// case 6: mdp(cmd_infos); break;
 	// case 7: mode(cmd_infos); break;
 	// case 8: nick(cmd_infos); break;
