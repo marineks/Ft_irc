@@ -23,7 +23,7 @@ Channel::~Channel() {}
 
 std::string						Channel::getName() const 		{ return (_name); }
 std::string						Channel::getTopic() const 		{ return (_topic); }
-std::map <std::string, Client>&	Channel::getClientList() const 	{ return (_clientList); }
+std::map <std::string, Client>&	Channel::getClientList()	 	{ return (_clientList); }
 std::vector<std::string>		Channel::getBannedUsers() const { return (_banned_users); }
 std::vector<std::string>		Channel::getOperators() const 	{ return (_operators); }
 
