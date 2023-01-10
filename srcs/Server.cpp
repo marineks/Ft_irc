@@ -1,7 +1,8 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
-Server::Server() : _servinfo(NULL), _server_socket_fd(0)
+Server::Server(std::string port, std::string password) 
+: _servinfo(NULL), _server_socket_fd(0), _port(port), _password(password)
 {
 	std::cout << YELLOW << "Server Constructor" << RESET << std::endl;
 	memset(&_hints, 0, sizeof(_hints));
@@ -28,19 +29,17 @@ void Server::setHints()
 	_hints.ai_flags = AI_PASSIVE;	  // We'll be on localhost by default
 }
 
-std::string Server::getMdp() const
-{
-	return (_mdp);
-}
+std::string 					Server::getPort()	  const { return (_port); }
 
-std::map<std::string, Channel>&	Server::getChannels()
-{
-	return (_channels);
-}
+std::string 					Server::getPassword() const { return (_password); }
 
-std::map<const int, Client>&	Server::getClients()
+std::map<std::string, Channel>&	Server::getChannels()		{ return (_channels); }
+
+std::map<const int, Client>&	Server::getClients()		{ return (_clients); }
+
+void							Server::setPassword(std::string new_pwd)
 {
-	return (_clients);
+	_password = new_pwd;
 }
 
 /**
@@ -185,6 +184,12 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 			it->second.setUsername(cmds[i].substr(cmds[i].find(" "), cmds[i].find(" ") + 1));
 			it->second.setUsername(cleanStr(it->second.getUsername()));
 			it->second.setRealname(cmds[i].substr(cmds[i].find(":") + 1, cmds[i].length() - cmds[i].find(":") + 1));
+		}
+		else if (cmds[i].find("PASS") != std::string::npos)
+		{
+			cmd_struct cmd_infos;
+			parseCommand(cmds[i], cmd_infos);
+			pass(this, client_fd, cmd_infos);
 		}
 	}
 	if (it->second.is_valid() == SUCCESS)

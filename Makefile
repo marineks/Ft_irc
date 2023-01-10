@@ -6,7 +6,8 @@ SRCS		= main.cpp Client.cpp ManageServer.cpp Server.cpp parsing.cpp Channel.cpp 
 				commands/topic.cpp	\
 				commands/list.cpp 	\
 				commands/invite.cpp	\
-				commands/nick.cpp
+				commands/nick.cpp	\
+				commands/pass.cpp
 
 DIR_SRCS	= srcs/
 
@@ -18,7 +19,7 @@ CXX			= c++
 
 DEP			= ${OBJS:%.o=%.d}
 
-CPPFLAGS	= -Wall -Wextra -MMD -MP -g3 -std=c++98 -c -I includes/
+CPPFLAGS	= -Wall -Wextra -Wunused -MMD -MP -g3 -std=c++98 -c -I includes/ 
 
 RM 			= rm -f
 

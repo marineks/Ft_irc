@@ -14,15 +14,18 @@ class Server
 		std::map<const int, Client>		_clients;
 		std::map<std::string, Channel>	_channels;
 		// Commands						_cmd;
-		std::string						_mdp;// = "pantoufle"
+		std::string						_port;
+		std::string						_password;
 	
 	public:
 		// Constructor & destructor
-		Server();
+		Server(std::string port, std::string password);
 		~Server();
 		// Accessors
 		void							setHints();
-		std::string						getMdp() const;
+		std::string						getPort() const;
+		std::string						getPassword() const;
+		void								setPassword(std::string new_pwd);
 		std::map<std::string, Channel>& 	getChannels();
 		std::map<const int, Client>&		getClients();
 		// Running Server functions
