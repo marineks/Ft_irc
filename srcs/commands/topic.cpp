@@ -45,9 +45,7 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	channel_name = findChannelName(cmd_infos.message);
 	if (channel_name.empty())
 	{
-		std::string ERR_NEEDMOREPARAMS = " 461 " + client_nickname + " " + cmd_infos.name + " :Not enough parameters.\r\n";
-		std::cout << ERR_NEEDMOREPARAMS << std::endl;
-		send(client_fd, ERR_NEEDMOREPARAMS.c_str(), ERR_NEEDMOREPARAMS.size(), 0);
+		sendServerRpl(client_fd, ERR_NEEDMOREPARAMS(client_nickname, cmd_infos.name));
 		return ;
 	}
 	
@@ -57,17 +55,14 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	// // [!] Si channel n'existe pas, renvoyer une erreur
 	if (channel == channels.end())
 	{
-		std::cout << "This channel does not exist." << std::endl;
-		std::string ERR_NOSUCHCHANNEL = " 403 " + client_nickname + " " + channel_name + " :No such channel.\r\n";
-		send(client_fd, ERR_NOSUCHCHANNEL.c_str(), ERR_NOSUCHCHANNEL.size(), 0);
+		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(client_nickname, channel_name));
 		return ;
 	}
 	// [!] Si user pas dans ce chan, renvoyer une erreur
 	if (channel->second.doesClientExist(client_nickname) == false)
 	{
 		std::cout << "You are not on the channel you want to see to the topic of." << std::endl;
-		std::string ERR_NOTONCHANNEL = " 442 " + client_nickname + " " + channel_name + " :The user is not on this channel.\r\n";
-		send(client_fd, ERR_NOTONCHANNEL.c_str(), ERR_NOTONCHANNEL.size(), 0);
+		sendServerRpl(client_fd, ERR_NOTONCHANNEL(client_nickname, channel_name));
 		return ;
 	}
 
@@ -76,25 +71,20 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	if (topic.empty())
 	{
 		// afficher le topic
+		sendServerRpl(client_fd,  RPL_TOPIC(client_nickname, channel_name, topic));
 		std::cout << "The topic of this channel is " << topic << std::endl;
-		std::string RPL_TOPIC = " 332 " + client_nickname + " " + channel_name + " " + topic + "\r\n";
-		send(client_fd, RPL_TOPIC.c_str(), RPL_TOPIC.size(), 0);	
 	}
 	else if (topic == ":")
 	{
 		// erase le topic
 		topic.clear();
-		std::string RPL_NOTOPIC = " 331 " + client_nickname + " " + channel_name + ": The topic has been cleared.\r\n";
-		std::cout << RPL_NOTOPIC << std::endl;
-		send(client_fd, RPL_NOTOPIC.c_str(), RPL_NOTOPIC.size(), 0);
+		sendServerRpl(client_fd,  RPL_NOTOPIC(client_nickname, channel_name));
 	}
 	else
 	{
 		// reattribuer le topic
 		channel->second.setTopic(topic);
-		std::string RPL_NEWTOPIC = client_nickname + " " + channel_name + " New topic is " + topic + "\r\n";
-		std::cout << RPL_NEWTOPIC << std::endl;
-		send(client_fd, RPL_NEWTOPIC.c_str(), RPL_NEWTOPIC.size(), 0);
+		sendServerRpl(client_fd,  RPL_NEWTOPIC(client_nickname, channel_name, topic));
 	}
 }
 

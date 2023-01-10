@@ -43,31 +43,21 @@ void	nick(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::string nickname	= retrieveNickname(cmd_infos.message);
 	Client		client		= retrieveClient(server, client_fd);
 
-	if (nickname.empty())
-	{
-		std::string ERR_NONICKNAMEGIVEN = "431 " + client.getNickname() + " :There is no nickname.\r\n";
-		send(client_fd, ERR_NONICKNAMEGIVEN.c_str(), ERR_NONICKNAMEGIVEN.size(), 0);
-		std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << ERR_NONICKNAMEGIVEN << RESET << std::endl;
+	if (nickname.empty()) {
+		sendServerRpl(client_fd, ERR_NONICKNAMEGIVEN(client.getNickname()));
 	} 
-	else if (containsInvalidCharacters(nickname))
-	{
-		// ERR_ERRONEUSNICKNAME
-		std::string ERR_ERRONEUSNICKNAME = "432 " + client.getNickname() + " " + nickname + " :Erroneus nickname\r\n";
-		send(client_fd, ERR_ERRONEUSNICKNAME.c_str(), ERR_ERRONEUSNICKNAME.size(), 0);
-		std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << ERR_ERRONEUSNICKNAME << RESET << std::endl; 
+	else if (containsInvalidCharacters(nickname)) {
+		sendServerRpl(client_fd, ERR_ERRONEUSNICKNAME(client.getNickname(), nickname));
 	} 
-	else if (isAlreadyUsed(server, nickname) == true)
-	{
-		// ERR_NICKNAMEINUSE
-		std::string ERR_NICKNAMEINUSE = "433 " + client.getNickname() + " " + nickname + " :Nickname is already in use.\r\n";
-		send(client_fd, ERR_NICKNAMEINUSE.c_str(), ERR_NICKNAMEINUSE.size(), 0);
-		std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << ERR_NICKNAMEINUSE << RESET << std::endl;
+	else if (isAlreadyUsed(server, nickname) == true) {
+		sendServerRpl(client_fd, ERR_NICKNAMEINUSE(client.getNickname(), nickname));
 	} else {
+		
 		client.setOldNickname(client.getNickname());
 		std::cout << "[Server] Nickname change registered. Old nickname is now : " << client.getOldNickname() << std::endl;
+		
 		client.setNickname(nickname);
-		std::string RPL_NICK = client.getOldNickname() + "!" + client.getUsername() + "@localhost :" + client.getOldNickname() + " changed their nickname to " + client.getNickname() + "\r\n";
-		std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_NICK << RESET << std::endl;
+		sendServerRpl(client_fd, RPL_NICK(client.getOldNickname(), client.getUsername(), client.getNickname()));
 	}
 }
 
