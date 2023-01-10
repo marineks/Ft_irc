@@ -3,7 +3,6 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
-static std::string	findNickname(std::string msg_to_parse);
 static std::string	findChannel(std::string msg_to_parse);
 /**
  * @brief The INVITE command is used to invite a user to a channel. 
