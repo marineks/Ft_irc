@@ -7,7 +7,7 @@
 */
 Client::Client(int client_fd) : _client_fd(client_fd)
 {
-	std::cout << YELLOW << "Client constructor" << RESET << std::endl;
+	std::cout << YELLOW << "Client constructor for Client #" << client_fd << RESET << std::endl;
 }
 
 Client::~Client()
@@ -21,7 +21,8 @@ Client::~Client()
 *					#################
 */
 int				Client::getClientFd() const { return (_client_fd); }
-std::string		Client::getNickname() const { return (_nickname); }
+std::string&	Client::getNickname()  		{ return (_nickname); }
+std::string&	Client::getOldNickname()  	{ return (_old_nickname); }
 std::string 	Client::getUsername() const { return (_fullname); }
 std::string		Client::getRealname() const { return (_realname); }
 
@@ -29,6 +30,11 @@ void	Client::setNickname(std::string const &nickname)
 {
 	// If the nickname has more than 9 characters, it must be truncated
 	_nickname = (_nickname.size() > 9) ? nickname.substr(0, 9) : nickname;
+}
+
+void	Client::setOldNickname(std::string const &nickname)
+{
+	_old_nickname = nickname;
 }
 
 void	Client::setUsername(std::string const &username)

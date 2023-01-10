@@ -14,7 +14,7 @@ class Server
 		std::map<const int, Client>		_clients;
 		std::map<std::string, Channel>	_channels;
 		// Commands						_cmd;
-		std::string						_mdp = "pantoufle";
+		std::string						_mdp;// = "pantoufle"
 	
 	public:
 		// Constructor & destructor
