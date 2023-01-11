@@ -32,8 +32,11 @@ void	pass(Server *server, int const client_fd, cmd_struct cmd_infos)
 	if (server->getPassword() == password)
 	{
 		std::cout << "Yeah" << std::endl;
+		// comment faire une connexion ? 
+		// envoyer un msg au client ?
+		std::string test = "Password is accepted.\r\n ";
+		sendServerRpl(client_fd, test);
 	}
-
 }
 
 std::string	retrievePassword(std::string msg_to_parse)

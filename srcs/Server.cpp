@@ -195,7 +195,10 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 	if (it->second.is_valid() == SUCCESS)
 		send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
 	else
+	{
+		std::cout << RED << "je suis laaaa" << RESET << std::endl;
 		throw Server::InvalidClientException();
+	}
 }
 
 static void splitMessage(std::vector<std::string> &cmds, std::string msg)

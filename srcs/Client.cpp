@@ -65,6 +65,9 @@ void	Client::printClient()const
 
 int	Client::is_valid() const
 {
+	std::cout << "1 a ce moment la, les infos sont : " << _fullname << std::endl;
+	std::cout << "2 a ce moment la, les infos sont : " << _nickname << std::endl;
+	std::cout << "3 a ce moment la, les infos sont : " << _realname << std::endl;
 	if (_fullname.empty())
 		return (FAILURE);
 	if (_nickname.empty())
