@@ -237,8 +237,8 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		"PART",
 		"PING",
 		"OPER",
-		"PRIVMSG",
 		"QUIT",
+		"PRIVMSG",
 		"TOPIC",
 		"USER",
 		"WHO",
@@ -250,7 +250,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	int index = 0;
 
 	parseCommand(cmd_line, cmd_infos);
-
+	
 	while (index < VALID_LEN)
 	{
 		if (cmd_infos.name == validCmds[index])
@@ -272,7 +272,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	case 10: ping(client_fd, cmd_infos); break;
 	// case 11: oper(this, cmd_infos); break;
 	// case 12: quit(this, cmd_infos); break;
-	// case 13: privmsg(cmd_infos); break;
+	case 13: privmsg(this, client_fd, cmd_infos); break;
 	case 14: topic(this, client_fd, cmd_infos); break;
 	// case 15: user(cmd_infos); break;
 	// case 16: who(cmd_infos); break;
