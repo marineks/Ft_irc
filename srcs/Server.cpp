@@ -1,8 +1,9 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
-Server::Server(std::string port, std::string password) 
-: _servinfo(NULL), _server_socket_fd(0), _port(port), _password(password)
+// Server::Server(std::string port, std::string password)
+Server::Server()
+: _servinfo(NULL), _server_socket_fd(0)// , _port(port), _password(password)
 {
 	std::cout << YELLOW << "Server Constructor" << RESET << std::endl;
 	memset(&_hints, 0, sizeof(_hints));
@@ -185,15 +186,15 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 			it->second.setUsername(cleanStr(it->second.getUsername()));
 			it->second.setRealname(cmds[i].substr(cmds[i].find(":") + 1, cmds[i].length() - cmds[i].find(":") + 1));
 		}
-		else if (cmds[i].find("PASS") != std::string::npos)
-		{
-			cmd_struct cmd_infos;
-			parseCommand(cmds[i], cmd_infos);
-			if (pass(this, client_fd, cmd_infos) == SUCCESS)
-				it->second.setConnexionPassword(true);
-			else
-				it->second.setConnexionPassword(false);
-		}
+		// else if (cmds[i].find("PASS") != std::string::npos)
+		// {
+		// 	cmd_struct cmd_infos;
+		// 	parseCommand(cmds[i], cmd_infos);
+		// 	if (pass(this, client_fd, cmd_infos) == SUCCESS)
+		// 		it->second.setConnexionPassword(true);
+		// 	else
+		// 		it->second.setConnexionPassword(false);
+		// }
 	}
 	if (it->second.is_valid() == SUCCESS)
 		send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);

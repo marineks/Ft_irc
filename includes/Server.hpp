@@ -19,7 +19,8 @@ class Server
 	
 	public:
 		// Constructor & destructor
-		Server(std::string port, std::string password);
+		// Server(std::string port, std::string password);
+		Server();
 		~Server();
 		// Accessors
 		void							setHints();

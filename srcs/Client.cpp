@@ -78,7 +78,7 @@ int	Client::is_valid() const
 		return (FAILURE);
 	if (_realname.empty())
 		return (FAILURE);
-	if (_connexion_password == false)
-		return (FAILURE);
+	// if (_connexion_password == false)
+	// 	return (FAILURE);
 	return (SUCCESS);
 }
