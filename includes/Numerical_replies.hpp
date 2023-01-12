@@ -16,10 +16,14 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define ERR_NICKNAMEINUSE(client, nick) ("433 " + client + " " + nick + " :Nickname is already in use.\r\n")
 # define RPL_NICK(oclient, uclient, client) (":" + oclient + "!" + uclient + "@localhost :" + oclient + " changed their nickname to " + client + "\r\n")
 
+// PASS
+# define ERR_PASSWDMISMATCH(client) ("464 " + client + " :Password incorrect.\r\n")
+
 // TOPIC
 # define RPL_TOPIC(client, channel, topic) (" 332 " + client + " " + channel + " " + topic + "\r\n")
 # define RPL_NOTOPIC(client, channel) (" 331 " + client + " " + channel + ": The topic has been cleared.\r\n")
 # define RPL_NEWTOPIC(client, channel, topic) (client + " " + channel + " New topic is " + topic + "\r\n")
+
 
 
 

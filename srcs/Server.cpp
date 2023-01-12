@@ -1,7 +1,8 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
-Server::Server() : _servinfo(NULL), _server_socket_fd(0)
+Server::Server(std::string port, std::string password) 
+: _servinfo(NULL), _server_socket_fd(0), _port(port), _password(password)
 {
 	std::cout << YELLOW << "Server Constructor" << RESET << std::endl;
 	memset(&_hints, 0, sizeof(_hints));
@@ -28,19 +29,17 @@ void Server::setHints()
 	_hints.ai_flags = AI_PASSIVE;	  // We'll be on localhost by default
 }
 
-std::string Server::getMdp() const
-{
-	return (_mdp);
-}
+std::string 					Server::getPort()	  const { return (_port); }
 
-std::map<std::string, Channel>&	Server::getChannels()
-{
-	return (_channels);
-}
+std::string 					Server::getPassword() const { return (_password); }
 
-std::map<const int, Client>&	Server::getClients()
+std::map<std::string, Channel>&	Server::getChannels()		{ return (_channels); }
+
+std::map<const int, Client>&	Server::getClients()		{ return (_clients); }
+
+void							Server::setPassword(std::string new_pwd)
 {
-	return (_clients);
+	_password = new_pwd;
 }
 
 /**
@@ -186,6 +185,15 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 			it->second.setUsername(cleanStr(it->second.getUsername()));
 			it->second.setRealname(cmds[i].substr(cmds[i].find(":") + 1, cmds[i].length() - cmds[i].find(":") + 1));
 		}
+		else if (cmds[i].find("PASS") != std::string::npos)
+		{
+			cmd_struct cmd_infos;
+			parseCommand(cmds[i], cmd_infos);
+			if (pass(this, client_fd, cmd_infos) == SUCCESS)
+				it->second.setConnexionPassword(true);
+			else
+				it->second.setConnexionPassword(false);
+		}
 	}
 	if (it->second.is_valid() == SUCCESS)
 		send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
@@ -231,7 +239,6 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		"KICK",
 		"KILL",
 		"LIST",
-		"MDP",
 		"MODE",
 		"NICK",
 		"PART",
@@ -265,19 +272,18 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	// case 3: kick(this, cmd_infos); break;
 	// case 4: kill(cmd_infos); break;
 	case 5: list(this, client_fd, cmd_infos); break;
-	// case 6: mdp(cmd_infos); break;
-	// case 7: mode(cmd_infos); break;
-	case 8: nick(this, client_fd, cmd_infos); break;
-	// case 9: part(cmd_infos); break;
-	case 10: ping(client_fd, cmd_infos); break;
-	// case 11: oper(this, cmd_infos); break;
+	// case 6: mode(cmd_infos); break;
+	case 7: nick(this, client_fd, cmd_infos); break;
+	// case 8: part(cmd_infos); break;
+	case 9: ping(client_fd, cmd_infos); break;
+	// case 10: oper(this, cmd_infos); break;
+  // case 11: privmsg(cmd_infos); break;
 	// case 12: quit(this, cmd_infos); break;
-	// case 13: privmsg(cmd_infos); break;
-	case 14: topic(this, client_fd, cmd_infos); break;
-	// case 15: user(cmd_infos); break;
-	// case 16: who(cmd_infos); break;
-	// case 17: whois(cmd_infos); break;
-	// case 18: whowas(cmd_infos); break;
+	case 13: topic(this, client_fd, cmd_infos); break;
+	// case 14: user(cmd_infos); break;
+	// case 15: who(cmd_infos); break;
+	// case 16: whois(cmd_infos); break;
+	// case 17: whowas(cmd_infos); break;
 	default:
 		std::cout << PURPLE << "This command is not supported by our services." << RESET << std::endl;
 	}
