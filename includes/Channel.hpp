@@ -40,8 +40,6 @@ class Channel
 		void							addToBanned(std::string &banned_name);
 		void							removeFromBanned(std::string &banned_name);
 		bool							isBanned(std::string &banned_name);
-		/* Channel attributes */
-		void							updateTopic(std::string &topic);
 };
 
 #endif

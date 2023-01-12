@@ -79,15 +79,12 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	{
 		// erase le topic
 		topic.clear();
-		channel->second.updateTopic(topic);
+		channel->second.setTopic(topic);
 		sendServerRpl(client_fd,  RPL_NOTOPIC(client_nickname, channel_name));
 	}
 	else
 	{
 		// reattribuer le topic
-		// channel->second.updateTopic(topic);
-		
-
 		channel->second.setTopic(topic);
 		sendServerRpl(client_fd,  RPL_NEWTOPIC(client_nickname, channel_name, topic));
 	}
