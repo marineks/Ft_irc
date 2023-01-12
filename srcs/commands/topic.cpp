@@ -38,7 +38,7 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::string channel_name;
 	std::string	topic;
 	
-	Client		client = retrieveClient(server, client_fd);
+	Client&		client = retrieveClient(server, client_fd);
 	std::string client_nickname = client.getNickname();
 
 	// ETAPE 1 - PARSER POUR TROUVER UN EVENTUEL CHANNEL_NAME
@@ -91,14 +91,6 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 		channel->second.setTopic(topic);
 		sendServerRpl(client_fd,  RPL_NEWTOPIC(client_nickname, channel_name, topic));
 	}
-}
-
-Client	retrieveClient(Server *server, int const client_fd)
-{
-	std::map<const int, Client>	client_list = server->getClients();
-	std::map<const int, Client>::iterator it_client = client_list.find(client_fd);
-	Client client = it_client->second;
-	return (client);
 }
 
 // Possible output : | #test :New topic|

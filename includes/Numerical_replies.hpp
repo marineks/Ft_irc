@@ -14,7 +14,7 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define ERR_NONICKNAMEGIVEN(client) ("431 " + client + " :There is no nickname.\r\n")
 # define ERR_ERRONEUSNICKNAME(client, nick) ("432 " + client + " " + nick + " :Erroneus nickname\r\n")
 # define ERR_NICKNAMEINUSE(client, nick) ("433 " + client + " " + nick + " :Nickname is already in use.\r\n")
-# define RPL_NICK(oclient, uclient, client) (":" + oclient + "!" + uclient + "@localhost :" + oclient + " changed their nickname to " + client + "\r\n")
+# define RPL_NICK(oclient, uclient, client) (":" + oclient + "!" + uclient + "@localhost NICK " +  client + "\r\n")
 
 // TOPIC
 # define RPL_TOPIC(client, channel, topic) (" 332 " + client + " " + channel + " " + topic + "\r\n")

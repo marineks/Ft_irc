@@ -26,7 +26,7 @@ int	ping(int const client_fd, cmd_struct &cmd)
 	
 	// renvoyer un PONG avec le même TOKEN
 	std::string pong_reply = "PONG" + cmd.message + "\r\n";
-	send(client_fd, pong_reply.c_str(), pong_reply.size(), 0);
+	sendServerRpl(client_fd, pong_reply);
 	
 	return (SUCCESS);
 }
