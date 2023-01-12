@@ -11,7 +11,7 @@ class Client
 		std::string		_old_nickname;
 		std::string		_fullname;
 		std::string		_realname;
-		std::string		_mdp;
+		bool			_connexion_password;
 	
 	public:
 		Client(int client_fd);
@@ -26,6 +26,8 @@ class Client
 		std::string		getUsername()const;
 		void			setRealname(std::string const &realname);
 		std::string		getRealname()const;
+		bool&			getConnexionPassword();
+		void			setConnexionPassword(bool boolean);
 		
 		void			printClient()const;
 		int				is_valid()const;

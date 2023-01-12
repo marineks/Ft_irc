@@ -189,16 +189,16 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 		{
 			cmd_struct cmd_infos;
 			parseCommand(cmds[i], cmd_infos);
-			pass(this, client_fd, cmd_infos);
+			if (pass(this, client_fd, cmd_infos) == SUCCESS)
+				it->second.setConnexionPassword(true);
+			else
+				it->second.setConnexionPassword(false);
 		}
 	}
 	if (it->second.is_valid() == SUCCESS)
 		send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
 	else
-	{
-		std::cout << RED << "je suis laaaa" << RESET << std::endl;
 		throw Server::InvalidClientException();
-	}
 }
 
 static void splitMessage(std::vector<std::string> &cmds, std::string msg)
@@ -239,7 +239,6 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		"KICK",
 		"KILL",
 		"LIST",
-		"MDP",
 		"MODE",
 		"NICK",
 		"PART",
@@ -273,15 +272,14 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	// case 3: kick(this, cmd_infos); break;
 	// case 4: kill(cmd_infos); break;
 	case 5: list(this, client_fd, cmd_infos); break;
-	// case 6: mdp(cmd_infos); break;
-	// case 7: mode(cmd_infos); break;
-	case 8: nick(this, client_fd, cmd_infos); break;
-	// case 9: part(cmd_infos); break;
-	case 10: ping(client_fd, cmd_infos); break;
-	// case 11: oper(this, cmd_infos); break;
-	// case 12: quit(this, cmd_infos); break;
+	// case 6: mode(cmd_infos); break;
+	case 7: nick(this, client_fd, cmd_infos); break;
+	// case 8: part(cmd_infos); break;
+	case 9: ping(client_fd, cmd_infos); break;
+	// case 10: oper(this, cmd_infos); break;
+	// case 11: quit(this, cmd_infos); break;
 	// case 12: privmsg(cmd_infos); break;
-	case 14: topic(this, client_fd, cmd_infos); break;
+	case 13: topic(this, client_fd, cmd_infos); break;
 	// case 14: user(cmd_infos); break;
 	// case 15: who(cmd_infos); break;
 	// case 16: whois(cmd_infos); break;

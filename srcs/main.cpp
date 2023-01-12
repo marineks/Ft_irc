@@ -6,13 +6,10 @@ int main (int argc, char **argv)
 	{
 		Server server(argv[1], argv[2]);
 
-		// char port[5] = "6667"; // Port was hardcoded for now
-
 		// The three following functions calls are just set up
 		server.setHints();
 		server.fillServinfo(argv[1]);
 		server.launchServer();
-		std::cout << "The Server password is : " << server.getPassword() << std::endl;
 		// Below, the main loop for server/client connection
 		try
 		{
