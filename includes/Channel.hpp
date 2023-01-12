@@ -24,7 +24,7 @@ class Channel
 		std::vector<std::string>&		getOperators() ;
 		std::vector<std::string>&		getBannedUsers() ;
 		std::map <std::string, Client>&	getClientList();
-		void							setTopic(std::string newTopic);
+		void							setTopic(std::string& newTopic);
 		bool							doesClientExist(std::string &clientName);
 		/* Manage client in Channel */
 		void							addClientToChannel(Client &client);
@@ -40,6 +40,8 @@ class Channel
 		void							addToBanned(std::string &banned_name);
 		void							removeFromBanned(std::string &banned_name);
 		bool							isBanned(std::string &banned_name);
+		/* Channel attributes */
+		void							updateTopic(std::string &topic);
 };
 
 #endif

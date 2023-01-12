@@ -22,17 +22,32 @@ Channel::~Channel() {}
 */
 
 std::string&						Channel::getName() 			{ return (_name); }
-std::string&						Channel::getTopic() 		{ return (_topic); }
+std::string&						Channel::getTopic() 		{ 
+	std::cout << _topic << std::endl;
+	std::cout << "Wouihoo |" << _topic << "|" << std::endl;
+	return (_topic); 
+	}
 std::map <std::string, Client>&		Channel::getClientList()	{ return (_clientList); }
 std::vector<std::string>&			Channel::getBannedUsers()	{ return (_banned_users); }
 std::vector<std::string>&			Channel::getOperators() 	{ return (_operators); }
 
-void							Channel::setTopic(std::string newTopic)
+void							Channel::setTopic(std::string& newTopic)
 {
-	_topic = newTopic; 
+	_topic = newTopic;
+	// std::cout << "Woohoo " << _topic << std::endl;
 	return ;
 }
 
+
+
+void							Channel::updateTopic(std::string &topic)
+{
+	
+	this->setTopic(topic);
+	
+	std::cout << "The new topic is  " << BLUE << this->getTopic() << RESET << std::endl;
+
+}
 bool		Channel::doesClientExist(std::string &clientName)
 {	
 	if (_clientList.size() == 0)

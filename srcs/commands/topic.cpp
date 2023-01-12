@@ -50,7 +50,7 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	}
 	
 	// ETAPE 2 - RECUPERER LE CHANNEL GRACE AU CHANNEL NAME
-	std::map<std::string, Channel>			 channels = server->getChannels();
+	std::map<std::string, Channel>&			 channels = server->getChannels();
 	std::map<std::string, Channel>::iterator channel = channels.find(channel_name);
 	// // [!] Si channel n'existe pas, renvoyer une erreur
 	if (channel == channels.end())
@@ -68,21 +68,26 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 
 	// Gérer le topic
 	topic = findTopic(cmd_infos.message);
+	
 	if (topic.empty())
 	{
 		// afficher le topic
-		sendServerRpl(client_fd,  RPL_TOPIC(client_nickname, channel_name, topic));
-		std::cout << "The topic of this channel is " << topic << std::endl;
+		sendServerRpl(client_fd,  RPL_TOPIC(client_nickname, channel_name, channel->second.getTopic()));
+		std::cout << "The topic of this channel is " << channel->second.getTopic() << std::endl;
 	}
 	else if (topic == ":")
 	{
 		// erase le topic
 		topic.clear();
+		channel->second.updateTopic(topic);
 		sendServerRpl(client_fd,  RPL_NOTOPIC(client_nickname, channel_name));
 	}
 	else
 	{
 		// reattribuer le topic
+		// channel->second.updateTopic(topic);
+		
+
 		channel->second.setTopic(topic);
 		sendServerRpl(client_fd,  RPL_NEWTOPIC(client_nickname, channel_name, topic));
 	}
