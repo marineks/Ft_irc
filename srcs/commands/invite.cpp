@@ -14,7 +14,7 @@ static std::string	findChannel(std::string msg_to_parse);
  */
 void	invite(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
-	Client		client			= retrieveClient(server, client_fd);
+	Client&		client			= retrieveClient(server, client_fd);
 	std::string	client_nickname	= client.getNickname();
 	std::string channel_name	= findChannel(cmd_infos.message);
 	std::string invited_client	= findNickname(cmd_infos.message);

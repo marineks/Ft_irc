@@ -11,7 +11,6 @@
 int	parseCommand(std::string cmd_line, cmd_struct &cmd_infos)
 {
 	// COMMAND
-	std::cout << "PARSE CMd |" << cmd_line << "|" << std::endl;
 	for (std::string::size_type i = 0; i < cmd_line.size(); i++)
 	{
 		if (isupper(cmd_line[i]))

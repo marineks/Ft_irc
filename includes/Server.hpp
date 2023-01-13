@@ -19,7 +19,7 @@ class Server
 	
 	public:
 		// Constructor & destructor
-		// Server(std::string port, std::string password);
+		Server(std::string port, std::string password);
 		Server();
 		~Server();
 		// Accessors
@@ -36,7 +36,8 @@ class Server
 		// Manage Clients functions
 		void		addClient(int client_socket, std::vector<pollfd> &poll_fds);
 		void		delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it);
-		void		fillClients(std::map<const int, Client> &client_list, int client_fd, std::vector<std::string> cmds);
+		// void		fillClients(std::map<const int, Client> &client_list, int client_fd, std::vector<std::string> cmds);
+		void 		fillClients(std::map<const int, Client> &client_list, int client_fd, std::string cmd);
 		// Parsing & Commands functions
 		void		parseMessage(const int client_fd, std::string message);
 		void		execCommand(int const client_fd, std::string cmd_line);

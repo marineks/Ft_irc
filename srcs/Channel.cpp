@@ -27,10 +27,9 @@ std::map <std::string, Client>&		Channel::getClientList()	{ return (_clientList)
 std::vector<std::string>&			Channel::getBannedUsers()	{ return (_banned_users); }
 std::vector<std::string>&			Channel::getOperators() 	{ return (_operators); }
 
-void							Channel::setTopic(std::string newTopic)
+void		Channel::setTopic(std::string& newTopic)
 {
-	_topic = newTopic; 
-	return ;
+	_topic = newTopic;
 }
 
 bool		Channel::doesClientExist(std::string &clientName)

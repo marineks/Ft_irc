@@ -27,7 +27,7 @@ static std::string	getRplList(std::string client_nick, std::map<std::string, Cha
 void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
 	std::string channel_to_display	= findAnyChannel(cmd_infos.message);
-	Client		client 				= retrieveClient(server, client_fd);
+	Client&		client 				= retrieveClient(server, client_fd);
 	std::string client_nick 		= client.getNickname();
 	std::string	RPL_LISTSTART		= "321 " + client_nick + " Channel :Users Name\r\n";
 	std::string	RPL_LIST;

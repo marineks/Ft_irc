@@ -15,7 +15,7 @@ struct cmd_struct
 };
 
 int		parseCommand(std::string cmd_line, cmd_struct &cmd_infos);
-Client	retrieveClient(Server *server, int const client_fd);
+Client&	retrieveClient(Server *server, int const client_fd);
 std::string	findNickname(std::string msg_to_parse);
 // void	ban(Server server, cmd_struct cmd_infos);
 void	invite(Server *server, int const client_fd, cmd_struct cmd_infos);
