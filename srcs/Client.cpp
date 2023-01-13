@@ -26,7 +26,10 @@ std::string&	Client::getOldNickname()  	{ return (_old_nickname); }
 std::string 	Client::getUsername() const { return (_fullname); }
 std::string		Client::getRealname() const { return (_realname); }
 
-bool&			Client::getConnexionPassword() { return (_connexion_password); }
+bool&			Client::getConnexionPassword()	{ return (_connexion_password); }
+bool&			Client::isRegistrationDone() 	{ return (_registrationDone); }
+bool&			Client::isWelcomeSent()			{ return (_welcomeSent); }
+bool&			Client::hasAllInfo() 			{ return (_hasAllInfo); }
 
 void	Client::setNickname(std::string const &nickname)
 {
@@ -54,6 +57,21 @@ void	Client::setConnexionPassword(bool boolean)
 	_connexion_password = boolean;
 }
 
+void	Client::setRegistrationDone(bool boolean)
+{
+	_registrationDone = boolean;
+}
+
+void	Client::setWelcomeSent(bool boolean)
+{
+	_welcomeSent = boolean;
+}
+
+void	Client::sethasAllInfo(bool boolean)
+{
+	_hasAllInfo = boolean;
+}
+
 /*
 *					##############################
 *					### OTHER MEMBER FUNCTIONS ###
@@ -78,7 +96,7 @@ int	Client::is_valid() const
 		return (FAILURE);
 	if (_realname.empty())
 		return (FAILURE);
-	// if (_connexion_password == false)
-	// 	return (FAILURE);
+	if (_connexion_password == false)
+		return (FAILURE);
 	return (SUCCESS);
 }
