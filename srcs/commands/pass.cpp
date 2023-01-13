@@ -27,8 +27,6 @@ int		pass(Server *server, int const client_fd, cmd_struct cmd_infos)
 
 	if (server->getPassword() == password)
 	{
-		std::string CORRECT_PWD = "Password is accepted.\r\n ";
-		sendServerRpl(client_fd, CORRECT_PWD);
 		return (SUCCESS);
 	}
 	else
