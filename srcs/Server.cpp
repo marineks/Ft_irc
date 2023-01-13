@@ -300,7 +300,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	}
 }
 
-void	Server::addChannel(std::string &channelName)
+void Server::addChannel(std::string &channelName)
 {
 	std::map<std::string, Channel>::iterator it = _channels.find(channelName);
 	if (it != _channels.end())
@@ -312,7 +312,7 @@ void	Server::addChannel(std::string &channelName)
 	_channels.insert(std::pair<std::string, Channel>(channel.getName(), channel));
 }
 
-void	Server::addClientToChannel(std::string &channelName, Client &client)
+void Server::addClientToChannel(std::string &channelName, Client &client)
 {
 	std::map<std::string, Channel>::iterator it;
 	it = _channels.find(channelName);

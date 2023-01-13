@@ -5,7 +5,8 @@
 *				###	CONSTRUCTOR & DESTRUCTOR ###
 *				################################
 */
-Client::Client(int client_fd) : _client_fd(client_fd), _connexion_password(false)
+Client::Client(int client_fd)
+: _client_fd(client_fd), _connexion_password(false), _registrationDone(false), _welcomeSent(false), _hasAllInfo(false)
 {
 	std::cout << YELLOW << "Client constructor for Client #" << client_fd << RESET << std::endl;
 }
