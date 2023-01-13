@@ -212,30 +212,21 @@ void Server::parseMessage(int const client_fd, std::string message)
 {
 	std::vector<std::string>				cmds;
 	std::map<const int, Client>::iterator	it = _clients.find(client_fd);
-	// static bool 							welcomeSent = false;
-	// static bool								hasAllInfo = false;
 
 	splitMessage(cmds, message);
 
-	if (it->second.isRegistrationDone() == true)
-		std::cout << PURPLE << "à ce moment la, il pense que le client est enregistré" << RESET << std::endl;
 	for (size_t i = 0; i != cmds.size(); i++)
 	{
 		if (it->second.isRegistrationDone() == false)
 		{
 			if (it->second.hasAllInfo() == false)
 			{
-				std::cout << "CMD de [i] : " << cmds[i] << std::endl;
 				fillClients(_clients, client_fd, cmds[i]);
 				if (cmds[i].find("USER") != std::string::npos)
-				{
-					std::cout << RED << "HAS ALL INFO je suis la" << RESET << std::endl;
 					it->second.hasAllInfo() = true;
-				}
 			}
 			if (it->second.hasAllInfo() == true && it->second.isWelcomeSent() == false)
 			{
-				std::cout << RED << "JE VAIS ENVOYER LE WELCOME BITCHES" << RESET << std::endl;
 				if (it->second.is_valid() == SUCCESS)
 				{
 					send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
