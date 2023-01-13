@@ -1,9 +1,9 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
-// Server::Server(std::string port, std::string password)
-Server::Server()
-: _servinfo(NULL), _server_socket_fd(0)// , _port(port), _password(password)
+// Server::Server()
+Server::Server(std::string port, std::string password)
+: _servinfo(NULL), _server_socket_fd(0) , _port(port), _password(password)
 {
 	std::cout << YELLOW << "Server Constructor" << RESET << std::endl;
 	memset(&_hints, 0, sizeof(_hints));
@@ -166,40 +166,32 @@ std::string	cleanStr(std::string str)
 	return (str);
 }
 
-void Server::fillClients(std::map<const int, Client> &client_list, int client_fd, std::vector<std::string> cmds)
+void Server::fillClients(std::map<const int, Client> &client_list, int client_fd, std::string cmd)
 {
-	std::map<const int, Client>::iterator it;
-
-	it = client_list.find(client_fd);
-	for (size_t i = 0; i != cmds.size(); i++)
+	std::map<const int, Client>::iterator it = client_list.find(client_fd);
+	
+	if (cmd.find("NICK") != std::string::npos)
 	{
-		if (cmds[i].find("NICK") != std::string::npos)
-		{
-			cmds[i].erase(cmds[i].find("NICK"), 4);
-			cmds[i] = cleanStr(cmds[i]);
-			it->second.setNickname(cmds[i]);
-		}
-		else if (cmds[i].find("USER") != std::string::npos)
-		{
-			cmds[i].erase(cmds[i].find("USER "), 5);
-			it->second.setUsername(cmds[i].substr(cmds[i].find(" "), cmds[i].find(" ") + 1));
-			it->second.setUsername(cleanStr(it->second.getUsername()));
-			it->second.setRealname(cmds[i].substr(cmds[i].find(":") + 1, cmds[i].length() - cmds[i].find(":") + 1));
-		}
-		// else if (cmds[i].find("PASS") != std::string::npos)
-		// {
-		// 	cmd_struct cmd_infos;
-		// 	parseCommand(cmds[i], cmd_infos);
-		// 	if (pass(this, client_fd, cmd_infos) == SUCCESS)
-		// 		it->second.setConnexionPassword(true);
-		// 	else
-		// 		it->second.setConnexionPassword(false);
-		// }
+		cmd.erase(cmd.find("NICK"), 4);
+		cmd = cleanStr(cmd);
+		it->second.setNickname(cmd);
 	}
-	if (it->second.is_valid() == SUCCESS)
-		send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
-	else
-		throw Server::InvalidClientException();
+	else if (cmd.find("USER") != std::string::npos)
+	{
+		cmd.erase(cmd.find("USER "), 5);
+		it->second.setUsername(cmd.substr(cmd.find(" "), cmd.find(" ") + 1));
+		it->second.setUsername(cleanStr(it->second.getUsername()));
+		it->second.setRealname(cmd.substr(cmd.find(":") + 1, cmd.length() - cmd.find(":") + 1));
+	}
+	else if (cmd.find("PASS") != std::string::npos)
+	{
+		cmd_struct cmd_infos;
+		parseCommand(cmd, cmd_infos);
+		if (pass(this, client_fd, cmd_infos) == SUCCESS)
+			it->second.setConnexionPassword(true);
+		else
+			it->second.setConnexionPassword(false);
+	}
 }
 
 static void splitMessage(std::vector<std::string> &cmds, std::string msg)
@@ -218,16 +210,43 @@ static void splitMessage(std::vector<std::string> &cmds, std::string msg)
 
 void Server::parseMessage(int const client_fd, std::string message)
 {
-	std::vector<std::string> cmds;
+	std::vector<std::string>				cmds;
+	std::map<const int, Client>::iterator	it = _clients.find(client_fd);
+	// static bool 							welcomeSent = false;
+	// static bool								hasAllInfo = false;
 
 	splitMessage(cmds, message);
-	if (cmds[0].find("CAP LS") != std::string::npos)
+
+	if (it->second.isRegistrationDone() == true)
+		std::cout << PURPLE << "à ce moment la, il pense que le client est enregistré" << RESET << std::endl;
+	for (size_t i = 0; i != cmds.size(); i++)
 	{
-		fillClients(_clients, client_fd, cmds);
-	}
-	else
-	{
-		for (size_t i = 0; i != cmds.size(); i++)
+		if (it->second.isRegistrationDone() == false)
+		{
+			if (it->second.hasAllInfo() == false)
+			{
+				std::cout << "CMD de [i] : " << cmds[i] << std::endl;
+				fillClients(_clients, client_fd, cmds[i]);
+				if (cmds[i].find("USER") != std::string::npos)
+				{
+					std::cout << RED << "HAS ALL INFO je suis la" << RESET << std::endl;
+					it->second.hasAllInfo() = true;
+				}
+			}
+			if (it->second.hasAllInfo() == true && it->second.isWelcomeSent() == false)
+			{
+				std::cout << RED << "JE VAIS ENVOYER LE WELCOME BITCHES" << RESET << std::endl;
+				if (it->second.is_valid() == SUCCESS)
+				{
+					send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
+					it->second.isWelcomeSent() = true;
+					it->second.isRegistrationDone() = true;
+				}		
+				else
+					throw Server::InvalidClientException();
+			}
+		}
+		else
 			execCommand(client_fd, cmds[i]);
 	}
 }

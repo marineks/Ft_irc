@@ -12,6 +12,9 @@ class Client
 		std::string		_fullname;
 		std::string		_realname;
 		bool			_connexion_password;
+		bool			_registrationDone;
+		bool			_welcomeSent;
+		bool			_hasAllInfo;
 	
 	public:
 		Client(int client_fd);
@@ -28,6 +31,12 @@ class Client
 		std::string		getRealname()const;
 		bool&			getConnexionPassword();
 		void			setConnexionPassword(bool boolean);
+		bool&			isRegistrationDone();
+		void			setRegistrationDone(bool boolean);
+		bool&			isWelcomeSent();
+		void			setWelcomeSent(bool boolean);
+		bool&			hasAllInfo();
+		void			sethasAllInfo(bool boolean);
 		
 		void			printClient()const;
 		int				is_valid()const;
