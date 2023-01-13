@@ -41,9 +41,9 @@ static bool	isAlreadyUsed(Server *server, std::string new_nickname);
 void	nick(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
 	std::string nickname	= retrieveNickname(cmd_infos.message);
-	Client		client		= retrieveClient(server, client_fd);
+	Client&		client		= retrieveClient(server, client_fd);
 
-	if (nickname.empty()) {
+	if (nickname.empty()) {	
 		sendServerRpl(client_fd, ERR_NONICKNAMEGIVEN(client.getNickname()));
 	} 
 	else if (containsInvalidCharacters(nickname)) {
