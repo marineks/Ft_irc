@@ -273,7 +273,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	// case 3: kick(this, cmd_infos); break;
 	// case 4: kill(cmd_infos); break;
 	case 5: list(this, client_fd, cmd_infos); break;
-	// case 6: mode(cmd_infos); break;
+	case 6: mode(this, client_fd, cmd_infos); break;
 	case 7: nick(this, client_fd, cmd_infos); break;
 	// case 8: part(cmd_infos); break;
 	case 9: ping(client_fd, cmd_infos); break;
