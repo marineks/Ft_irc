@@ -3,7 +3,7 @@
 
 # include "Irc.hpp"
 # include "Server.hpp"
-# define VALID_LEN 17
+# define VALID_LEN 15
 
 class Server;
 
@@ -22,6 +22,7 @@ void	invite(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	join(Server *server, int const client_fd, cmd_struct cmd_infos);
 // void	kick(Server server, cmd_struct cmd_infos);
 void	list(Server *server, int const client_fd, cmd_struct cmd_infos);
+void	names(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	nick(Server *server, int const client_fd, cmd_struct cmd_infos);
 // void	oper(Server server, cmd_struct cmd_infos);
 int		pass(Server *server, int const client_fd, cmd_struct cmd_infos);
