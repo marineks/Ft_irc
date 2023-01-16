@@ -110,17 +110,17 @@ void Server::addClient(int client_socket, std::vector<pollfd> &poll_fds)
 	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
 }
 
-void Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it)
+void Server::delClient(std::vector<pollfd> &poll_fds, int current_fd)
 {
 	std::cout << "je suis dans le del\n";
-	std::cout << "Deconnection of client : " << it->fd << std::endl;
-	int key = it->fd;
+	std::cout << "Deconnection of client : " << current_fd << std::endl;
+	int key = current_fd;
 	std::vector<pollfd>::iterator iterator;
 	for (iterator = poll_fds.begin(); iterator != poll_fds.end(); iterator++)
 	{
-		if (iterator->fd == it->fd)
+		if (iterator->fd == current_fd)
 		{
-			close(it->fd);
+			close(current_fd);
 			poll_fds.erase(iterator);
 			_clients.erase(key);
 			break;

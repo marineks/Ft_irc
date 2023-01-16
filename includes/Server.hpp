@@ -35,8 +35,7 @@ class Server
 		int			manageServerLoop();
 		// Manage Clients functions
 		void		addClient(int client_socket, std::vector<pollfd> &poll_fds);
-		void		delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it);
-		// void		fillClients(std::map<const int, Client> &client_list, int client_fd, std::vector<std::string> cmds);
+		void 		delClient(std::vector<pollfd> &poll_fds, int current_fd);
 		void 		fillClients(std::map<const int, Client> &client_list, int client_fd, std::string cmd);
 		// Parsing & Commands functions
 		void		parseMessage(const int client_fd, std::string message);
