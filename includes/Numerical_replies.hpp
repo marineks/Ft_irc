@@ -13,7 +13,7 @@ void	sendServerRpl(int const client_fd, std::string reply);
 // JOIN
 # define RPL_JOIN(username, nick, channel) (":" + nick + "!" + username + "@localhost JOIN " +  channel + "\r\n")
 # define ERR_BANNEDFROMCHAN(client, channel) ("474 " + client + " " + channel + " :Cannot join channel (+b)")
-
+# define ERR_BADCHANNELKEY(client, channel) ("475 " + client + " " + channel + " :Cannot join channel (+k)")
 // NICK
 # define ERR_NONICKNAMEGIVEN(client) ("431 " + client + " :There is no nickname.\r\n")
 # define ERR_ERRONEUSNICKNAME(client, nick) ("432 " + client + " " + nick + " :Erroneus nickname\r\n")

@@ -146,18 +146,18 @@ int Server::manageServerLoop()
 				it++;
 		}
 		poll_fds.insert(poll_fds.end(), new_pollfds.begin(), new_pollfds.end()); // Add the range of NEW_pollfds in poll_fds (helps recalculating poll_fds.end() in the for loop)
-		std::cout << "j'ai insert\n"
-				  << std::endl;
+		// std::cout << "j'ai insert\n"
+		// 		  << std::endl;
 
-		// print list of our client
-		std::cout << "Map size : " << _clients.size() << std::endl;
-		std::cout << "print list of our client" << std::endl;
-		std::map<const int, Client>::iterator it_map;
-		for (it_map = _clients.begin(); it_map != _clients.end(); it_map++)
-		{
-			std::cout << "Key : " << it_map->first << std::endl;
-			it_map->second.printClient();
-		}
+		// // print list of our client
+		// std::cout << "Map size : " << _clients.size() << std::endl;
+		// std::cout << "print list of our client" << std::endl;
+		// std::map<const int, Client>::iterator it_map;
+		// for (it_map = _clients.begin(); it_map != _clients.end(); it_map++)
+		// {
+		// 	std::cout << "Key : " << it_map->first << std::endl;
+		// 	it_map->second.printClient();
+		// }
 	}
 	return (SUCCESS);
 }
