@@ -10,6 +10,10 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define ERR_USERONCHANNEL(client, nick, channel) ("443 " + client + " " + nick + " " + channel + " :Is already on channel\r\n")
 # define RPL_INVITING(client, nick, channel) ("341 " + client + " " + nick + " " + channel + " :Is invited to a channel!\r\n")
 
+// JOIN
+# define RPL_JOIN(username, nick, channel) ((":" + nick + "!" + username + "@localhost JOIN " +  channel + "\r\n"))
+
+
 // NICK
 # define ERR_NONICKNAMEGIVEN(client) ("431 " + client + " :There is no nickname.\r\n")
 # define ERR_ERRONEUSNICKNAME(client, nick) ("432 " + client + " " + nick + " :Erroneus nickname\r\n")
@@ -23,7 +27,7 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define RPL_PONG(token) ("PONG " + token + "\r\n")
 
 // TOPIC
-# define RPL_TOPIC(client, channel, topic) (" 332 " + client + " " + channel + " " + topic + "\r\n")
+# define RPL_TOPIC(client, channel, topic) (client + " 332 " + channel + " " + topic + "\r\n")
 # define RPL_NOTOPIC(client, channel) (" 331 " + client + " " + channel + ": The topic has been cleared.\r\n")
 # define RPL_NEWTOPIC(client, channel, topic) (client + " " + channel + " New topic is " + topic + "\r\n")
 
