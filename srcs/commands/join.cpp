@@ -65,6 +65,18 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 	} 
 	else {
 		// addClientToChannel(server, channelName, client);
+		// check le password
+		std::string password;
+		cmd_infos.message.erase(0, cmd_infos.message.find(' ') + 1);
+		password = cmd_infos.message.substr(cmd_infos.message.find(' ') + 1, cmd_infos.message.size() - 1);
+		std::cout << "password ? " << password << std::endl;
+		if ( it->second.getPassword().size() != 0)
+			std::cout << "password ? " << it->second.getPassword() << std::endl;
+		if ( it->second.getPassword().size() != 0 && password != it->second.getPassword())
+		{
+			std::cout << "Wrong password sorray!\n";
+			return ;
+		}
 		server->addClientToChannel(channelName, client);
 		it_chan->second.addFirstOperator(client.getNickname()); // FIXME: pourquoi le rajouter en oper par défaut au channel ?
 		printChannel(server, channelName);

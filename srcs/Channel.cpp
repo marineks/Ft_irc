@@ -6,11 +6,12 @@
 *				################################
 */
 
-Channel::Channel(std::string const &channelName): _name(channelName) 
+Channel::Channel(std::string const &channelName): _name(channelName), _limit(-1), _password("")
 {
 	_banned_users.clear();
 	_clientList.clear();
 	_topic.clear();
+	// _password.clear();
 }
 
 Channel::~Channel() {}
@@ -26,11 +27,12 @@ std::string&						Channel::getTopic() 		{ return (_topic); }
 std::map <std::string, Client>&		Channel::getClientList()	{ return (_clientList); }
 std::vector<std::string>&			Channel::getBannedUsers()	{ return (_banned_users); }
 std::vector<std::string>&			Channel::getOperators() 	{ return (_operators); }
+int									Channel::getLimit()			{ return (_limit);}
+std::string&							Channel::getPassword()		{ return (_password);}
 
-void		Channel::setTopic(std::string& newTopic)
-{
-	_topic = newTopic;
-}
+void		Channel::setPassword(std::string &password) { _password = password;}
+void		Channel::setLimit(int &value) { _limit = value;}
+void		Channel::setTopic(std::string& newTopic){ _topic = newTopic;}
 
 bool		Channel::doesClientExist(std::string &clientName)
 {	
@@ -67,7 +69,10 @@ void	Channel::removeClientFromChannel(std::string &clientName)
 {
 	std::map <std::string, Client>::iterator it = this->_clientList.find(clientName);
 	if (it != _clientList.end())
+	{
 		this->_clientList.erase(it);
+		std::cout << clientName << " has been erased from client list\n";
+	}
 	
 	// This function checks if the ClientName is present in the Operator list
 	// and if so, deletes it.
@@ -80,9 +85,15 @@ void	Channel::removeClientFromChannel(std::string &clientName)
 *				################################
 */
 
-void	Channel::addClientToChannel(Client &client)
+int	Channel::addClientToChannel(Client &client)
 {
+	if ((int)_clientList.size() == _limit)
+	{
+		std::cout << "Channel reached its maximum capacity\n";
+		return (1);
+	}
 	_clientList.insert(std::pair<std::string, Client>(client.getNickname(), client));
+	return (0);
 }
 
 void	Channel::addToBanned(std::string &banned_name)

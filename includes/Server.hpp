@@ -42,7 +42,8 @@ class Server
 		void		parseMessage(const int client_fd, std::string message);
 		void		execCommand(int const client_fd, std::string cmd_line);
 		// Display functions
-		void		printChannel(std::string &channelName);
+		void		printClientList();
+		void		printChannels();
 		void		printOper(std::string &channelName);
 		// Custom exceptions
 		class InvalidClientException : public std::exception {
@@ -51,7 +52,7 @@ class Server
 		};
 		void	addChannel(std::string &channelName);
 		void	addClientToChannel(std::string &channelName, Client &client);
-
-};
+		void	banClientFromChannel(std::string &channelName, std::string client_nickname, std::string operator_nickname);
+	};
 
 #endif

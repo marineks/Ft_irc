@@ -288,7 +288,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	// case 8: part(cmd_infos); break;
 	case 9: ping(client_fd, cmd_infos); break;
 	// case 10: oper(this, cmd_infos); break;
-  // case 11: privmsg(cmd_infos); break;
+//   case 11: privmsg(cmd_infos); break;
 	// case 12: quit(this, cmd_infos); break;
 	case 13: topic(this, client_fd, cmd_infos); break;
 	// case 14: user(cmd_infos); break;
@@ -297,6 +297,29 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	// case 17: whowas(cmd_infos); break;
 	default:
 		std::cout << PURPLE << "This command is not supported by our services." << RESET << std::endl;
+	}
+}
+
+void	Server::printClientList()
+{
+	std::map<const int, Client>::iterator it;
+	std::map<const int, Client>::iterator end;
+	it = _clients.begin();
+	end = _clients.end();
+	std::cout << "Client list :\n";
+	for (; it != end; it++)
+		std::cout << "fd = " << it->first << " Nickname = " << it->second.getNickname() << std::endl;
+}
+
+void	Server::printChannels()
+{
+	std::map<std::string, Channel>::iterator it = _channels.begin();
+	std::map<std::string, Channel>::iterator end = _channels.end();
+	int i = 0;
+	for (; it != end; it++)
+	{
+		std::cout << "Channel #" << i << " " << it->first << "|" << std::endl;
+		i++;
 	}
 }
 
@@ -319,9 +342,29 @@ void	Server::addClientToChannel(std::string &channelName, Client &client)
 	std::string client_nickname = client.getNickname();
 	if (it->second.doesClientExist(client_nickname) == false)
 	{
-		it->second.addClientToChannel(client);
-		std::cout << "Client successfully joined the channel" << channelName << "!" << std::endl;
+		if (it->second.addClientToChannel(client) == SUCCESS)
+			std::cout << "Client successfully joined the channel" << channelName << "!" << std::endl;
 	}
 	else 
 		std::cout << YELLOW << client.getNickname() << "already here\n" << RESET;
+}
+
+void	Server::banClientFromChannel(std::string &channelName, std::string client_nickname, std::string operator_nickname)
+{
+	std::map<std::string, Channel>::iterator it;
+	it = _channels.find(channelName);
+	if (it == _channels.end())
+	{
+		std::cout << "Channel not found\n";
+		return ;
+	}
+	std::cout << it->first << std::endl;
+	if (it->second.doesClientExist(client_nickname) == true)
+	{
+		it->second.removeClientFromChannel(client_nickname);
+		it->second.addToBanned(client_nickname);
+		std::cout << client_nickname << " has been banned from " << channelName << " by " << operator_nickname <<std::endl; 
+	}
+	else 
+		std::cout << YELLOW << client_nickname << " already here\n" << RESET;
 }

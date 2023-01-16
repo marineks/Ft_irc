@@ -14,6 +14,8 @@ class Channel
 		std::string 					_name;
 		std::string						_operatorPassword;
 		std::string						_topic;
+		int								_limit;
+		std::string						_password;
 	public:
 		Channel(std::string const &name);
 		~Channel();
@@ -24,10 +26,15 @@ class Channel
 		std::vector<std::string>&		getOperators() ;
 		std::vector<std::string>&		getBannedUsers() ;
 		std::map <std::string, Client>&	getClientList();
+		int								getLimit();
+		std::string&					getPassword();
+
+		void							setPassword(std::string &password);
+		void							setLimit(int &value);
 		void							setTopic(std::string& newTopic);
 		bool							doesClientExist(std::string &clientName);
 		/* Manage client in Channel */
-		void							addClientToChannel(Client &client);
+		int								addClientToChannel(Client &client);
 		void							printClientList();
 		void							removeClientFromChannel(std::string &clientName);
 		/* Operators */

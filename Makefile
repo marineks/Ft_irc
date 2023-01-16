@@ -1,9 +1,12 @@
 NAME		= ircserv
 
 SRCS		= main.cpp Client.cpp ManageServer.cpp Server.cpp parsing.cpp Channel.cpp utils.cpp \
+				commands/ban.cpp 	\
 				commands/join.cpp 	\
 				commands/ping.cpp 	\
 				commands/topic.cpp	\
+				commands/passwordChannel.cpp \
+				commands/limit.cpp	\
 				commands/list.cpp 	\
 				commands/mode.cpp 	\
 				commands/invite.cpp	\

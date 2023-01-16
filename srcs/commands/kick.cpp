@@ -26,7 +26,7 @@
  * @param server
  * @param cmd_infos Structure w/ prefix, command name and message
  */
-void	kick(Server server, cmd_struct cmd_infos)
+void	kick(Server server, std::string datas[4])
 {
 	std::string operator_name;
 	std::string channel_name;
