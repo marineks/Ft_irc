@@ -168,7 +168,7 @@ std::string	retrieveKey(std::string msg_to_parse)
 		msg_to_parse.erase(0, 1); // Expected output : |#f,#bar fubar_75,foobar|
 	
 	int	begin_pos = msg_to_parse.find(" ") + 1; // Expected: begin à |fubar_75,foobar|
-	while (msg_to_parse[begin_pos] && msg_to_parse[begin_pos] != ',')
+	while (msg_to_parse[begin_pos] || msg_to_parse[begin_pos] != ',')
 	{
 		key += msg_to_parse[begin_pos];
 		begin_pos++;
