@@ -3,6 +3,10 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
+static bool			containsAtLeastOneAlphaChar(std::string str);
+static std::string	getChannelName(std::string msg_to_parse);
+static std::string	getSymbol(Channel &channel);
+static std::string	getListOfMembers(Channel &channel);
 /**
  * @brief The NAMES command is used to view the nicknames joined to a channel.
  *  If the channel name is invalid or the channel does not exist, one RPL_ENDOFNAMES 
@@ -22,5 +26,61 @@
  */
 void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
+	Client										client = retrieveClient(server, client_fd);
+	std::string									channel_to_name;
+	std::string									symbol;
+	std::string									list_of_members;
+
+	while (containsAtLeastOneAlphaChar(cmd_infos.message) == true)
+	{
+		// find the channel to display names of
+		channel_to_name.clear();
+		channel_to_name = getChannelName(cmd_infos.message);
+		cmd_infos.message.erase(cmd_infos.message.find(channel_to_name), channel_to_name.length()); 
+
+		// Error handling (Inexistent channel, Secret Mode on...)
+		std::map<std::string, Channel>				channels = server->getChannels();
+		std::map<std::string, Channel>::iterator	channel = channels.find(channel_to_name);
+		if (channel == channels.end()) // + "|| isSecretModeOn(channel_name) == true  && doesClientExist() == false"
+			sendServerRpl(client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_name));
+
+		// find the symbol of said channel (public, secret, or private)
+		symbol.clear();
+		symbol = getSymbol(&channel->second);
+
+		// get as a string the list of all members (by nickname)
+		list_of_members.clear();
+		list_of_members = getListOfMembers(&channel->second);
+
+		sendServerRpl(client_fd, RPL_NAMREPLY(client.getNickname(), symbol, channel_to_name, list_of_members));
+		sendServerRpl(client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_name));
+	}
+	
+}
+
+static bool		containsAtLeastOneAlphaChar(std::string str)
+{
+	for (size_t i = 0; i < str.size(); i++)
+	{
+		if (isalpha(str[i]) || str[i] == '_' || str[i] == '-' || isdigit(str[i]))
+			return (true);
+	}
+	return (false);
+}
+
+static std::string getChannelName(std::string msg_to_parse)
+{
 
 }
+
+static std::string	getSymbol(Channel &channel)
+{
+	return 
+}
+
+
+static std::string	getListOfMembers(Channel &channel)
+{
+	return 
+}
+
