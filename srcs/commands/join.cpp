@@ -42,8 +42,11 @@ void			sendChanInfos(Channel &channel, std::string channel_name, Client &client)
  */
 void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
-	std::string channel_name;
+	Client		client 	= retrieveClient(server, client_fd);
+	std::string	channel_name;
 
+	if (containsAtLeastOneAlphaChar(cmd_infos.message) == false)
+		sendServerRpl(client_fd, ERR_NEEDMOREPARAMS(client.getNickname(), cmd_infos.name));
 	while (containsAtLeastOneAlphaChar(cmd_infos.message) == true)
 	{
 		channel_name.clear();
@@ -52,9 +55,7 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 		// erase de la string le channel = "#foo,#bar" devient "#,#bar"
 		cmd_infos.message.erase(cmd_infos.message.find(channel_name), channel_name.length()); 
 		
-		// Récupérer le Client client grace au client fd
-		Client client = retrieveClient(server, client_fd);
-
+		
 		// Récupérer le bon channel grâce au channel name
 		std::map<std::string, Channel>&			 channels 	= server->getChannels();
 		std::map<std::string, Channel>::iterator it			= channels.find(channel_name);
@@ -65,7 +66,7 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 		std::string client_nickname = client.getNickname();
 		std::map<std::string, Channel>::iterator it_chan = server->getChannels().find(channel_name);
 		if (it_chan->second.isBanned(client_nickname) == true) {
-			std::cout << client.getNickname() << " is banned from " << channel_name << std::endl; 
+			sendServerRpl(client_fd, ERR_BANNEDFROMCHAN(client_nickname, channel_name));
 			return ;
 		} 
 		else {
@@ -97,7 +98,11 @@ void		sendChanInfos(Channel &channel, std::string channel_name, Client &client)
  	
 	sendServerRpl(client_fd, RPL_JOIN(username, nick, channel_name));
 	if (channel.getTopic().empty() == false)
+	{
 		sendServerRpl(client_fd, RPL_TOPIC(client_id, channel_name, channel.getTopic()));
+		sendServerRpl(client_fd, RPL_DISPLAYTOPIC(client_id, channel_name));
+	}
+		
 
 	// TODO: DES QUE NAMES EST FAIT / A list of users currently joined to the channel (with one or more RPL_NAMREPLY (353) 
 	// numerics followed by a single RPL_ENDOFNAMES (366) numeric).
