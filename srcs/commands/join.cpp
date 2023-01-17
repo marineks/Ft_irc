@@ -1,5 +1,6 @@
 #include "Irc.hpp"
 #include "Channel.hpp"
+#include "Server.hpp"
 #include "Commands.hpp"
 
 bool			containsAtLeastOneAlphaChar(std::string str);
@@ -94,11 +95,14 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 	
 }
 
-// If a client’s JOIN command to the server is successful, the server MUST send, in this order:
-// A JOIN message with the client as the message <source> and the channel they have 
-// joined as the first parameter of the message.
-// The channel’s topic (with RPL_TOPIC (332), 
-// and no message if the channel does not have a topic.
+/**
+ * @brief If a client’s JOIN command to the server is successful, the server MUST send, in this order:
+ * 
+ * 	1) A JOIN message
+ * 	2) The channel's TOPIC if there is one (RPL_TOPIC)
+ * 	3) The NAMES of the users in this channel
+ *  
+ */
 void		sendChanInfos(Channel &channel, std::string channel_name, Client &client)
 {
 	int			client_fd	= client.getClientFd();
@@ -112,14 +116,11 @@ void		sendChanInfos(Channel &channel, std::string channel_name, Client &client)
 		sendServerRpl(client_fd, RPL_TOPIC(client_id, channel_name, channel.getTopic()));
 		sendServerRpl(client_fd, RPL_DISPLAYTOPIC(client_id, channel_name));
 	}
-		
-
-	// TODO: DES QUE NAMES EST FAIT
-	// A list of users currently joined to the channel (with one or more RPL_NAMREPLY (353) 
-	// numerics followed by a single RPL_ENDOFNAMES (366) numeric).
-	// These RPL_NAMREPLY messages sent by the server MUST include the requesting client 
-	// that has just joined the channel.
-
+	
+	std::string	list_of_members = getListOfMembers(channel);
+	std::string symbol			= "=";
+	sendServerRpl(client_fd, RPL_NAMREPLY(username, symbol, channel_name, list_of_members));
+	sendServerRpl(client_fd, RPL_ENDOFNAMES(username, channel_name));
 }
 
 bool		containsAtLeastOneAlphaChar(std::string str)

@@ -18,3 +18,23 @@ Client&	retrieveClient(Server *server, int const client_fd)
 	Client &client = it_client->second;
 	return (client);
 }
+
+std::string	getListOfMembers(Channel &channel)
+{
+	std::map<std::string, Client>&			client_list	= channel.getClientList();
+	std::map<std::string, Client>::iterator	it			= client_list.begin();
+	std::string								nick;
+	std::string								members_list;
+
+	while (it != client_list.end())
+	{
+		nick.clear();
+		nick = it->second.getNickname();
+		members_list += nick;
+		members_list += " ";
+		it++;
+	}
+	if (members_list[members_list.size() - 1] == ' ')
+		members_list.erase(members_list.end()-1);
+	return (members_list);
+}
