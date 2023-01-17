@@ -251,6 +251,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		"KILL",
 		"LIST",
 		"MODE",
+		"NAMES",
 		"NICK",
 		"PART",
 		"PING",
@@ -259,9 +260,6 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		"QUIT",
 		"TOPIC",
 		"USER",
-		"WHO",
-		"WHOIS",
-		"WHOWAS"
 		};
 
 	cmd_struct cmd_infos;
@@ -283,18 +281,16 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	// case 3: kick(this, cmd_infos); break;
 	// case 4: kill(cmd_infos); break;
 	case 5: list(this, client_fd, cmd_infos); break;
-	// case 6: mode(cmd_infos); break;
-	case 7: nick(this, client_fd, cmd_infos); break;
-	// case 8: part(cmd_infos); break;
-	case 9: ping(client_fd, cmd_infos); break;
-	// case 10: oper(this, cmd_infos); break;
-  // case 11: privmsg(cmd_infos); break;
-	// case 12: quit(this, cmd_infos); break;
-	case 13: topic(this, client_fd, cmd_infos); break;
-	// case 14: user(cmd_infos); break;
-	// case 15: who(cmd_infos); break;
-	// case 16: whois(cmd_infos); break;
-	// case 17: whowas(cmd_infos); break;
+	// case 6: mode(this, client_fd, cmd_infos); break;
+	case 7: names(this, client_fd, cmd_infos); break;
+	case 8: nick(this, client_fd, cmd_infos); break;
+	// case 9: part(cmd_infos); break;
+	case 10: ping(client_fd, cmd_infos); break;
+	// case 11: oper(this, cmd_infos); break;
+  	// case 12: privmsg(cmd_infos); break;
+	// case 13: quit(this, cmd_infos); break;
+	case 14: topic(this, client_fd, cmd_infos); break;
+	// case 15: user(cmd_infos); break;
 	default:
 		std::cout << PURPLE << "This command is not supported by our services." << RESET << std::endl;
 	}
