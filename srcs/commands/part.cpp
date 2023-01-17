@@ -3,6 +3,8 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
+static std::string	getReason(std::string msg_to_parse);
+static bool			containsAtLeastOneAlphaChar(std::string str);
 /**
  * @brief The PART command removes the client from the given channel(s).
  * 
@@ -18,27 +20,62 @@
  *   ERR_NOTONCHANNEL (442)
  * 	
  * 	Example:
- * 	[IRSSI] /PART #test,#hey Dining
+ * 	[IRSSI] /PART #test,#hey :Dining
  * 	[SERVER] leaves both channels #test and #hey with the reason "Dining"
  * 	[SERVER to CLIENT]"@user_id PART #channel :Dining" (for EACH channel they leave)
  */
-void	part(Server *server, int const client_fd, cmd_struct cmd_infos)
+void				part(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
+	Client		client		= retrieveClient(server, client_fd);
+	std::string nick		= client.getNickname();
+	std::string	channel;
 
-	// find reason if there is one
-	// erase reason from msg
+	std::string reason = getReason(cmd_infos.message);
+	cmd_infos.message.erase(cmd_infos.message.find(reason), reason.length()); // #chan reason" becomes "#chan "
 
-	// tout mettre dans la meme boucle que join
+	while (containsAtLeastOneAlphaChar(cmd_infos.message) == true)
+	{
+		channel.clear();
+		channel = getChannelName(cmd_infos.message);
+		cmd_infos.message.erase(cmd_infos.message.find(channel), channel.length()); 
 
-		// find channel
-		// erase channel from msg
+		std::map<std::string, Channel>&			 channels 	= server->getChannels();
+		std::map<std::string, Channel>::iterator it			= channels.find(channel);
+		if (it == channels.end()) // a) if chan does not exist
+		{
+			sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(nick, channel));
+			continue ;
+		}
+		else if (it != channels.end() \
+				&& it->second.doesClientExist(nick) == false) // b) if chan exists and client not in it
+		{
+			sendServerRpl(client_fd, ERR_NOTONCHANNEL(nick, channel));
+			continue ;
+		}
+		else // c) if successful command
+		{
+			sendServerRpl(client_fd, RPL_PART(client.getUsername(), nick, channel, reason));
+		}
+	}
+}
 
-		
-		// if chan exists and client not in it => ERR_NOTONCHANNEL
-		// the chan will be ignored
+static std::string	getReason(std::string msg_to_parse)
+{
+	std::string reason;
+	
+	reason.clear(); // by default let's say there is no reason = "#hey"
+	
+	if (msg_to_parse.find(":") != msg_to_parse.npos) // If there is a ":", there is a reason => "#hey :bonjour"
+		reason.append(msg_to_parse, msg_to_parse.find(":"), std::string::npos);
+	return (reason); // expected outcome : "bonjour"
+}
 
-		// if chan does not exist => ERR_NOSUCHCHANNEL
-			// chan will be ignored
-		
-		// si chan valide, on envoie un message PART au client
+static bool			containsAtLeastOneAlphaChar(std::string str)
+{
+	for (size_t i = 0; i < str.size(); i++)
+	{
+		if (isalpha(str[i]))
+			return (true);
+	}
+	return (false);
 }

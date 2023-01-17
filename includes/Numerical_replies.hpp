@@ -25,6 +25,9 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define ERR_NICKNAMEINUSE(client, nick) ("433 " + client + " " + nick + " :Nickname is already in use.\r\n")
 # define RPL_NICK(oclient, uclient, client) (":" + oclient + "!" + uclient + "@localhost NICK " +  client + "\r\n")
 
+// PART
+# define RPL_PART(username, nick, channel, reason) (":" + nick + "!" + username + "@localhost PART #" + channel + " " + (reason.empty() ? "." : reason ) + "\r\n")
+
 // PASS
 # define ERR_PASSWDMISMATCH(client) ("464 " + client + " :Password incorrect.\r\n")
 
