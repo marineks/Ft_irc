@@ -38,3 +38,19 @@ std::string	getListOfMembers(Channel &channel)
 		members_list.erase(members_list.end()-1);
 	return (members_list);
 }
+
+std::string	getChannelName(std::string msg_to_parse)
+{
+	std::cout << "The msg_to_parse looks like this : |" << msg_to_parse << "|" << std::endl;
+	// Expected output : | #foobar|
+	// Expected output 2 : | #foo,#bar fubar,foobar|
+
+	std::string channel_name;
+	size_t i = 0;
+	while (msg_to_parse[i] && (!isalpha(msg_to_parse[i]) && !isdigit(msg_to_parse[i]) && msg_to_parse[i] != '-' && msg_to_parse[i] != '_'))
+		i++;
+	while (msg_to_parse[i] && (isalpha(msg_to_parse[i]) || msg_to_parse[i] == '-' || msg_to_parse[i] == '_' || isdigit(msg_to_parse[i])))
+		channel_name += msg_to_parse[i++];
+	std::cout << "The channel name is : |" << channel_name << "|" << std::endl;
+	return (channel_name);
+}

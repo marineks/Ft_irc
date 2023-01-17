@@ -4,7 +4,6 @@
 #include "Commands.hpp"
 
 bool			containsAtLeastOneAlphaChar(std::string str);
-std::string		getChannelName(std::string msg_to_parse);
 std::string		retrieveKey(std::string msg_to_parse);
 void			addChannel(Server *server, std::string const &channelName);
 void			addClientToChannel(Server *server, std::string &channelName, Client &client);
@@ -138,22 +137,6 @@ bool		containsAtLeastOneAlphaChar(std::string str)
 			return (true);
 	}
 	return (false);
-}
-
-std::string	getChannelName(std::string msg_to_parse)
-{
-	std::cout << "The msg_to_parse looks like this : |" << msg_to_parse << "|" << std::endl;
-	// Expected output : | #foobar|
-	// Expected output 2 : | #foo,#bar fubar,foobar|
-
-	std::string channel_name;
-	size_t i = 0;
-	while (msg_to_parse[i] && (!isalpha(msg_to_parse[i]) && !isdigit(msg_to_parse[i]) && msg_to_parse[i] != '-' && msg_to_parse[i] != '_'))
-		i++;
-	while (msg_to_parse[i] && (isalpha(msg_to_parse[i]) || msg_to_parse[i] == '-' || msg_to_parse[i] == '_' || isdigit(msg_to_parse[i])))
-		channel_name += msg_to_parse[i++];
-	std::cout << "The channel name is : |" << channel_name << "|" << std::endl;
-	return (channel_name);
 }
 
 std::string	retrieveKey(std::string msg_to_parse)
