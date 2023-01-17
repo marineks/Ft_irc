@@ -79,9 +79,9 @@ static std::string	findAnyChannel(std::string msg_to_parse)
 	else
 	{
 		size_t i = 0;
-		while (!isalpha(msg_to_parse[i]))
+		while (msg_to_parse[i] && (!isalpha(msg_to_parse[i]) && !isdigit(msg_to_parse[i]) && msg_to_parse[i] != '-' && msg_to_parse[i] != '_'))
 			i++;
-		while (isalpha(msg_to_parse[i]))
+		while (msg_to_parse[i] && (isalpha(msg_to_parse[i]) || msg_to_parse[i] == '-' || msg_to_parse[i] == '_' || isdigit(msg_to_parse[i])))
 			channel += msg_to_parse[i++];
 		return (channel);
 	}

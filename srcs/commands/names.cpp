@@ -41,8 +41,11 @@ void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 		std::map<std::string, Channel>				channels = server->getChannels();
 		std::map<std::string, Channel>::iterator	channel = channels.find(channel_to_name);
 		if (channel == channels.end()) // + "|| isSecretModeOn(channel_name) == true  && doesClientExist() == false"
+		{
 			sendServerRpl(client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
-
+			continue ;
+		}
+			
 		// find the symbol of said channel (public, secret, or private) //TODO : Dès que MODE est fait
 		// symbol.clear();
 		// symbol = getSymbol(&channel->second);
@@ -72,10 +75,9 @@ static std::string getChannelName(std::string msg_to_parse)
 	std::string	channel_name;
 	size_t		i = 0;
 
-	while (!isalpha(msg_to_parse[i]) && !isdigit(msg_to_parse[i]))
+	while (msg_to_parse[i] && (!isalpha(msg_to_parse[i]) && !isdigit(msg_to_parse[i]) && msg_to_parse[i] != '-' && msg_to_parse[i] != '_'))
 		i++;
-	// while (msg_to_parse[i] && (isalpha(msg_to_parse[i]) || msg_to_parse[i] == '-' || msg_to_parse[i] == '_' || isdigit(msg_to_parse[i])))
-	while (msg_to_parse[i] && isalpha(msg_to_parse[i]))
+	while (msg_to_parse[i] && (isalpha(msg_to_parse[i]) || msg_to_parse[i] == '-' || msg_to_parse[i] == '_' || isdigit(msg_to_parse[i])))
 	{
 		channel_name += msg_to_parse[i];
 		i++;

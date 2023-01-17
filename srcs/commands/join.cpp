@@ -58,7 +58,6 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 		// erase de la string le channel = "#foo,#bar" devient "#,#bar"
 		cmd_infos.message.erase(cmd_infos.message.find(channel_name), channel_name.length()); 
 		
-		
 		// Récupérer le bon channel grâce au channel name
 		std::map<std::string, Channel>&			 channels 	= server->getChannels();
 		std::map<std::string, Channel>::iterator it			= channels.find(channel_name);
@@ -149,9 +148,9 @@ std::string	getChannelName(std::string msg_to_parse)
 
 	std::string channel_name;
 	size_t i = 0;
-	while (!isalpha(msg_to_parse[i]))
+	while (msg_to_parse[i] && (!isalpha(msg_to_parse[i]) && !isdigit(msg_to_parse[i]) && msg_to_parse[i] != '-' && msg_to_parse[i] != '_'))
 		i++;
-	while (isalpha(msg_to_parse[i]) || msg_to_parse[i] == '-' || msg_to_parse[i] == '_') // as soon as there is a space or comma, it means the word is finished
+	while (msg_to_parse[i] && (isalpha(msg_to_parse[i]) || msg_to_parse[i] == '-' || msg_to_parse[i] == '_' || isdigit(msg_to_parse[i])))
 		channel_name += msg_to_parse[i++];
 	std::cout << "The channel name is : |" << channel_name << "|" << std::endl;
 	return (channel_name);
