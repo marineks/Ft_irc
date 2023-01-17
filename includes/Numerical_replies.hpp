@@ -10,6 +10,11 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define ERR_USERONCHANNEL(client, nick, channel) ("443 " + client + " " + nick + " " + channel + " :Is already on channel\r\n")
 # define RPL_INVITING(client, nick, channel) ("341 " + client + " " + nick + " " + channel + " :Is invited to a channel!\r\n")
 
+// JOIN
+# define RPL_JOIN(username, nick, channel) (":" + nick + "!" + username + "@localhost JOIN " +  channel + "\r\n")
+# define ERR_BANNEDFROMCHAN(client, channel) ("474 " + client + " " + channel + " :Cannot join channel (+b)")
+# define ERR_BADCHANNELKEY(client, channel) ("475 " + client + " " + channel + " :Cannot join channel (+k)")
+
 // NAMES
 # define RPL_NAMREPLY(client, symbol, channel, list_of_nicks) ("353 " + client + " " + symbol + " " + channel + " :" + list_of_nicks + ".\r\n")
 # define RPL_ENDOFNAMES(client, channel) ("366 " + client + " " + channel + " :End of /NAMES list\r\n")
@@ -27,10 +32,10 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define RPL_PONG(token) ("PONG " + token + "\r\n")
 
 // TOPIC
-# define RPL_TOPIC(client, channel, topic) (" 332 " + client + " " + channel + " " + topic + "\r\n")
-# define RPL_NOTOPIC(client, channel) (" 331 " + client + " " + channel + ": The topic has been cleared.\r\n")
+# define RPL_TOPIC(client, channel, topic) ("332 " + client + " #" + channel + " " + topic + "\r\n")
+# define RPL_NOTOPIC(client, channel) ("331 " + client + " " + channel + ": The topic has been cleared.\r\n")
 # define RPL_NEWTOPIC(client, channel, topic) (client + " " + channel + " New topic is " + topic + "\r\n")
-
+# define RPL_DISPLAYTOPIC(client_id, channel) (client_id + " TOPIC " +  channel + "\r\n")
 
 
 

@@ -72,6 +72,7 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	if (topic.empty())
 	{
 		// afficher le topic
+		// PREVOIR CAR OU CHAN A AFFICHER EST VIDE
 		sendServerRpl(client_fd,  RPL_TOPIC(client_nickname, channel_name, channel->second.getTopic()));
 		std::cout << "The topic of this channel is " << channel->second.getTopic() << std::endl;
 	}
@@ -86,7 +87,8 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	{
 		// reattribuer le topic
 		channel->second.setTopic(topic);
-		sendServerRpl(client_fd,  RPL_NEWTOPIC(client_nickname, channel_name, topic));
+		sendServerRpl(client_fd,  RPL_TOPIC(client_nickname, channel_name, topic));
+		// sendServerRpl(client_fd,  RPL_NEWTOPIC(client_nickname, channel_name, topic));
 	}
 }
 
