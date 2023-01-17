@@ -70,16 +70,17 @@ static bool		containsAtLeastOneAlphaChar(std::string str)
 
 static std::string getChannelName(std::string msg_to_parse)
 {
-	std::cout << "The msg_to_parse looks like this : |" << msg_to_parse << "|" << std::endl;
-	
-	std::string channel_name;
-	
-	size_t i = 0;
-	while (!isalpha(msg_to_parse[i]) || !isdigit(msg_to_parse[i]))
+	std::string	channel_name;
+	size_t		i = 0;
+
+	while (!isalpha(msg_to_parse[i]) && !isdigit(msg_to_parse[i]))
 		i++;
-	while (isalpha(msg_to_parse[i]) || msg_to_parse[i] == '-' || msg_to_parse[i] == '_' || isdigit(msg_to_parse[i]))
-		channel_name += msg_to_parse[i++];
-	std::cout << "The channel name is : |" << channel_name << "|" << std::endl;
+	// while (msg_to_parse[i] && (isalpha(msg_to_parse[i]) || msg_to_parse[i] == '-' || msg_to_parse[i] == '_' || isdigit(msg_to_parse[i])))
+	while (msg_to_parse[i] && isalpha(msg_to_parse[i]))
+	{
+		channel_name += msg_to_parse[i];
+		i++;
+	}
 	return (channel_name);
 }
 
@@ -104,10 +105,8 @@ static std::string	getListOfMembers(Channel &channel)
 		members_list += " ";
 		it++;
 	}
-	std::cout << "The members list is : |" << members_list << "|" << std::endl;
 	if (members_list[members_list.size() - 1] == ' ')
 		members_list.erase(members_list.end()-1);
-	std::cout << "[UPD] The members list is : |" << members_list << "|" << std::endl;
 	return (members_list);
 }
 
