@@ -8,7 +8,8 @@ SRCS		= main.cpp Client.cpp ManageServer.cpp Server.cpp parsing.cpp Channel.cpp 
 				commands/invite.cpp	\
 				commands/nick.cpp	\
 				commands/pass.cpp	\
-				commands/names.cpp
+				commands/names.cpp	\
+				commands/part.cpp
 
 DIR_SRCS	= srcs/
 
