@@ -5,7 +5,7 @@
 
 static bool			containsAtLeastOneAlphaChar(std::string str);
 static std::string	getChannelName(std::string msg_to_parse);
-static std::string	getSymbol(Channel &channel);
+// static std::string	getSymbol(Channel &channel);
 static std::string	getListOfMembers(Channel &channel);
 /**
  * @brief The NAMES command is used to view the nicknames joined to a channel.
@@ -26,10 +26,10 @@ static std::string	getListOfMembers(Channel &channel);
  */
 void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
-	Client										client = retrieveClient(server, client_fd);
-	std::string									channel_to_name;
-	std::string									symbol;
-	std::string									list_of_members;
+	Client			client				= retrieveClient(server, client_fd);
+	std::string		symbol				= "=";
+	std::string		channel_to_name;
+	std::string		list_of_members;
 
 	while (containsAtLeastOneAlphaChar(cmd_infos.message) == true)
 	{
@@ -42,18 +42,18 @@ void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 		std::map<std::string, Channel>				channels = server->getChannels();
 		std::map<std::string, Channel>::iterator	channel = channels.find(channel_to_name);
 		if (channel == channels.end()) // + "|| isSecretModeOn(channel_name) == true  && doesClientExist() == false"
-			sendServerRpl(client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_name));
+			sendServerRpl(client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
 
-		// find the symbol of said channel (public, secret, or private)
-		symbol.clear();
-		symbol = getSymbol(&channel->second);
+		// find the symbol of said channel (public, secret, or private) //TODO : Dès que MODE est fait
+		// symbol.clear();
+		// symbol = getSymbol(&channel->second);
 
 		// get as a string the list of all members (by nickname)
 		list_of_members.clear();
-		list_of_members = getListOfMembers(&channel->second);
+		list_of_members = getListOfMembers(channel->second);
 
 		sendServerRpl(client_fd, RPL_NAMREPLY(client.getNickname(), symbol, channel_to_name, list_of_members));
-		sendServerRpl(client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_name));
+		sendServerRpl(client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
 	}
 	
 }
@@ -70,17 +70,44 @@ static bool		containsAtLeastOneAlphaChar(std::string str)
 
 static std::string getChannelName(std::string msg_to_parse)
 {
-
+	std::cout << "The msg_to_parse looks like this : |" << msg_to_parse << "|" << std::endl;
+	
+	std::string channel_name;
+	
+	size_t i = 0;
+	while (!isalpha(msg_to_parse[i]) || !isdigit(msg_to_parse[i]))
+		i++;
+	while (isalpha(msg_to_parse[i]) || msg_to_parse[i] == '-' || msg_to_parse[i] == '_' || isdigit(msg_to_parse[i]))
+		channel_name += msg_to_parse[i++];
+	std::cout << "The channel name is : |" << channel_name << "|" << std::endl;
+	return (channel_name);
 }
 
-static std::string	getSymbol(Channel &channel)
-{
-	return 
-}
+// static std::string	getSymbol(Channel &channel)
+// {
+// 	return 
+// }
 
 
 static std::string	getListOfMembers(Channel &channel)
 {
-	return 
+	std::map<std::string, Client>&			client_list	= channel.getClientList();
+	std::map<std::string, Client>::iterator	it			= client_list.begin();
+	std::string								nick;
+	std::string								members_list;
+
+	while (it != client_list.end())
+	{
+		nick.clear();
+		nick = it->second.getNickname();
+		members_list += nick;
+		members_list += " ";
+		it++;
+	}
+	std::cout << "The members list is : |" << members_list << "|" << std::endl;
+	if (members_list[members_list.size() - 1] == ' ')
+		members_list.erase(members_list.end()-1);
+	std::cout << "[UPD] The members list is : |" << members_list << "|" << std::endl;
+	return (members_list);
 }
 
