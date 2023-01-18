@@ -175,7 +175,6 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 		cmd.erase(cmd.find("NICK"), 4);
 		cmd = cleanStr(cmd);
 		it->second.setNickname(cmd);
-		std::cout << "The username is |" << it->second.getNickname() << "|" << std::endl;
 		if (isAlreadyUsed(this, client_fd, it->second.getNickname()) == true)
 		{
 			sendServerRpl(client_fd, ERR_NICKNAMEINUSE(it->second.getNickname(), cmd));
