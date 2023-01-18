@@ -34,7 +34,7 @@ void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 	{
 		// find the channel to display names of
 		channel_to_name.clear();
-		channel_to_name = getChannelName(cmd_infos.message);
+		channel_to_name = getaChannelName(cmd_infos.message);
 		cmd_infos.message.erase(cmd_infos.message.find(channel_to_name), channel_to_name.length()); 
 
 		// Error handling (Inexistent channel, Secret Mode on...)

@@ -5,6 +5,8 @@
 
 static std::string	getReason(std::string msg_to_parse);
 static bool			containsAtLeastOneAlphaChar(std::string str);
+static void			broadcastToAllChannelMembers(Channel &channel, std::string reason);
+
 /**
  * @brief The PART command removes the client from the given channel(s).
  * 
@@ -22,7 +24,7 @@ static bool			containsAtLeastOneAlphaChar(std::string str);
  * 	Example:
  * 	[IRSSI] /PART #test,#hey :Dining
  * 	[SERVER] leaves both channels #test and #hey with the reason "Dining"
- * 	[SERVER to CLIENT]"@user_id PART #channel :Dining" (for EACH channel they leave)
+ * 	[SERVER to CLIENT]"@user_id PART #channel Dining" (for EACH channel they leave)
  */
 void				part(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
@@ -54,7 +56,9 @@ void				part(Server *server, int const client_fd, cmd_struct cmd_infos)
 		}
 		else // c) if successful command
 		{
+			it->second.getClientList().erase(nick);
 			sendServerRpl(client_fd, RPL_PART(client.getUsername(), nick, channel, reason));
+			broadcastToAllChannelMembers(it->second, reason);
 		}
 	}
 }
@@ -66,7 +70,7 @@ static std::string	getReason(std::string msg_to_parse)
 	reason.clear(); // by default let's say there is no reason = "#hey"
 	
 	if (msg_to_parse.find(":") != msg_to_parse.npos) // If there is a ":", there is a reason => "#hey :bonjour"
-		reason.append(msg_to_parse, msg_to_parse.find(":"), std::string::npos);
+		reason.append(msg_to_parse, msg_to_parse.find(":") + 1, std::string::npos);
 	return (reason); // expected outcome : "bonjour"
 }
 
@@ -78,4 +82,19 @@ static bool			containsAtLeastOneAlphaChar(std::string str)
 			return (true);
 	}
 	return (false);
+}
+
+static void			broadcastToAllChannelMembers(Channel &channel, std::string reason)
+{
+	std::map<std::string, Client>::iterator member = channel.getClientList().begin();
+	
+	while (member != channel.getClientList().end())
+	{
+		sendServerRpl(member->second.getClientFd(),	\
+			RPL_PART(member->second.getUsername(),		\
+					member->second.getNickname(),		\
+					channel.getName(),					\
+					reason));
+		member++;
+	}
 }
