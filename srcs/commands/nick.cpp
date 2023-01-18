@@ -5,7 +5,6 @@
 
 std::string	retrieveNickname(std::string msg_to_parse);
 static bool	containsInvalidCharacters(std::string nickname);
-static bool	isAlreadyUsed(Server *server, std::string new_nickname);
 
 /**
  * @brief The NICK command is used to give the client a nickname or 
@@ -49,7 +48,7 @@ void	nick(Server *server, int const client_fd, cmd_struct cmd_infos)
 	else if (containsInvalidCharacters(nickname)) {
 		sendServerRpl(client_fd, ERR_ERRONEUSNICKNAME(client.getNickname(), nickname));
 	} 
-	else if (isAlreadyUsed(server, nickname) == true) {
+	else if (isAlreadyUsed(server, client_fd, nickname) == true) {
 		sendServerRpl(client_fd, ERR_NICKNAMEINUSE(client.getNickname(), nickname));
 	} else {
 		
@@ -94,14 +93,15 @@ static bool	containsInvalidCharacters(std::string nickname)
 	return (false);			
 }
 
-static bool	isAlreadyUsed(Server *server, std::string new_nickname)
+bool	isAlreadyUsed(Server *server, int client_fd, std::string new_nickname)
 {
 	std::map<const int, Client>&			client_list	= server->getClients();
 	std::map<const int, Client>::iterator	client		= client_list.begin();
 
 	while (client != client_list.end())
 	{
-		if (client->second.getNickname() == new_nickname)
+		if (client->second.getClientFd() != client_fd \
+			&& client->second.getNickname() == new_nickname)
 			return (true);
 		client++;
 	}

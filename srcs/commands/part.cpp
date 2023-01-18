@@ -5,7 +5,8 @@
 
 static std::string	getReason(std::string msg_to_parse);
 static bool			containsAtLeastOneAlphaChar(std::string str);
-static void			broadcastToAllChannelMembers(Channel &channel, std::string reason);
+// static void			broadcastToAllChannelMembers(Channel &channel, std::string reason);
+static void			broadcastToAllChannelMembers(Channel &channel, std::string user, std::string nick, std::string reason);
 
 /**
  * @brief The PART command removes the client from the given channel(s).
@@ -58,7 +59,7 @@ void				part(Server *server, int const client_fd, cmd_struct cmd_infos)
 		{
 			it->second.getClientList().erase(nick);
 			sendServerRpl(client_fd, RPL_PART(client.getUsername(), nick, channel, reason));
-			broadcastToAllChannelMembers(it->second, reason);
+			broadcastToAllChannelMembers(it->second, client.getUsername(), nick, reason);
 		}
 	}
 }
@@ -84,17 +85,14 @@ static bool			containsAtLeastOneAlphaChar(std::string str)
 	return (false);
 }
 
-static void			broadcastToAllChannelMembers(Channel &channel, std::string reason)
+static void			broadcastToAllChannelMembers(Channel &channel, std::string user, std::string nick, std::string reason)
 {
 	std::map<std::string, Client>::iterator member = channel.getClientList().begin();
 	
 	while (member != channel.getClientList().end())
 	{
 		sendServerRpl(member->second.getClientFd(),	\
-			RPL_PART(member->second.getUsername(),		\
-					member->second.getNickname(),		\
-					channel.getName(),					\
-					reason));
+			RPL_PART(user, nick, channel.getName(), reason));
 		member++;
 	}
 }
