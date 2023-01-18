@@ -4,7 +4,7 @@
 #include "Commands.hpp"
 
 static bool			containsAtLeastOneAlphaChar(std::string str);
-static std::string	getChannelName(std::string msg_to_parse);
+static std::string	getaChannelName(std::string msg_to_parse);
 // static std::string	getSymbol(Channel &channel);
 /**
  * @brief The NAMES command is used to view the nicknames joined to a channel.
@@ -34,7 +34,7 @@ void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 	{
 		// find the channel to display names of
 		channel_to_name.clear();
-		channel_to_name = getChannelName(cmd_infos.message);
+		channel_to_name = getaChannelName(cmd_infos.message);
 		cmd_infos.message.erase(cmd_infos.message.find(channel_to_name), channel_to_name.length()); 
 
 		// Error handling (Inexistent channel, Secret Mode on...)
@@ -70,7 +70,7 @@ static bool		containsAtLeastOneAlphaChar(std::string str)
 	return (false);
 }
 
-static std::string getChannelName(std::string msg_to_parse)
+static std::string getaChannelName(std::string msg_to_parse)
 {
 	std::string	channel_name;
 	size_t		i = 0;

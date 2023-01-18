@@ -96,16 +96,14 @@ static bool	containsInvalidCharacters(std::string nickname)
 
 static bool	isAlreadyUsed(Server *server, std::string new_nickname)
 {
-	std::map<const int, Client>	client_list;
-	client_list = server->getClients();
+	std::map<const int, Client>&			client_list	= server->getClients();
+	std::map<const int, Client>::iterator	client		= client_list.begin();
 
-	std::map<const int, Client>::iterator	client;
-	client = client_list.begin();
-
-	for (client; client != client_list.end(); client++)
+	while (client != client_list.end())
 	{
 		if (client->second.getNickname() == new_nickname)
 			return (true);
+		client++;
 	}
 	return (false);
 }
