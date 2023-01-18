@@ -20,6 +20,7 @@ std::string	getListOfMembers(Channel &channel);
 std::string	getChannelName(std::string msg_to_parse);
 std::string	findNickname(std::string msg_to_parse);
 bool		isAlreadyUsed(Server *server, int client_fd, std::string new_nickname);
+std::string	getReason(std::string msg_to_parse);
 
 // #######################
 // ###### COMMANDS #######
