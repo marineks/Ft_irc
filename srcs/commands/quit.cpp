@@ -14,25 +14,7 @@
  * 
  * 	Source: https://modern.ircdocs.horse/#quit-message
  */
-void	quit(Server server, cmd_struct cmd_infos)
+void	quit(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
-	// TODO: coder le parsing du cmd.message pour arriver à channelName et clientName
-	std::string channelName;
-	std::string clientName;
-
-	// FIXME : je crois que QUIT n'a pas vraiment/que cet effet
-	// du coté du client ca quitte IRSSI, et du coté server, ca del le Client non?
-	std::map<std::string, Channel>			 channels = server.getChannels();
-	std::map<std::string, Channel>::iterator it;
-	it = channels.find(channelName);
-	if (it == channels.end())
-	{
-		std::cout << "Channel not found\n";
-		return ;
-	}
-	if (it->second.doesClientExist(clientName) == true)
-	{
-		it->second.removeClientFromChannel(clientName);
-		std::cout << clientName << " has now left " << channelName << std::endl; 
-	}
+	
 }
