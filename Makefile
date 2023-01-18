@@ -21,7 +21,7 @@ CXX			= c++
 
 DEP			= ${OBJS:%.o=%.d}
 
-CPPFLAGS	= -Wall -Wextra -Wunused -MMD -MP -g3 -std=c++98 -c -I includes/ 
+CPPFLAGS	= -Wall -Wextra -Werror -MMD -MP -g3 -std=c++98 -c -I includes/ 
 
 RM 			= rm -f
 
