@@ -23,7 +23,9 @@
     ERR_NOSUCHNICK (401) -OK
     ERR_NOSUCHSERVER (402)
     ERR_CANNOTSENDTOCHAN (404)
-    ERR_TOOMANYTARGETS (407)
+    ERR_TOOMANYTARGETS (407) 
+    // TODO ? Too many target, a checker si on accepte autte chose que le nick avec irssi
+    // TODO : Renvoyé à un client qui essaie d'envoyer un PRIVMSG/NOTICE utilisant le format de destination utilisateur@hôte pour lequel utilisateur@hôte a plusieurs occurrences.
     ERR_NORECIPIENT (411) -OK
     ERR_NOTEXTTOSEND (412) -OK
     ERR_NOTOPLEVEL (413)
@@ -77,34 +79,34 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
 	// std::cout << "prefix : " << cmd_infos.prefix << std::endl;
 	// std::cout << "cmd_name : " << cmd_infos.name << std::endl;
 	std::cout << YELLOW << "message : |" << cmd_infos.message << "|" << RESET << std::endl;
-   (void)client_fd;
+   
    std::map<const int, Client>	client_list = server->getClients();
+   std::map<std::string, Channel> channel_list = server->getChannels(); 
    std::map<const int, Client>::iterator it_client = client_list.find(client_fd); // trouver le client qui envoie
-   std::map<std::string, Channel> channel_list = server->getChannels();
 
-
+   // Parsing message 
    size_t      delimiter = cmd_infos.message.rfind(":");
    std::string target = cmd_infos.message.substr(1, (delimiter - 2)); // end before the space there is before the delimiter ':'
    std::string msg_to_send = cmd_infos.message.substr(delimiter);
-   
    std::cout << "\ntarget to send : |" << target << "|" << std::endl;
    std::cout << "Message to send : |" << msg_to_send << "|" << std::endl;
 
-   // if (target.empty()) // pas de destinataire
-      // send : 411 ERR_NORECIPIENT ":No recipient given (<commande>)"
-   // if (msg_to_send.empty())
-      // send : 412 ERR_NOTEXTTOSEND : ":No text to send" 
+   // Error syntaxe message
+   if (target.empty()) // pas de destinataire 
+      sendServerRpl(client_fd, ERR_NORECIPIENT(it_client->second.getNickname()));
+   if (msg_to_send.empty()) // pas de message
+      sendServerRpl(client_fd, ERR_NOTEXTTOSEND(it_client->second.getNickname()));
 
    // Channel case
    if (target[0] == '#')
    {
-      std::map<std::string, Channel>::iterator it;
-      it = channel_list.find(target.substr(1)); // skip the '#' character
+      std::map<std::string, Channel>::iterator it = channel_list.find(target.substr(1)); // skip the '#' character
       if (it == channel_list.end())
          sendServerRpl(client_fd, ERR_NOSUCHNICK(target));
       else
       {
          std::cout << "channel exist" << std::endl;
+         // TODO: check a faire avec les modes
          // checker si user membre du channel -> si oui : boucle for to send to every user in the channel
          // -> si non : checker si le mode du channel permet d'envoyer des messages
          
