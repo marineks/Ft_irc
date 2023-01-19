@@ -26,14 +26,15 @@
  * @param server
  * @param cmd_infos Structure w/ prefix, command name and message
  */
-void	kick(Server server, cmd_struct cmd_infos)
+void	kick(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
 	std::string operator_name;
 	std::string channel_name;
 	std::string client_name;
 
 	std::map<std::string, Channel>::iterator it;
-	it = server.getChannels().find(channel_name); // TODO: prévoir cas où Channel n'existe pas
+	it = server.getChannels().find(channel_name);
+	 // TODO: prévoir cas où Channel n'existe pas
 	if (it->second.doesClientExist(client_name) == true)
 	{
 		if (it->second.isOperator(operator_name) == false)

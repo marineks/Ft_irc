@@ -28,7 +28,7 @@ std::string	getReason(std::string msg_to_parse);
 
 void	invite(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	join(Server *server, int const client_fd, cmd_struct cmd_infos);
-// void	kick(Server server, cmd_struct cmd_infos);
+void	kick(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	list(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	names(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	nick(Server *server, int const client_fd, cmd_struct cmd_infos);
