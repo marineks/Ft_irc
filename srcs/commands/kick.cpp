@@ -1,6 +1,7 @@
 #include "Irc.hpp"
 #include "Channel.hpp"
 #include "Server.hpp"
+#include "Commands.hpp"
 
 /**
  * @brief The KICK command can be used to request the forced removal of a user 
@@ -31,9 +32,11 @@ void	kick(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::string operator_name;
 	std::string channel_name;
 	std::string client_name;
+	(void)client_fd;
+	(void)cmd_infos;
 
 	std::map<std::string, Channel>::iterator it;
-	it = server.getChannels().find(channel_name);
+	it = server->getChannels().find(channel_name);
 	 // TODO: prévoir cas où Channel n'existe pas
 	if (it->second.doesClientExist(client_name) == true)
 	{
