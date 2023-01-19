@@ -20,7 +20,7 @@
    only available to operators.
 
    Numeric Replies:
-    ERR_NOSUCHNICK (401)
+    ERR_NOSUCHNICK (401) -OK
     ERR_NOSUCHSERVER (402)
     ERR_CANNOTSENDTOCHAN (404)
     ERR_TOOMANYTARGETS (407)
@@ -100,10 +100,7 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
       std::map<std::string, Channel>::iterator it;
       it = channel_list.find(target.substr(1)); // skip the '#' character
       if (it == channel_list.end())
-      {
-         std::cout << "channel doesn't exist" << std::endl;
-         // send :401 ERR_NOSUCHNICK : "<pseudonyme> :No such nick/channel"
-      }
+         sendServerRpl(client_fd, ERR_NOSUCHNICK(target));
       else
       {
          std::cout << "channel exist" << std::endl;
@@ -113,28 +110,38 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
    }
    else // user case
    {
-      std::map<const int, Client>::iterator it = client_list.begin();
-
-      while (it!=client_list.end())
+      std::map<const int, Client>::iterator it_target = client_list.begin();
+      while (it_target!=client_list.end())
       {
-         if (it->second.getNickname() == target)
-            break;
-         it++;
+         if (it_target->second.getNickname() == target)
+         {
+            std::cout << "user found" << std::endl;
+             break;
+         }
+         it_target++;
       }
 
-      if (it == client_list.end())
-      {
-         std::cout << "user doesn't exist" << std::endl;
-         // send :401 ERR_NOSUCHNICK : "<pseudonyme> :No such nick/channel"
-      }
+      if (it_target == client_list.end())
+         sendServerRpl(client_fd, ERR_NOSUCHNICK(target));
       else
       {
          std::string reply;
+         std::map<const int, Client>::iterator it_client = client_list.find(client_fd); // trouver le client qui envoie
 
-         reply = user_id(it->second.getNickname(), it->second.getUsername()) + " " + cmd_infos.name + " " + cmd_infos.message;
-         std::cout << "reply to send to server : " << reply << std::endl;
-         std::cout << "client_fd target : " << it->first << std::endl;
-         sendServerRpl(it->first, reply);
+         std::string client_nickname = it_client->second.getNickname();
+         std::string client_username = it_client->second.getUsername();
+         int         target_fd = it_target->first;
+         
+         // reply = user_id(it_client->second.getNickname(), it_client->second.getUsername()) + " PRIVMSG" + cmd_infos.message + "\r\n";
+         // reply = ":" + client_nickname + "!" + client_username + "@localhost" + " PRIVMSG " + target + " " + msg_to_send + "\r\n";
+         reply = client_nickname + "!" + client_username + "@localhost" + " PRIVMSG " + target + " " + msg_to_send + "\r\n";
+         // reply = ":" + client_nickname + "!" + client_username + "@localhost" + " MSG " + target + " " + msg_to_send + "\r\n";
+         std::cout << "reply to send to server : |" << reply << "|" << std::endl;
+         std::cout << "client_fd target : " << it_target->first << std::endl;
+
+         sendServerRpl(target_fd, reply);
+         // sendServerRpl(target_fd, RPL_PRIVMSG(client_nickname, client_username, cmd_infos.message));
+         // sendServerRpl(it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
       }
    }
 

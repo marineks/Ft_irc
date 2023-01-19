@@ -36,6 +36,10 @@ void	sendServerRpl(int const client_fd, std::string reply);
 // PING
 # define RPL_PONG(token) ("PONG " + token + "\r\n")
 
+// PRIVMSG
+# define ERR_NOSUCHNICK(target) ("401 " + target + " :No such nick/channel\r\n")
+# define RPL_PRIVMSG(nick, username, message) (":" + nick + "!" + username + "@localhost PRIVMSG" + message + "\r\n")
+
 // TOPIC
 # define RPL_TOPIC(client, channel, topic) ("332 " + client + " #" + channel + " " + topic + "\r\n")
 # define RPL_NOTOPIC(client, channel) ("331 " + client + " " + channel + ": The topic has been cleared.\r\n")
