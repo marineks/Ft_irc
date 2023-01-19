@@ -283,7 +283,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	{
 		case 1: invite(this, client_fd, cmd_infos); break;
 		case 2: join(this, client_fd, cmd_infos); break;
-		// case 3: kick(this, cmd_infos); break;
+		case 3: kick(this, client_fd, cmd_infos); break;
 		// case 4: kill(cmd_infos); break;
 		case 5: list(this, client_fd, cmd_infos); break;
 		// case 6: mode(this, client_fd, cmd_infos); break;
