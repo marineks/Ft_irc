@@ -281,23 +281,23 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 
 	switch (index + 1)
 	{
-	case 1: invite(this, client_fd, cmd_infos); break;
-	case 2: join(this, client_fd, cmd_infos); break;
-	// case 3: kick(this, cmd_infos); break;
-	// case 4: kill(cmd_infos); break;
-	case 5: list(this, client_fd, cmd_infos); break;
-	// case 6: mode(this, client_fd, cmd_infos); break;
-	case 7: names(this, client_fd, cmd_infos); break;
-	case 8: nick(this, client_fd, cmd_infos); break;
-	case 9: part(this, client_fd, cmd_infos); break;
-	case 10: ping(client_fd, cmd_infos); break;
-	// case 11: oper(this, cmd_infos); break;
-  	case 12: privmsg(this, client_fd, cmd_infos); break;
-	// case 13: quit(this, cmd_infos); break;
-	case 14: topic(this, client_fd, cmd_infos); break;
-	// case 15: user(cmd_infos); break;
-	default:
-		std::cout << PURPLE << "This command is not supported by our services." << RESET << std::endl;
+		case 1: invite(this, client_fd, cmd_infos); break;
+		case 2: join(this, client_fd, cmd_infos); break;
+		// case 3: kick(this, cmd_infos); break;
+		// case 4: kill(cmd_infos); break;
+		case 5: list(this, client_fd, cmd_infos); break;
+		// case 6: mode(this, client_fd, cmd_infos); break;
+		case 7: names(this, client_fd, cmd_infos); break;
+		case 8: nick(this, client_fd, cmd_infos); break;
+		case 9: part(this, client_fd, cmd_infos); break;
+		case 10: ping(this, client_fd, cmd_infos); break;
+		// case 11: oper(this, cmd_infos); break;
+		case 12: privmsg(this, client_fd, cmd_infos); break;
+		case 13: quit(this, client_fd, cmd_infos); break;
+		case 14: topic(this, client_fd, cmd_infos); break;
+		// case 15: user(cmd_infos); break;
+		default:
+			std::cout << PURPLE << "This command is not supported by our services." << RESET << std::endl;
 	}
 }
 

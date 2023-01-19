@@ -19,8 +19,12 @@
  * 
  * @return SUCCESS (0) or FAILURE (1) 
  */
-int	ping(int const client_fd, cmd_struct &cmd)
+int	ping(Server *server, int const client_fd, cmd_struct &cmd)
 {
-	sendServerRpl(client_fd, RPL_PONG(cmd.message));
+	Client		&client		= retrieveClient(server, client_fd);
+	std::string	nickname	= client.getNickname();
+	std::string	username	= client.getUsername();
+
+	sendServerRpl(client_fd, RPL_PONG(user_id(nickname, username), cmd.message));
 	return (SUCCESS);
 }
