@@ -79,6 +79,7 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::cout << YELLOW << "message : |" << cmd_infos.message << "|" << RESET << std::endl;
    (void)client_fd;
    std::map<const int, Client>	client_list = server->getClients();
+   std::map<const int, Client>::iterator it_client = client_list.find(client_fd); // trouver le client qui envoie
    std::map<std::string, Channel> channel_list = server->getChannels();
 
 
@@ -106,6 +107,14 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
          std::cout << "channel exist" << std::endl;
          // checker si user membre du channel -> si oui : boucle for to send to every user in the channel
          // -> si non : checker si le mode du channel permet d'envoyer des messages
+         
+         // TODO: checker si il faut renvoyer ou pas a celui qui envoie ?
+         std::map<std::string, Client>::iterator member = it->second.getClientList().begin(); // debut de la liste des clients du channel
+         while (member != it->second.getClientList().end())
+         {
+            sendServerRpl(member->second.getClientFd(),	RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
+            member++;
+         }
       }
    }
    else // user case
@@ -126,7 +135,6 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
       else
       {
          std::string reply;
-         std::map<const int, Client>::iterator it_client = client_list.find(client_fd); // trouver le client qui envoie
 
          std::string client_nickname = it_client->second.getNickname();
          std::string client_username = it_client->second.getUsername();
