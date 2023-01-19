@@ -102,7 +102,7 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
    {
       std::map<std::string, Channel>::iterator it = channel_list.find(target.substr(1)); // skip the '#' character
       if (it == channel_list.end())
-         sendServerRpl(client_fd, ERR_NOSUCHNICK(target));
+         sendServerRpl(client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), target));
       else
       {
          std::cout << "channel exist" << std::endl;
@@ -133,7 +133,7 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
       }
 
       if (it_target == client_list.end())
-         sendServerRpl(client_fd, ERR_NOSUCHNICK(target));
+         sendServerRpl(client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), target));
       else
       {
          std::string reply;
@@ -143,14 +143,14 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
          
          // reply = user_id(it_client->second.getNickname(), it_client->second.getUsername()) + " PRIVMSG" + cmd_infos.message + "\r\n";
          // reply = ":" + client_nickname + "!" + client_username + "@localhost" + " PRIVMSG " + target + " " + msg_to_send + "\r\n";
-         reply = client_nickname + "!" + client_username + "@localhost" + " PRIVMSG " + target + " " + msg_to_send + "\r\n";
+         // reply = client_nickname + "!" + client_username + "@localhost" + " PRIVMSG " + target + " " + msg_to_send + "\r\n";
          // reply = ":" + client_nickname + "!" + client_username + "@localhost" + " MSG " + target + " " + msg_to_send + "\r\n";
          std::cout << "reply to send to server : |" << reply << "|" << std::endl;
          std::cout << "client_fd target : " << it_target->first << std::endl;
 
-         sendServerRpl(it_target->first, reply);
+         // sendServerRpl(it_target->first, reply);
          // sendServerRpl(target_fd, RPL_PRIVMSG(client_nickname, client_username, cmd_infos.message));
-         // sendServerRpl(it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
+         sendServerRpl(it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
       }
    }
 
