@@ -68,8 +68,9 @@
     ; Message to all users who come from a host which has a name matching *.edu.
 
 	useful link : https://irssi.org/documentation/help/msg/
-	https://modern.ircdocs.horse/#privmsg-message
+   https://modern.ircdocs.horse/#errnosuchnick-401
    http://abcdrfc.free.fr/rfc-vf/rfc1459.html (errors)
+   https://askubuntu.com/questions/855881/irssi-where-do-private-messages-go (how to use IRSSI)
  * 
  */
 
@@ -78,7 +79,7 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
 	// std::cout << "prefix : " << cmd_infos.prefix << std::endl;
 	// std::cout << "cmd_name : " << cmd_infos.name << std::endl;
-	std::cout << YELLOW << "message : |" << cmd_infos.message << "|" << RESET << std::endl;
+	// std::cout << YELLOW << "message : |" << cmd_infos.message << "|" << RESET << std::endl;
    
    std::map<const int, Client>	client_list = server->getClients();
    std::map<std::string, Channel> channel_list = server->getChannels(); 
@@ -88,13 +89,13 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
    size_t      delimiter = cmd_infos.message.rfind(":");
    std::string target = cmd_infos.message.substr(1, (delimiter - 2)); // end before the space there is before the delimiter ':'
    std::string msg_to_send = cmd_infos.message.substr(delimiter);
-   std::cout << "\ntarget to send : |" << target << "|" << std::endl;
-   std::cout << "Message to send : |" << msg_to_send << "|" << std::endl;
+   // std::cout << "\ntarget to send : |" << target << "|" << std::endl;
+   // std::cout << "Message to send : |" << msg_to_send << "|" << std::endl;
 
    // Error syntaxe message
-   if (target.empty()) // pas de destinataire 
+   if (target.empty())        // pas de destinataire 
       sendServerRpl(client_fd, ERR_NORECIPIENT(it_client->second.getNickname()));
-   if (msg_to_send.empty()) // pas de message
+   if (msg_to_send.empty())   // pas de message
       sendServerRpl(client_fd, ERR_NOTEXTTOSEND(it_client->second.getNickname()));
 
    // Channel case
@@ -114,7 +115,7 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
          std::map<std::string, Client>::iterator member = it->second.getClientList().begin(); // debut de la liste des clients du channel
          while (member != it->second.getClientList().end())
          {
-            sendServerRpl(member->second.getClientFd(),	RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
+            sendServerRpl(member->second.getClientFd(), RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
             member++;
          }
       }
@@ -125,33 +126,13 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
       while (it_target!=client_list.end())
       {
          if (it_target->second.getNickname() == target)
-         {
-            std::cout << "user found" << std::endl;
              break;
-         }
          it_target++;
       }
 
-      if (it_target == client_list.end())
+      if (it_target == client_list.end()) // user doesn't exist
          sendServerRpl(client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), target));
-      else
-      {
-         std::string reply;
-
-         std::string client_nickname = it_client->second.getNickname();
-         std::string client_username = it_client->second.getUsername();
-         
-         // reply = user_id(it_client->second.getNickname(), it_client->second.getUsername()) + " PRIVMSG" + cmd_infos.message + "\r\n";
-         // reply = ":" + client_nickname + "!" + client_username + "@localhost" + " PRIVMSG " + target + " " + msg_to_send + "\r\n";
-         // reply = client_nickname + "!" + client_username + "@localhost" + " PRIVMSG " + target + " " + msg_to_send + "\r\n";
-         // reply = ":" + client_nickname + "!" + client_username + "@localhost" + " MSG " + target + " " + msg_to_send + "\r\n";
-         std::cout << "reply to send to server : |" << reply << "|" << std::endl;
-         std::cout << "client_fd target : " << it_target->first << std::endl;
-
-         // sendServerRpl(it_target->first, reply);
-         // sendServerRpl(target_fd, RPL_PRIVMSG(client_nickname, client_username, cmd_infos.message));
+      else    // send message to user
          sendServerRpl(it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
-      }
    }
-
 }
