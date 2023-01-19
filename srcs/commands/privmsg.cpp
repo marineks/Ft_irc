@@ -24,7 +24,7 @@
     ERR_NOSUCHSERVER (402)
     ERR_CANNOTSENDTOCHAN (404)
     ERR_TOOMANYTARGETS (407) 
-    // TODO ? Too many target, a checker si on accepte autte chose que le nick avec irssi
+    // TODO ? ERR_TOOMANYTARGETS, a checker si on accepte autte chose que le nick avec irssi
     // TODO : Renvoyé à un client qui essaie d'envoyer un PRIVMSG/NOTICE utilisant le format de destination utilisateur@hôte pour lequel utilisateur@hôte a plusieurs occurrences.
     ERR_NORECIPIENT (411) -OK
     ERR_NOTEXTTOSEND (412) -OK
@@ -140,7 +140,6 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
 
          std::string client_nickname = it_client->second.getNickname();
          std::string client_username = it_client->second.getUsername();
-         int         target_fd = it_target->first;
          
          // reply = user_id(it_client->second.getNickname(), it_client->second.getUsername()) + " PRIVMSG" + cmd_infos.message + "\r\n";
          // reply = ":" + client_nickname + "!" + client_username + "@localhost" + " PRIVMSG " + target + " " + msg_to_send + "\r\n";
@@ -149,7 +148,7 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
          std::cout << "reply to send to server : |" << reply << "|" << std::endl;
          std::cout << "client_fd target : " << it_target->first << std::endl;
 
-         sendServerRpl(target_fd, reply);
+         sendServerRpl(it_target->first, reply);
          // sendServerRpl(target_fd, RPL_PRIVMSG(client_nickname, client_username, cmd_infos.message));
          // sendServerRpl(it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
       }
