@@ -34,7 +34,7 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define ERR_PASSWDMISMATCH(client) ("464 " + client + " :Password incorrect.\r\n")
 
 // PING
-# define RPL_PONG(token) ("PONG " + token + "\r\n")
+# define RPL_PONG(user_id, token) (user_id + " PONG" + token + "\r\n")
 
 // QUIT
 # define RPL_QUIT(user_id, reason) (user_id + " QUIT :Quit: " + reason + "\r\n")
