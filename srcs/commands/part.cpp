@@ -3,9 +3,7 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
-static std::string	getReason(std::string msg_to_parse);
 static bool			containsAtLeastOneAlphaChar(std::string str);
-// static void			broadcastToAllChannelMembers(Channel &channel, std::string reason);
 static void			broadcastToAllChannelMembers(Channel &channel, std::string user, std::string nick, std::string reason);
 
 /**
@@ -64,7 +62,7 @@ void				part(Server *server, int const client_fd, cmd_struct cmd_infos)
 	}
 }
 
-static std::string	getReason(std::string msg_to_parse)
+std::string	getReason(std::string msg_to_parse)
 {
 	std::string reason;
 	
