@@ -25,12 +25,18 @@ void	list(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	passwordChannel(Server *server, std::string datas[4]);
 void	limit(Server *server, std::string datas[4]);
 void 	mode(Server *server, int client_fd, cmd_struct cmd_infos);
+void	moderation(Server *server, std::string datas[4]);
 void	nick(Server *server, int const client_fd, cmd_struct cmd_infos);
 // void	oper(Server server, cmd_struct cmd_infos);
+void	operators(Server *server, std::string datas[4]);
 int		pass(Server *server, int const client_fd, cmd_struct cmd_infos);
 int		ping(int const client_fd, cmd_struct &cmd);
+void	priv(Server *server, std::string datas[4]);
 // void	quit(Server server, cmd_struct cmd_infos);
+void	secret(Server *server, std::string datas[4]);
 void	topic(Server *server, int const client_fd, cmd_struct cmd_infos);
+void	topicProtection(Server *server, std::string datas[4]);
+void	voice(Server *server, std::string datas[4]);
 // void	unban(Server server, cmd_struct cmd_infos);
 
 #endif

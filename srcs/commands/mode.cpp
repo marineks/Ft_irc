@@ -16,14 +16,22 @@ std::string getFlags(std::string line)
 {
 	line.erase(0, line.find('#'));
 	line.erase(0, line.find(' ') + 1);
+	if (line.find(' ') == std::string::npos)
+		return (line);
 	line.erase(line.find(' '), line.size() - 1);
 	return (line);
 }
 
 std::string	getArg(std::string line)
 {
+	if (line.find('#') == std::string::npos)
+		return (line);
 	line.erase(0, line.find('#'));
+	if (line.find(' ') == std::string::npos)
+		return (line);
 	line.erase(0, line.find(' ') + 1);
+	if (line.find(' ') == std::string::npos)
+		return (line);
 	line.erase(0, line.find(' ') + 1);
 	return (line);
 }
@@ -37,14 +45,13 @@ void	executeFlags(Server *server, int index, std::string datas[4])
 		// case 1: invite(this, client_fd, cmd_infos); break; // invite
 		case 2: passwordChannel(server, datas); break; // limit_size channel
 		case 3: limit(server, datas); break;  // limit size
-		// case 5: moderation(this, client_fd, cmd_infos); break; // no external message
+		case 4: moderation(server, datas); break; // no external message
 		// case 6: extern(this, cmd_infos); break; // donne statut operateur 
-		// case 7: operator(this, client_fd, cmd_infos); break; // private
-		// case 8: private(this, client_fd, cmd_infos); break; // secret
-		// case 9: register(this, client_fd, cmd_infos); break; // private
-		// case 10: secret(this, client_fd, cmd_infos); break; // topic protection 
-		// case 11: topic(this, client_fd, cmd_infos); break; // voiced 
-		// case 12: voice(this, client_fd, cmd_infos); break; // private
+		case 6: operators(server, datas); break;
+		case 7: priv(server, datas); break; // secret
+		case 8: secret(server, datas); break; // topic protection 
+		case 9: topicProtection(server, datas); break; // voiced 
+		case 10: voice(server, datas); break; // private
 	}
 }
 void	iterFlags(Server *server, std::string datas[4])
@@ -64,6 +71,7 @@ void	iterFlags(Server *server, std::string datas[4])
 
 void	mode(Server *server, int client_fd, cmd_struct cmd_infos)
 {
+	// check if client is operator.
 	if (cmd_infos.message.find('#') == 0 || cmd_infos.message.find('#') > cmd_infos.message.length())
 		return ;
 	std::string datas[4]; // 0 nick_operator, 1 channel, 2 Flags, 3 arg	
@@ -73,5 +81,10 @@ void	mode(Server *server, int client_fd, cmd_struct cmd_infos)
 	datas[2] = getFlags(cmd_infos.message);
 	datas[3] = getArg(cmd_infos.message);
 	std::cout << "flags = " << datas[2] << std::endl;
+	if (server->is_operator(datas[1], datas[0]) == false)
+	{
+		std::cout << datas[0] << " is not an Operator sorray on " << datas[1] << std::endl;
+		return ;
+	}
 	iterFlags(server, datas);
 }

@@ -35,8 +35,7 @@ class Server
 		int			manageServerLoop();
 		// Manage Clients functions
 		void		addClient(int client_socket, std::vector<pollfd> &poll_fds);
-		void		delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it);
-		// void		fillClients(std::map<const int, Client> &client_list, int client_fd, std::vector<std::string> cmds);
+		void 		delClient(std::vector<pollfd> &poll_fds, int current_fd);
 		void 		fillClients(std::map<const int, Client> &client_list, int client_fd, std::string cmd);
 		// Parsing & Commands functions
 		void		parseMessage(const int client_fd, std::string message);
@@ -50,9 +49,18 @@ class Server
 			public :
 					const char *	what (void) const throw();
 		};
+		bool	isChannel(std::string &channelName);
 		void	addChannel(std::string &channelName);
 		void	addClientToChannel(std::string &channelName, Client &client);
 		void	banClientFromChannel(std::string &channelName, std::string client_nickname, std::string operator_nickname);
+		void	managePassword(std::string datas[4], char sign);
+		void	manageSecret(std::string datas[4]);
+		void	managePrivate(std::string datas[4]);
+		void	manageTopicProtection(std::string datas[4]);
+		void	manageOperator(std::string datas[4]);
+		bool	is_operator(std::string &channelName, std::string &clientName);
+		void	manageVoice(std::string datas[4]);
+		void	manageModeration(std::string datas[4]);
 	};
 
 #endif

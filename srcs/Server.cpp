@@ -110,17 +110,17 @@ void Server::addClient(int client_socket, std::vector<pollfd> &poll_fds)
 	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
 }
 
-void Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it)
+void Server::delClient(std::vector<pollfd> &poll_fds, int current_fd)
 {
 	std::cout << "je suis dans le del\n";
-	std::cout << "Deconnection of client : " << it->fd << std::endl;
-	int key = it->fd;
+	std::cout << "Deconnection of client : " << current_fd << std::endl;
+	int key = current_fd;
 	std::vector<pollfd>::iterator iterator;
 	for (iterator = poll_fds.begin(); iterator != poll_fds.end(); iterator++)
 	{
-		if (iterator->fd == it->fd)
+		if (iterator->fd == current_fd)
 		{
-			close(it->fd);
+			close(current_fd);
 			poll_fds.erase(iterator);
 			_clients.erase(key);
 			break;
@@ -323,6 +323,18 @@ void	Server::printChannels()
 	}
 }
 
+bool	Server::isChannel(std::string &channelName)
+{
+	std::map<std::string, Channel>::iterator it;
+	it = _channels.find(channelName);
+	if (it == _channels.end())
+	{
+		std::cout << RED << "This channel does not exists\n" << RESET;
+		return (false);
+	}
+	return (true);
+}
+
 void	Server::addChannel(std::string &channelName)
 {
 	std::map<std::string, Channel>::iterator it = _channels.find(channelName);
@@ -335,8 +347,10 @@ void	Server::addChannel(std::string &channelName)
 	_channels.insert(std::pair<std::string, Channel>(channel.getName(), channel));
 }
 
-void	Server::addClientToChannel(std::string &channelName, Client &client)
+void Server::addClientToChannel(std::string &channelName, Client &client)
 {
+	if (this->isChannel(channelName) == false)
+		return ;
 	std::map<std::string, Channel>::iterator it;
 	it = _channels.find(channelName);
 	std::string client_nickname = client.getNickname();
@@ -351,13 +365,10 @@ void	Server::addClientToChannel(std::string &channelName, Client &client)
 
 void	Server::banClientFromChannel(std::string &channelName, std::string client_nickname, std::string operator_nickname)
 {
+	if (this->isChannel(channelName) == false)
+		return ;
 	std::map<std::string, Channel>::iterator it;
 	it = _channels.find(channelName);
-	if (it == _channels.end())
-	{
-		std::cout << "Channel not found\n";
-		return ;
-	}
 	std::cout << it->first << std::endl;
 	if (it->second.doesClientExist(client_nickname) == true)
 	{
@@ -367,4 +378,97 @@ void	Server::banClientFromChannel(std::string &channelName, std::string client_n
 	}
 	else 
 		std::cout << YELLOW << client_nickname << " already here\n" << RESET;
+}
+
+void	Server::managePassword(std::string datas[4], char sign)
+{
+	if (this->isChannel(datas[1]) == false)
+		return ;
+	std::map<std::string, Channel>::iterator it;
+	it =_channels.find(datas[1]);
+	if (sign == '+')
+		it->second.setPassword(datas[3]);
+	else if (sign == '-')
+		it->second.getPassword().clear();
+}
+
+void	Server::manageSecret(std::string datas[4])
+{
+	if (this->isChannel(datas[1]) == false)
+		return ;
+	std::map<std::string, Channel>::iterator it;
+	it = _channels.find(datas[1]);
+	if (datas[2][0] == '+')
+		it->second.setSecret(1);
+	else if (datas[2][0] == '-')
+		it->second.setSecret(0);
+}
+
+void	Server::managePrivate(std::string datas[4])
+{
+	if (this->isChannel(datas[1]) == false)
+		return ;
+	std::map<std::string, Channel>::iterator it;
+	it = _channels.find(datas[1]);
+	if (datas[2][0] == '+')
+		it->second.setPrivate(1);
+	else if (datas[2][0] == '-')
+		it->second.setPrivate(0);
+}
+
+void	Server::manageTopicProtection(std::string datas[4])
+{
+	if (this->isChannel(datas[1]) == false)
+		return ;
+	std::map<std::string, Channel>::iterator it;
+	it = _channels.find(datas[1]);
+	if (datas[2][0] == '+')
+		it->second.setTopicProtection(1);
+	else if (datas[2][0] == '-')
+		it->second.setTopicProtection(0);
+}
+
+void	Server::manageOperator(std::string datas[4])
+{
+	if (this->isChannel(datas[1]) == false)
+		return ;
+	std::map<std::string, Channel>::iterator it;
+	it = _channels.find(datas[1]);
+	if (datas[2][0] == '+')
+		it->second.addOperator(datas[3]);
+	else if (datas[2][0] == '-')
+		it->second.removeOperator(datas[3]);
+}
+
+bool	Server::is_operator(std::string &channelName, std::string &clientName)
+{
+	if (this->isChannel(channelName) == false)
+		return (false);
+	std::map<std::string, Channel>::iterator it;
+	it = _channels.find(channelName);
+	return (it->second.isOperator(clientName));
+}
+
+void	Server::manageVoice(std::string datas[4])
+{
+	if (this->isChannel(datas[1]) == false)
+		return ;
+	std::map<std::string, Channel>::iterator it;
+	it = _channels.find(datas[1]);
+	if (datas[2][0] == '+')
+		it->second.addOperator(datas[3]);
+	else if (datas[2][0] == '-')
+		it->second.removeOperator(datas[3]);
+}
+
+void	Server::manageModeration(std::string datas[4])
+{
+	if (this->isChannel(datas[1]) == false)
+		return ;
+	std::map<std::string, Channel>::iterator it;
+	it = _channels.find(datas[1]);
+	if (datas[2][0] == '+')
+		it->second.setModeration(true);
+	else if (datas[2][0] == '-')
+		it->second.setModeration(false);
 }

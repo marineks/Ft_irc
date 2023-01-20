@@ -97,32 +97,31 @@ int Server::manageServerLoop()
 					if (read_count <= FAILURE) // when recv returns an error
 					{
 						std::cerr << RED << "Recv() failed [456]" << RESET << std::endl;
-						delClient(poll_fds, it);
+						delClient(poll_fds, it->fd);
 						if ((unsigned int)(poll_fds.size() - 1) == 0)
 							break;
 					}
 					else if (read_count == 0) // when a client disconnects
 					{
-						delClient(poll_fds, it);
+						delClient(poll_fds, it->fd);
 						std::cout << "Disconnected\n";
 						if ((unsigned int)(poll_fds.size() - 1) == 0)
 							break;
 					}
 					else
 					{
-						print("Recv : ", it->fd, message); // si affichage incoherent regarder ici
+						print("[CLIENT] Recv : ", it->fd, message); // si affichage incoherent regarder ici
 						try 
 						{
 							parseMessage(it->fd, message);
 						}
 						catch(const std::exception& e) 
 						{ 
-							std::cout << "Caught exception : " << std::endl;
+							std::cout << "[SERVER] Caught exception : ";
 							std::cerr << e.what() << std::endl;
-							delClient(poll_fds, it); // NOTE: are we sure we want to delete the client in that case?
-							std::cout << "Client deleted." << std::endl;
-							if ((unsigned int)(poll_fds.size() - 1) == 0)
-								break;
+							delClient(poll_fds, it->fd);
+							std::cout << "[SERVER] Client #"<< it->fd << " deleted." << std::endl;
+							break ;
 						}
 						it++;
 					}
@@ -137,7 +136,7 @@ int Server::manageServerLoop()
 				}
 				else
 				{
-					delClient(poll_fds, it);
+					delClient(poll_fds, it->fd);
 					if ((unsigned int)(poll_fds.size() - 1) == 0)
 						break;
 				}

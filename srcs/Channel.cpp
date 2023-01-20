@@ -6,12 +6,13 @@
 *				################################
 */
 
-Channel::Channel(std::string const &channelName): _name(channelName), _limit(-1), _password("")
+Channel::Channel(std::string const &channelName): _name(channelName), _limit(-1), _secret(0),\
+	_private(0), _topic_protection(0), _moderation(false)
 {
 	_banned_users.clear();
 	_clientList.clear();
 	_topic.clear();
-	// _password.clear();
+	_password.clear();
 }
 
 Channel::~Channel() {}
@@ -28,11 +29,19 @@ std::map <std::string, Client>&		Channel::getClientList()	{ return (_clientList)
 std::vector<std::string>&			Channel::getBannedUsers()	{ return (_banned_users); }
 std::vector<std::string>&			Channel::getOperators() 	{ return (_operators); }
 int									Channel::getLimit()			{ return (_limit);}
-std::string&							Channel::getPassword()		{ return (_password);}
+std::string&						Channel::getPassword()		{ return (_password);}
+int									Channel::getSecret()const	{ return (_secret);}
+int									Channel::getPrivate()const	{ return (_private);}
+int									Channel::getTopicProtection()const { return (_topic_protection);}
+bool								Channel::getModeration()const {return (_moderation);}
 
 void		Channel::setPassword(std::string &password) { _password = password;}
 void		Channel::setLimit(int &value) { _limit = value;}
 void		Channel::setTopic(std::string& newTopic){ _topic = newTopic;}
+void		Channel::setSecret(int i) {_secret = i;}
+void		Channel::setPrivate(int i) {_private = i;}
+void		Channel::setTopicProtection(int i) {_topic_protection = i;}
+void		Channel::setModeration(bool i) {_moderation = i;}
 
 bool		Channel::doesClientExist(std::string &clientName)
 {	
@@ -139,6 +148,23 @@ bool	Channel::isBanned(std::string &banned_name)
 	return (false);	
 }
 
+bool	Channel::goodPassword(std::string &password)
+{
+	if (_password.empty() == false)
+		std::cout << "password ? " << _password << std::endl;
+	else
+	{
+		std::cout << "no password required\n";
+		return (true);
+	}
+	if (_password.empty() == false && password != _password)
+	{
+		std::cout << "Wrong password sorray!\n";
+		return (false);
+	}
+	return (true);
+}
+
 /*
 *				################################
 *				###	  OPERATORS FUNCTIONS    ###
@@ -163,6 +189,20 @@ void	Channel::removeOperator(std::string operatorName)
 	}
 }
 
+void	Channel::addOperator(std::string operatorName)
+{
+	std::vector<std::string>::iterator it;
+	for (it = _operators.begin(); it != _operators.end(); it++)
+	{
+		if (*it == operatorName)
+		{
+			std::cout << operatorName << "is already an Operator\n";
+			return ;
+		}
+	}
+	_operators.push_back(operatorName);
+}
+
 bool 	Channel::isOperator(std::string &operatorName)
 {
 	std::vector<std::string>::iterator user;
@@ -184,4 +224,39 @@ void	Channel::printOperators(void)
 	{
 		std::cout << *it << std::endl;
 	}
+}
+
+void	Channel::addVoice(std::string &clientName)
+{
+	if (this->hasVoice(clientName) == true)
+		return ;
+	_voiced.push_back(clientName);
+}
+
+void	Channel::removeVoice(std::string &clientName)
+{
+	std::vector<std::string>::iterator it;
+	for (it = _operators.begin(); it != _operators.end(); it++)
+	{
+		if (*it == clientName)
+		{
+			_voiced.erase(it);
+			return ;
+		}
+	}
+	std::cout << clientName << " never had a voice\n";
+}
+
+bool	Channel::hasVoice(std::string &clientName)
+{
+	std::vector<std::string>::iterator it;
+	for (it = _operators.begin(); it != _operators.end(); it++)
+	{
+		if (*it == clientName)
+		{
+			std::cout << clientName << "already has a voice\n";
+			return (true);
+		}
+	}
+	return (false);
 }
