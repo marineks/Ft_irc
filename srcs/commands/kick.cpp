@@ -3,6 +3,8 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
+static std::string	getKickedName(std::string msg_to_parse);
+
 /**
  * @brief The KICK command can be used to request the forced removal of a user 
  *  from a channel. It causes the <user> to be removed from the <channel> by force. 
@@ -27,8 +29,27 @@
  * @param server
  * @param cmd_infos Structure w/ prefix, command name and message
  */
+void				kick(Server *server, int const client_fd, cmd_struct cmd_infos)
+{
+	Client& 	requester		= retrieveClient(server, client_fd);
+	std::string	requester_name	= requester.getNickname();
+	std::string	channel_name	= getChannelName(cmd_infos.message);
+	std::string	kicked_name		= getKickedName(cmd_infos.message);
+	
+
+}
+
+static std::string	getKickedName(std::string msg_to_parse)
+{
+	
+
+}
+
+
+
 void	kick(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
+
 	std::string operator_name;
 	std::string channel_name;
 	std::string client_name;

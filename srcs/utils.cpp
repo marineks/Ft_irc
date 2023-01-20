@@ -42,8 +42,6 @@ std::string	getListOfMembers(Channel &channel)
 std::string	getChannelName(std::string msg_to_parse)
 {
 	std::cout << "The msg_to_parse looks like this : |" << msg_to_parse << "|" << std::endl;
-	// Expected output : | #foobar|
-	// Expected output 2 : | #foo,#bar fubar,foobar|
 
 	std::string channel_name;
 	size_t i = 0;
