@@ -140,9 +140,9 @@ void Server::delClient(std::vector<pollfd> &poll_fds, int current_fd)
 std::string getWelcomeReply(std::map<const int, Client>::iterator &it)
 {
 	std::stringstream	rpl_welcome;
-	std::string			host = ":127.0.0.1";
+	std::string			host = "localhost";
 	std::string			space = " ";
-	std::string			welcome = " :Welcome ";
+	std::string			welcome = " :Welcome to the Internet Relay Network ";
 	std::string			rpl_code = "001";
 	std::string			user_id = it->second.getNickname() + "!" + it->second.getUsername() + "@" + host;
 	std::string			end = "\r\n";
@@ -150,7 +150,7 @@ std::string getWelcomeReply(std::map<const int, Client>::iterator &it)
 	// reset the stringstream
 	rpl_welcome.str(std::string());
 	// write in the stream to append everything in one line and properly terminate it with a NULL operator
-	rpl_welcome << host << space << rpl_code << space << it->second.getNickname() << welcome << user_id << end << '\0';
+	rpl_welcome << ":" << host << space << rpl_code << space << it->second.getNickname() << welcome << user_id << end;
 	// convert the stream in the required std::string
 	return (rpl_welcome.str());
 }
@@ -235,6 +235,7 @@ void Server::parseMessage(int const client_fd, std::string message)
 				if (it->second.is_valid() == SUCCESS)
 				{
 					send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
+					std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << getWelcomeReply(it) << RESET << std::endl;
 					it->second.isWelcomeSent() = true;
 					it->second.isRegistrationDone() = true;
 				}		

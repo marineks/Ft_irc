@@ -25,6 +25,10 @@ int	ping(Server *server, int const client_fd, cmd_struct &cmd)
 	std::string	nickname	= client.getNickname();
 	std::string	username	= client.getUsername();
 
+	if (cmd.message[0] == ' ')
+		cmd.message.erase(0, 1);
+	cmd.message.insert(0, ":");
 	sendServerRpl(client_fd, RPL_PONG(user_id(nickname, username), cmd.message));
+
 	return (SUCCESS);
 }
