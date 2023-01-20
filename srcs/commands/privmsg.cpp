@@ -74,13 +74,23 @@
  * 
  */
 
+static void  broadcastToChannel(int const client_fd, std::map<const int, Client>::iterator it_client, std::map<std::string, Channel>::iterator it_channel, std::string message)
+{
+   // TODO: check a faire avec les modes
+         // checker si user membre du channel -> si oui : boucle for to send to every user in the channel
+         // -> si non : checker si le mode du channel permet d'envoyer des messages
+   
+   std::map<std::string, Client>::iterator member = it_channel->second.getClientList().begin(); // debut de la liste des clients du channel
+    while (member != it_channel->second.getClientList().end())
+   {
+      if (member->second.getClientFd() != client_fd)   // prevent to send the message to the sender
+          sendServerRpl(member->second.getClientFd(), RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), message));
+      member++;
+   }
+}
 
 void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
-{
-	// std::cout << "prefix : " << cmd_infos.prefix << std::endl;
-	// std::cout << "cmd_name : " << cmd_infos.name << std::endl;
-	// std::cout << YELLOW << "message : |" << cmd_infos.message << "|" << RESET << std::endl;
-   
+{  
    std::map<const int, Client>	client_list = server->getClients();
    std::map<std::string, Channel> channel_list = server->getChannels(); 
    std::map<const int, Client>::iterator it_client = client_list.find(client_fd); // trouver le client qui envoie
@@ -89,8 +99,6 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
    size_t      delimiter = cmd_infos.message.rfind(":");
    std::string target = cmd_infos.message.substr(1, (delimiter - 2)); // end before the space there is before the delimiter ':'
    std::string msg_to_send = cmd_infos.message.substr(delimiter);
-   // std::cout << "\ntarget to send : |" << target << "|" << std::endl;
-   // std::cout << "Message to send : |" << msg_to_send << "|" << std::endl;
 
    // Error syntaxe message
    if (target.empty())        // pas de destinataire 
@@ -101,27 +109,17 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
    // Channel case
    if (target[0] == '#')
    {
-      std::map<std::string, Channel>::iterator it = channel_list.find(target.substr(1)); // skip the '#' character
-      if (it == channel_list.end())
+      std::map<std::string, Channel>::iterator it_channel = channel_list.find(target.substr(1)); // find channel name by skipping the '#' character
+      if (it_channel == channel_list.end())
          sendServerRpl(client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), target));
       else
-      {
-         std::cout << "channel exist" << std::endl;
-         // TODO: check a faire avec les modes
-         // checker si user membre du channel -> si oui : boucle for to send to every user in the channel
-         // -> si non : checker si le mode du channel permet d'envoyer des messages
-         
-         // TODO: checker si il faut renvoyer ou pas a celui qui envoie ?
-         std::map<std::string, Client>::iterator member = it->second.getClientList().begin(); // debut de la liste des clients du channel
-         while (member != it->second.getClientList().end())
-         {
-            sendServerRpl(member->second.getClientFd(), RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
-            member++;
-         }
-      }
+         broadcastToChannel(client_fd, it_client, it_channel, cmd_infos.message);
    }
-   else // user case
+   // user case
+   else
    {
+      std::map<std::string, Channel>::iterator it_channel = channel_list.find(target); // find channel name
+     
       std::map<const int, Client>::iterator it_target = client_list.begin();
       while (it_target!=client_list.end())
       {
@@ -129,10 +127,17 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
              break;
          it_target++;
       }
-
-      if (it_target == client_list.end()) // user doesn't exist
+      if (it_target == client_list.end() && it_channel == channel_list.end()) // user and channel doesn't exist
          sendServerRpl(client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), target));
-      else    // send message to user
-         sendServerRpl(it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
+      else
+      {
+         if (it_target == client_list.end()) // si le user n'existe pas mais le channel oui (gestion channel actif)
+         {
+            cmd_infos.message.insert(1, "#");  // ajouter le # before target
+            broadcastToChannel(client_fd, it_client, it_channel, cmd_infos.message);
+         }
+         else
+            sendServerRpl(it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
+      }  
    }
 }
