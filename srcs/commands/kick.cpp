@@ -35,40 +35,47 @@ void				kick(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::string	requester_name	= requester.getNickname();
 	std::string	channel_name	= getChannelName(cmd_infos.message);
 	std::string	kicked_name		= getKickedName(cmd_infos.message);
-	
-
+	std::string	reason			= getReason(cmd_infos.message);
+	std::cout << "Requester : |" << requester_name << "|" << std::endl;
+	std::cout << "Reason : |" << reason << "|" << std::endl;
+	std::cout << "Kicked : |" << kicked_name << "|" << std::endl;
 }
 
 static std::string	getKickedName(std::string msg_to_parse)
 {
-	
+	std::string kicked;
+
+	if (msg_to_parse[0] == ' ')
+		msg_to_parse.erase(0, 1);
+	kicked = msg_to_parse.substr(msg_to_parse.find(' ') + 1, (msg_to_parse.find(':') - 1 - (msg_to_parse.find(' ') + 1)));
+	return (kicked);
 
 }
 
 
 
-void	kick(Server *server, int const client_fd, cmd_struct cmd_infos)
-{
+// void	kick(Server *server, int const client_fd, cmd_struct cmd_infos)
+// {
 
-	std::string operator_name;
-	std::string channel_name;
-	std::string client_name;
-	(void)client_fd;
-	(void)cmd_infos;
+// 	std::string operator_name;
+// 	std::string channel_name;
+// 	std::string client_name;
+// 	(void)client_fd;
+// 	(void)cmd_infos;
 
-	std::map<std::string, Channel>::iterator it;
-	it = server->getChannels().find(channel_name);
-	 // TODO: prévoir cas où Channel n'existe pas
-	if (it->second.doesClientExist(client_name) == true)
-	{
-		if (it->second.isOperator(operator_name) == false)
-		{
-			std::cout << "[ERR 482]" << operator_name << " is not an operator on " << channel_name << std::endl;
-			return ;
-		}
-		it->second.removeClientFromChannel(client_name);
-		std::cout << client_name << " has been kicked from " << channel_name << " by " << operator_name <<std::endl; 
-	}
-	// TODO: prevoir ERR 441, 442 si User n'est pas dans chan ou user inexistant
-	// NOTE: on print l'output de notre action coté server mais je crois qu'il faut SEND un message au client aussi
-}
+// 	std::map<std::string, Channel>::iterator it;
+// 	it = server->getChannels().find(channel_name);
+// 	 // TODO: prévoir cas où Channel n'existe pas
+// 	if (it->second.doesClientExist(client_name) == true)
+// 	{
+// 		if (it->second.isOperator(operator_name) == false)
+// 		{
+// 			std::cout << "[ERR 482]" << operator_name << " is not an operator on " << channel_name << std::endl;
+// 			return ;
+// 		}
+// 		it->second.removeClientFromChannel(client_name);
+// 		std::cout << client_name << " has been kicked from " << channel_name << " by " << operator_name <<std::endl; 
+// 	}
+// 	// TODO: prevoir ERR 441, 442 si User n'est pas dans chan ou user inexistant
+// 	// NOTE: on print l'output de notre action coté server mais je crois qu'il faut SEND un message au client aussi
+// }
