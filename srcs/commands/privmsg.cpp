@@ -80,8 +80,21 @@ static void  broadcastToChannel(int const client_fd, std::map<const int, Client>
          // checker si user membre du channel -> si oui : boucle for to send to every user in the channel
          // -> si non : checker si le mode du channel permet d'envoyer des messages
    
+   // check si client est kick du channel
+   std::vector<std::string> kicked_users = it_channel->second.getKickedUsers();
+
+	for (std::vector<std::string>::iterator it = kicked_users.begin(); it != kicked_users.end(); it++)
+	{
+		if (*it == it_client->second.getNickname())
+		{
+			std::cout << it_client->second.getNickname() << " is kicked from the channel and can't send message anymore" << std::endl;
+			return ;
+		}
+	}
+
+   // Envoi le message aux users du channel 
    std::map<std::string, Client>::iterator member = it_channel->second.getClientList().begin(); // debut de la liste des clients du channel
-    while (member != it_channel->second.getClientList().end())
+   while (member != it_channel->second.getClientList().end())
    {
       if (member->second.getClientFd() != client_fd)   // prevent to send the message to the sender
           sendServerRpl(member->second.getClientFd(), RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), message));
@@ -110,6 +123,7 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
    if (target[0] == '#')
    {
       std::map<std::string, Channel>::iterator it_channel = channel_list.find(target.substr(1)); // find channel name by skipping the '#' character
+
       if (it_channel == channel_list.end())
          sendServerRpl(client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), target));
       else

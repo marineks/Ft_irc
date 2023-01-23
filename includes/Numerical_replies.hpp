@@ -13,9 +13,14 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define RPL_INVITING(client, nick, channel) ("341 " + client + " " + nick + " " + channel + " :Is invited to a channel!\r\n")
 
 // JOIN
-# define RPL_JOIN(username, nickname, channel) (":" + nickname + "!" + username + "@localhost JOIN " +  channel + "\r\n")
+# define RPL_JOIN(username, nickname, channel) (":" + nickname + "!" + username + "@localhost JOIN #" +  channel + "\r\n")
 # define ERR_BANNEDFROMCHAN(client, channel) ("474 " + client + " " + channel + " :Cannot join channel (+b)\r\n")
 # define ERR_BADCHANNELKEY(client, channel) ("475 " + client + " " + channel + " :Cannot join channel (+k)\r\n")
+
+// KICK
+# define ERR_USERNOTINCHANNEL(client, nickname, channel) ("441 " + client + " " + nickname + " #" +  channel + " :They aren't on that channel\r\n")
+# define ERR_CHANOPRIVSNEEDED(client, channel) ("482 " + client + " #" +  channel + " :You're not channel operator\r\n")
+# define RPL_KICK(user_id, channel, kicked, reason) (user_id + " KICK #" + channel + " " + kicked + " " + reason + "\r\n")
 
 // NAMES
 # define RPL_NAMREPLY(client, symbol, channel, list_of_nicks) ("353 " + client + " " + symbol + " #" + channel + " :" + list_of_nicks + "\r\n")
