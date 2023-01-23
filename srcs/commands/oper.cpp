@@ -1,6 +1,7 @@
 #include "Irc.hpp"
 #include "Channel.hpp"
 #include "Server.hpp"
+#include "Commands.hpp"
 
 /**
  * @brief The OPER command is used by a normal user to obtain IRC operator privileges.
@@ -20,40 +21,30 @@
  *  [CLIENT] OPER foo bar
  *  [SERVER] ; Attempt to register as an operator using a name of "foo" and the password "bar".
  */
-void oper(Server server, cmd_struct cmd_infos)
+void oper(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
-	// TODO: coder le parsing du command.message pour arriver à operator name, channelName et clientName
-	std::string channelName;
-	std::string operatorName;
-	std::string password;
-
-	std::map<std::string, Channel> channels = server.getChannels();
-	std::map<std::string, Channel>::iterator it;
-	it = channels.find(channelName);
-
-	if (password != it.getOperatorPassword()) // TODO: getter de opPwd à coder
-	{
-		std::cout << "Wrong Password\n";
-		return;
-	}
-	if (it == channels.end())
-	{
-		std::cout << "That channel doesn't exist\n";
-		return ;
-	}
-	if (it->second.isOperator(operatorName) == false)
-		it->second.addFirstOperator(operatorName); // NOTE: refacto cette fonction qui fait comme AddOperator
+	(void)server;
+	(void)client_fd;
+	(void)cmd_infos;
 }
 
-// NOTE: dans quelle cadre nous sert cette fonction? pour du debug? 
-void	Server::printOper(std::string &channelName)
-{
-	std::map<std::string, Channel>::iterator it;
-	it = _channels.find(channelName);
-	if (it == _channels.end())
-	{
-		std::cout << "That channel doesn't exit\n";
-		return ;
-	}
-	it->second.printOperators();
-}
+// 
+// 	std::string operatorName;
+// 	std::string password;
+
+// 	std::map<std::string, Channel> channels = server.getChannels();
+// 	std::map<std::string, Channel>::iterator it;
+// 	it = channels.find(channelName);
+
+// 	if (password != it.getOperatorPassword()) 
+// 	{
+// 		std::cout << "Wrong Password\n";
+// 		return;
+// 	}
+// 	if (it == channels.end())
+// 	{
+// 		std::cout << "That channel doesn't exist\n";
+// 		return ;
+// 	}
+// 	if (it->second.isOperator(operatorName) == false)
+// 		it->second.addFirstOperator(operatorName); // NOTE: refacto cette fonction qui fait comme AddOperator
