@@ -5,6 +5,10 @@
 
 static std::string	getName(std::string msg_to_parse);
 static std::string	getPassword(std::string msg_to_parse);
+static bool			isNameValid(Server *server, std::string name);
+static bool			isPasswordValid(Server *server, std::string password, std::string pwd);
+
+
 /**
  * @brief The OPER command is used by a normal user to obtain IRC operator privileges.
  * 	Both parameters are required for the command to be successful.
@@ -29,19 +33,57 @@ void oper(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::string name		= getName(cmd_infos.message);
 	std::string password	= getPassword(cmd_infos.message);
 
+	// DEBUG
+	std::cout << "Name: |" << name << "|" << std::endl;
+	std::cout << "Password: |" << password << "|" << std::endl;
+
 	if (name.empty() || password.empty())
 	{
 		sendServerRpl(client_fd, ERR_NEEDMOREPARAMS(client.getNickname(), cmd_infos.name));
 	}
-	else 
+	else if (isNameValid(server, name) == false)
 	{
-		std::cout << "Name: |" << name << "|" << std::endl;
-		std::cout << "Password: |" << password << "|" << std::endl;
+		sendServerRpl(client_fd, ERR_NOOPERHOST(client.getNickname()));
+	}
+	else if (isPasswordValid(server, password, name) == false)
+	{
+		sendServerRpl(client_fd, ERR_PASSWDMISMATCH(client.getNickname()));
+	}
+	else
+	{
+		sendServerRpl(client_fd, RPL_YOUREOPER(client.getNickname()));
 	}
 
 }
 
-std::string	getName(std::string msg_to_parse)
+static bool			isNameValid(Server *server, std::string name)
+{
+	std::vector<server_op>&				operators = server->getIrcOperators();
+	std::vector<server_op>::iterator	op;
+
+	for (op = operators.begin(); op != operators.end(); op++)
+	{
+		if (op->name == name)
+		{
+			return (true);
+		}
+	}
+	return (false);
+}
+
+static bool			isPasswordValid(Server *server, std::string password, std::string name)
+{
+	std::vector<server_op>&				operators = server->getIrcOperators();
+	std::vector<server_op>::iterator	op;
+
+	for (op = operators.begin(); op != operators.end(); op++)
+		if (op->name == name)
+			break;
+
+	return (op->password == password ? true : false);
+}
+
+static std::string	getName(std::string msg_to_parse)
 {
 	std::string name;
 
@@ -54,7 +96,7 @@ std::string	getName(std::string msg_to_parse)
 	return (name);
 }
 
-std::string	getPassword(std::string msg_to_parse)
+static std::string	getPassword(std::string msg_to_parse)
 {
 	std::string password;
 

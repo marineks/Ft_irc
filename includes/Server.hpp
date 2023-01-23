@@ -38,6 +38,7 @@ class Server
 		void								setPassword(std::string new_pwd);
 		std::map<std::string, Channel>& 	getChannels();
 		std::map<const int, Client>&		getClients();
+		std::vector<server_op>&				getIrcOperators(); 
 		
 		// Running Server functions
 		int 		readFromConfigFile(char *filename);

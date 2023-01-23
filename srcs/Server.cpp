@@ -39,6 +39,8 @@ std::map<std::string, Channel>&	Server::getChannels()		{ return (_channels); }
 
 std::map<const int, Client>&	Server::getClients()		{ return (_clients); }
 
+std::vector<server_op>&			Server::getIrcOperators()	{ return (_irc_operators); }
+
 void							Server::setPassword(std::string new_pwd)
 {
 	_password = new_pwd;
