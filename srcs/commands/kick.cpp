@@ -76,7 +76,6 @@ void				kick(Server *server, int const client_fd, cmd_struct cmd_infos)
 	else
 	{
 		it_chan->second.getClientList().erase(kicked_name);
-		sendServerRpl(client_fd, RPL_KICK(user_id(requester_name, requester.getUsername()), channel_name, kicked_name, reason));
 		broadcastToChannel(it_chan->second, requester, kicked_name, reason);
 	}
 }
