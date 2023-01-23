@@ -39,3 +39,4 @@ ircserv
 .nfs*
 **/.vscode/
 !.vscode/settings.json
+logs_test

@@ -14,8 +14,8 @@ void	sendServerRpl(int const client_fd, std::string reply);
 
 // JOIN
 # define RPL_JOIN(username, nickname, channel) (":" + nickname + "!" + username + "@localhost JOIN " +  channel + "\r\n")
-# define ERR_BANNEDFROMCHAN(client, channel) ("474 " + client + " " + channel + " :Cannot join channel (+b)")
-# define ERR_BADCHANNELKEY(client, channel) ("475 " + client + " " + channel + " :Cannot join channel (+k)")
+# define ERR_BANNEDFROMCHAN(client, channel) ("474 " + client + " " + channel + " :Cannot join channel (+b)\r\n")
+# define ERR_BADCHANNELKEY(client, channel) ("475 " + client + " " + channel + " :Cannot join channel (+k)\r\n")
 
 // NAMES
 # define RPL_NAMREPLY(client, symbol, channel, list_of_nicks) ("353 " + client + " " + symbol + " #" + channel + " :" + list_of_nicks + "\r\n")
@@ -26,6 +26,10 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define ERR_ERRONEUSNICKNAME(client, nickname) ("432 " + client + " " + nickname + " :Erroneus nickname\r\n")
 # define ERR_NICKNAMEINUSE(client, nickname) ("433 " + client + " " + nickname + " :Nickname is already in use.\r\n")
 # define RPL_NICK(oclient, uclient, client) (":" + oclient + "!" + uclient + "@localhost NICK " +  client + "\r\n")
+
+// OPER
+# define ERR_NOOPERHOST(client) ("491 " + client + " :No O-lines for your host\r\n")
+# define RPL_YOUREOPER(client) ("381 " + client + " :You are now an IRC operator\r\n")
 
 // PART
 # define RPL_PART(user_id, channel, reason) (user_id + " PART #" + channel + " " + (reason.empty() ? "." : reason ) + "\r\n")
