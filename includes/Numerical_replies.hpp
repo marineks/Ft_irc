@@ -13,7 +13,7 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define RPL_INVITING(client, nick, channel) ("341 " + client + " " + nick + " " + channel + " :Is invited to a channel!\r\n")
 
 // JOIN
-# define RPL_JOIN(username, nickname, channel) (":" + nickname + "!" + username + "@localhost JOIN #" +  channel + "\r\n")
+# define RPL_JOIN(user_id, channel) (user_id + " JOIN :#" +  channel + "\r\n")
 # define ERR_BANNEDFROMCHAN(client, channel) ("474 " + client + " " + channel + " :Cannot join channel (+b)\r\n")
 # define ERR_BADCHANNELKEY(client, channel) ("475 " + client + " " + channel + " :Cannot join channel (+k)\r\n")
 
@@ -23,8 +23,8 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define RPL_KICK(user_id, channel, kicked, reason) (user_id + " KICK #" + channel + " " + kicked + " " + reason + "\r\n")
 
 // NAMES
-# define RPL_NAMREPLY(client, symbol, channel, list_of_nicks) ("353 " + client + " " + symbol + " #" + channel + " :" + list_of_nicks + "\r\n")
-# define RPL_ENDOFNAMES(client, channel) ("366 " + client + " " + channel + " :End of /NAMES list\r\n")
+# define RPL_NAMREPLY(client, symbol, channel, list_of_nicks) (":localhost 353 " + client + " " + symbol + " #" + channel + " :" + list_of_nicks + "\r\n")
+# define RPL_ENDOFNAMES(client, channel) (":localhost 366 " + client + " #" + channel + " :End of /NAMES list.\r\n")
 
 // NICK
 # define ERR_NONICKNAMEGIVEN(client) ("431 " + client + " :There is no nickname.\r\n")

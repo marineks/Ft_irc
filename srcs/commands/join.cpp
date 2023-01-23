@@ -100,24 +100,33 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
  *  
  * [:msanjuan_!msanjuan@localhost 353 msanjuan_ = #hello :@msanjuan_ ]
  */
+//TODO: mettre cette fonction dans la classe chan!!!!!! pour que topic soit updaté!!
 void		sendChanInfos(Channel &channel, std::string channel_name, Client &client)
 {
-	int			client_fd	= client.getClientFd();
+	// int			client_fd	= client.getClientFd();
 	std::string	nick		= client.getNickname();
 	std::string username	= client.getUsername();
 	std::string	client_id	= ":" + nick + "!" + username + "@localhost";
  	
-	sendServerRpl(client_fd, RPL_JOIN(username, nick, channel_name));
-	if (channel.getTopic().empty() == false)
+	std::map<std::string, Client>::iterator member = channel.getClientList().begin();
+
+	while (member != channel.getClientList().end())
 	{
-		sendServerRpl(client_fd, RPL_TOPIC(client_id, channel_name, channel.getTopic()));
-		sendServerRpl(client_fd, RPL_DISPLAYTOPIC(client_id, channel_name));
+		sendServerRpl(member->second.getClientFd(), RPL_JOIN(user_id(nick, username), channel_name));
+		if (channel.getTopic().empty() == false)
+		{
+			std::cout << "je rentre jamais dedans wllh" << std::endl;
+			client_id	= ":" + member->second.getNickname() + "!" + member->second.getUsername() + "@localhost";
+			sendServerRpl(member->second.getClientFd(), RPL_TOPIC(client_id, channel_name, channel.getTopic()));
+			sendServerRpl(member->second.getClientFd(), RPL_DISPLAYTOPIC(client_id, channel_name));
+		}
+		
+		std::string	list_of_members = getListOfMembers(channel);
+		std::string symbol			= "=";
+		sendServerRpl(member->second.getClientFd(), RPL_NAMREPLY(username, symbol, channel_name, list_of_members));
+		sendServerRpl(member->second.getClientFd(), RPL_ENDOFNAMES(username, channel_name));
+		member++;
 	}
-	
-	std::string	list_of_members = getListOfMembers(channel);
-	std::string symbol			= "=";
-	sendServerRpl(client_fd, RPL_NAMREPLY(username, symbol, channel_name, list_of_members));
-	sendServerRpl(client_fd, RPL_ENDOFNAMES(username, channel_name));
 }
 
 bool		containsAtLeastOneAlphaChar(std::string str)
