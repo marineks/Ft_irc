@@ -83,10 +83,8 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 		} 
 		else {
 			addClientToChannel(server, channel_name, client);
-			// if le channel a pas d'operateur :
 			if (it_chan->second.getOperators().empty())
 				it_chan->second.addFirstOperator(client.getNickname());
-			
 			sendChanInfos(it_chan->second, channel_name, client);
 		}
 	}
