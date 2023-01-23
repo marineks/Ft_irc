@@ -19,14 +19,16 @@
  * 
  * @return SUCCESS (0) or FAILURE (1) 
  */
-int	ping(int const client_fd, cmd_struct &cmd)
+int	ping(Server *server, int const client_fd, cmd_struct &cmd)
 {
-	// checker la string (est-ce que l'identifier existe (registered or online?), est-ce que le channel existe ?)
-	// std::cout << client_fd << " is the client_fd. Message de la cmd : " << YELLOW << cmd.message << RESET << std::endl;
-	
-	// renvoyer un PONG avec le même TOKEN
-	// std::string pong_reply = "PONG" + cmd.message + "\r\n";
-	sendServerRpl(client_fd, RPL_PONG(cmd.message));
-	
+	Client		&client		= retrieveClient(server, client_fd);
+	std::string	nickname	= client.getNickname();
+	std::string	username	= client.getUsername();
+
+	if (cmd.message[0] == ' ')
+		cmd.message.erase(0, 1);
+	cmd.message.insert(0, ":");
+	sendServerRpl(client_fd, RPL_PONG(user_id(nickname, username), cmd.message));
+
 	return (SUCCESS);
 }

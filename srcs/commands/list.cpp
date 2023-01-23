@@ -42,12 +42,13 @@ void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 		else 
 		{
 			std::map<std::string, Channel>::iterator it = server->getChannels().begin();
-			for (it; it != server->getChannels().end(); it++)
+			while (it != server->getChannels().end())
 			{
 				RPL_LIST.clear();
 				RPL_LIST = getRplList(client_nick, it);
 				send(client_fd, RPL_LIST.c_str(), RPL_LIST.size(), 0);
 				std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LIST << RESET << std::endl;
+				it++;
 			}
 		}
 	}
@@ -79,9 +80,9 @@ static std::string	findAnyChannel(std::string msg_to_parse)
 	else
 	{
 		size_t i = 0;
-		while (!isalpha(msg_to_parse[i]))
+		while (msg_to_parse[i] && (!isalpha(msg_to_parse[i]) && !isdigit(msg_to_parse[i]) && msg_to_parse[i] != '-' && msg_to_parse[i] != '_'))
 			i++;
-		while (isalpha(msg_to_parse[i]))
+		while (msg_to_parse[i] && (isalpha(msg_to_parse[i]) || msg_to_parse[i] == '-' || msg_to_parse[i] == '_' || isdigit(msg_to_parse[i])))
 			channel += msg_to_parse[i++];
 		return (channel);
 	}

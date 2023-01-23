@@ -72,6 +72,7 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	if (topic.empty())
 	{
 		// afficher le topic
+		// PREVOIR CAR OU CHAN A AFFICHER EST VIDE
 		sendServerRpl(client_fd,  RPL_TOPIC(client_nickname, channel_name, channel->second.getTopic()));
 		std::cout << "The topic of this channel is " << channel->second.getTopic() << std::endl;
 	}
@@ -86,7 +87,8 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	{
 		// reattribuer le topic
 		channel->second.setTopic(topic);
-		sendServerRpl(client_fd,  RPL_NEWTOPIC(client_nickname, channel_name, topic));
+		sendServerRpl(client_fd,  RPL_TOPIC(client_nickname, channel_name, topic));
+		// sendServerRpl(client_fd,  RPL_NEWTOPIC(client_nickname, channel_name, topic));
 	}
 }
 
@@ -112,9 +114,9 @@ std::string	findChannelName(std::string msg_to_parse)
 	else
 	{
 		size_t i = 0;
-		while (!isalpha(msg_to_parse[i]))
+		while (msg_to_parse[i] && (!isalpha(msg_to_parse[i]) && !isdigit(msg_to_parse[i]) && msg_to_parse[i] != '-' && msg_to_parse[i] != '_'))
 			i++;
-		while (isalpha(msg_to_parse[i]))
+		while (msg_to_parse[i] && (isalpha(msg_to_parse[i]) || msg_to_parse[i] == '-' || msg_to_parse[i] == '_' || isdigit(msg_to_parse[i])))
 			channel_name += msg_to_parse[i++];
 	}
 	return (channel_name);

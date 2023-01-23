@@ -3,37 +3,50 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
-std::string	getTarget(std::string line)
+std::string	getTargettedChannel(std::string targettedChannelName)
 {
-	line.erase(0, line.find('#'));
+	// for (int i = 0; targettedChannelName[i]; i++)
+	// 	std::cout << "str[i] = " << (int)targettedChannelName[i] << std::endl;
+	targettedChannelName.erase(0, targettedChannelName.find(' ') + 1);
 	std::string substr_hashtag;
-	substr_hashtag = line.substr(line.find('#') + 1, line.find(" ") - 1);
-	std::cout << "substr = " << substr_hashtag << "|" << std::endl;
+	substr_hashtag = targettedChannelName.substr(0, targettedChannelName.find(" "));
+	// std::cout << "targettedChannelName " << substr_hashtag << "|" << std::endl;
 	return (substr_hashtag);
 }
 
-std::string getFlags(std::string line)
+std::string getFlags(std::string flags)
 {
-	line.erase(0, line.find('#'));
-	line.erase(0, line.find(' ') + 1);
-	if (line.find(' ') == std::string::npos)
-		return (line);
-	line.erase(line.find(' '), line.size() - 1);
-	return (line);
+	// flags.erase(0, flags.find('#'));
+	// for (int i = 0; flags[i]; i++)
+	// 	std::cout << "str[i] = " << (int)flags[i] << std::endl;
+	if (flags.find(' ') == std::string::npos)
+		return (flags);
+	flags.erase(0, flags.find(' ') + 1);
+	if (flags.find(' ') == std::string::npos)
+		return (flags);
+	flags.erase(0, flags.find(' ') + 1);
+	if (flags.find(' ') == std::string::npos)
+		return (flags);
+	flags.erase(flags.find(' '), flags.size() - 1);
+	// flags.erase(0, flags.find(' ') + 1);
+	return (flags);
 }
 
-std::string	getArg(std::string line)
+std::string	getArg(std::string arg)
 {
-	if (line.find('#') == std::string::npos)
-		return (line);
-	line.erase(0, line.find('#'));
-	if (line.find(' ') == std::string::npos)
-		return (line);
-	line.erase(0, line.find(' ') + 1);
-	if (line.find(' ') == std::string::npos)
-		return (line);
-	line.erase(0, line.find(' ') + 1);
-	return (line);
+	// for (int i = 0; arg[i]; i++)
+	// 	std::cout << "arg[i] = " << (int)arg[i] << std::endl;
+	if (arg.find(' ') == std::string::npos)
+		return (arg);
+	arg.erase(0, arg.find(' ') + 1);
+	if (arg.find(' ') == std::string::npos)
+		return (arg);
+	arg.erase(0, arg.find(' ') + 1);
+	if (arg.find(' ') == std::string::npos)
+		return (arg);
+	arg.erase(0, arg.find(' ') + 1);
+	// std::cout << "arg = " << arg << std::endl;
+	return (arg);
 }
 
 void	executeFlags(Server *server, int index, std::string datas[4])
@@ -69,18 +82,21 @@ void	iterFlags(Server *server, std::string datas[4])
 	}
 }
 
-void	mode(Server *server, int client_fd, cmd_struct cmd_infos)
+void	mode(Server *server, int client_fd, cmd_struct &cmd_infos)
 {
 	// check if client is operator.
-	if (cmd_infos.message.find('#') == 0 || cmd_infos.message.find('#') > cmd_infos.message.length())
-		return ;
+	// if (cmd_infos.message.find('#') == 0 || cmd_infos.message.find('#') > cmd_infos.message.length())
+	// {
+	// 	std::cout << RED << "Mode out\n" << RESET;
+	// 	return ;
+	// }
 	std::string datas[4]; // 0 nick_operator, 1 channel, 2 Flags, 3 arg	
 	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
 	datas[0] = it_client->second.getNickname();
-	datas[1] = getTarget(cmd_infos.message);
-	datas[2] = getFlags(cmd_infos.message);
-	datas[3] = getArg(cmd_infos.message);
-	std::cout << "flags = " << datas[2] << std::endl;
+	datas[1] = getTargettedChannel(cmd_infos.message); // new parsing working 
+	datas[2] = getFlags(cmd_infos.message); // new parsing ok 
+	datas[3] = getArg(cmd_infos.message); // new parsing ok 
+	// std::cout << "flags = " << datas[2] << "|" << std::endl;
 	if (server->is_operator(datas[1], datas[0]) == false)
 	{
 		std::cout << datas[0] << " is not an Operator sorray on " << datas[1] << std::endl;

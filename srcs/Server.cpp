@@ -140,9 +140,9 @@ void Server::delClient(std::vector<pollfd> &poll_fds, int current_fd)
 std::string getWelcomeReply(std::map<const int, Client>::iterator &it)
 {
 	std::stringstream	rpl_welcome;
-	std::string			host = ":127.0.0.1";
+	std::string			host = "localhost";
 	std::string			space = " ";
-	std::string			welcome = " :Welcome ";
+	std::string			welcome = " :Welcome to the Internet Relay Network ";
 	std::string			rpl_code = "001";
 	std::string			user_id = it->second.getNickname() + "!" + it->second.getUsername() + "@" + host;
 	std::string			end = "\r\n";
@@ -150,7 +150,7 @@ std::string getWelcomeReply(std::map<const int, Client>::iterator &it)
 	// reset the stringstream
 	rpl_welcome.str(std::string());
 	// write in the stream to append everything in one line and properly terminate it with a NULL operator
-	rpl_welcome << host << space << rpl_code << space << it->second.getNickname() << welcome << user_id << end << '\0';
+	rpl_welcome << ":" << host << space << rpl_code << space << it->second.getNickname() << welcome << user_id << end;
 	// convert the stream in the required std::string
 	return (rpl_welcome.str());
 }
@@ -175,6 +175,11 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 		cmd.erase(cmd.find("NICK"), 4);
 		cmd = cleanStr(cmd);
 		it->second.setNickname(cmd);
+		if (isAlreadyUsed(this, client_fd, it->second.getNickname()) == true)
+		{
+			sendServerRpl(client_fd, ERR_NICKNAMEINUSE(it->second.getNickname(), cmd));
+			it->second.setNickname(cmd.append("_"));
+		}
 	}
 	else if (cmd.find("USER") != std::string::npos)
 	{
@@ -230,6 +235,7 @@ void Server::parseMessage(int const client_fd, std::string message)
 				if (it->second.is_valid() == SUCCESS)
 				{
 					send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
+					std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << getWelcomeReply(it) << RESET << std::endl;
 					it->second.isWelcomeSent() = true;
 					it->second.isRegistrationDone() = true;
 				}		
@@ -251,6 +257,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		"KILL",
 		"LIST",
 		"MODE",
+		"NAMES",
 		"NICK",
 		"PART",
 		"PING",
@@ -259,9 +266,6 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		"QUIT",
 		"TOPIC",
 		"USER",
-		"WHO",
-		"WHOIS",
-		"WHOWAS"
 		};
 
 	cmd_struct cmd_infos;
@@ -278,25 +282,23 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 
 	switch (index + 1)
 	{
-	case 1: invite(this, client_fd, cmd_infos); break;
-	case 2: join(this, client_fd, cmd_infos); break;
-	// case 3: kick(this, cmd_infos); break;
-	// case 4: kill(cmd_infos); break;
-	case 5: list(this, client_fd, cmd_infos); break;
-	case 6: mode(this, client_fd, cmd_infos); break;
-	case 7: nick(this, client_fd, cmd_infos); break;
-	// case 8: part(cmd_infos); break;
-	case 9: ping(client_fd, cmd_infos); break;
-	// case 10: oper(this, cmd_infos); break;
-//   case 11: privmsg(cmd_infos); break;
-	// case 12: quit(this, cmd_infos); break;
-	case 13: topic(this, client_fd, cmd_infos); break;
-	// case 14: user(cmd_infos); break;
-	// case 15: who(cmd_infos); break;
-	// case 16: whois(cmd_infos); break;
-	// case 17: whowas(cmd_infos); break;
-	default:
-		std::cout << PURPLE << "This command is not supported by our services." << RESET << std::endl;
+		case 1: invite(this, client_fd, cmd_infos); break;
+		case 2: join(this, client_fd, cmd_infos); break;
+		case 3: kick(this, client_fd, cmd_infos); break;
+		// case 4: kill(cmd_infos); break;
+		case 5: list(this, client_fd, cmd_infos); break;
+		case 6: mode(this, client_fd, cmd_infos); break;
+		case 7: names(this, client_fd, cmd_infos); break;
+		case 8: nick(this, client_fd, cmd_infos); break;
+		case 9: part(this, client_fd, cmd_infos); break;
+		case 10: ping(this, client_fd, cmd_infos); break;
+		// case 11: oper(this, cmd_infos); break;
+		case 12: privmsg(this, client_fd, cmd_infos); break;
+		case 13: quit(this, client_fd, cmd_infos); break;
+		case 14: topic(this, client_fd, cmd_infos); break;
+		// case 15: user(cmd_infos); break;
+		default:
+			std::cout << PURPLE << "This command is not supported by our services." << RESET << std::endl;
 	}
 }
 
@@ -390,6 +392,24 @@ void	Server::managePassword(std::string datas[4], char sign)
 		it->second.setPassword(datas[3]);
 	else if (sign == '-')
 		it->second.getPassword().clear();
+}
+
+void	Server::manageLimit(std::string datas[4])
+{
+	if (this->isChannel(datas[1]) == false)
+		return ;
+	std::map<std::string, Channel>::iterator it;
+	it = this->getChannels().find(datas[1]);
+	int limit = atoi(datas[3].c_str());
+	if (datas[2][0] == '+')
+	{
+		it->second.setLimit(limit);
+	}
+	else if (datas[2][0] == '-')
+	{
+		limit = -1;
+		it->second.setLimit(limit);
+	}
 }
 
 void	Server::manageSecret(std::string datas[4])

@@ -54,6 +54,7 @@ class Server
 		void	addClientToChannel(std::string &channelName, Client &client);
 		void	banClientFromChannel(std::string &channelName, std::string client_nickname, std::string operator_nickname);
 		void	managePassword(std::string datas[4], char sign);
+		void	manageLimit(std::string datas[4]);
 		void	manageSecret(std::string datas[4]);
 		void	managePrivate(std::string datas[4]);
 		void	manageTopicProtection(std::string datas[4]);
