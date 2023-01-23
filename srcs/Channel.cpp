@@ -25,6 +25,7 @@ std::string&						Channel::getName() 			{ return (_name); }
 std::string&						Channel::getTopic() 		{ return (_topic); }
 std::map <std::string, Client>&		Channel::getClientList()	{ return (_clientList); }
 std::vector<std::string>&			Channel::getBannedUsers()	{ return (_banned_users); }
+std::vector<std::string>&			Channel::getKickedUsers()	{ return (_kicked_users); }
 std::vector<std::string>&			Channel::getOperators() 	{ return (_operators); }
 
 void		Channel::setTopic(std::string& newTopic)
@@ -83,6 +84,21 @@ void	Channel::removeClientFromChannel(std::string &clientName)
 void	Channel::addClientToChannel(Client &client)
 {
 	_clientList.insert(std::pair<std::string, Client>(client.getNickname(), client));
+}
+
+void	Channel::addToKicked(std::string &kicked_name)
+{
+	std::vector<std::string>::iterator it;
+	for (it = _kicked_users.begin(); it != _kicked_users.end(); it++)
+	{
+		if (*it == kicked_name)
+		{
+			std::cout << kicked_name << " is already kicked from the channel " << getName() << std::endl;
+			return ;
+		}
+	}
+	_kicked_users.push_back(kicked_name);
+	std::cout << RED << kicked_name << " is now kicked from the channel " << getName() << RESET << std::endl;
 }
 
 void	Channel::addToBanned(std::string &banned_name)

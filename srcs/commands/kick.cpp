@@ -75,7 +75,8 @@ void				kick(Server *server, int const client_fd, cmd_struct cmd_infos)
 	}
 	else
 	{
-		it_chan->second.getClientList().erase(kicked_name);
+		it_chan->second.getClientList().erase(kicked_name); // ?? A discuter avec Marine
+		it_chan->second.addToKicked(kicked_name);
 		broadcastToChannel(it_chan->second, requester, kicked_name, reason);
 	}
 }
