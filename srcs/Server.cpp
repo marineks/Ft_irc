@@ -7,7 +7,7 @@ Server::Server(std::string port, std::string password)
 {
 	std::cout << YELLOW << "Server Constructor" << RESET << std::endl;
 	memset(&_hints, 0, sizeof(_hints));
-	memset(&_irc_operators, 0, sizeof(_irc_operators));
+	// memset(&_irc_operators, 0, sizeof(_irc_operators));
 }
 
 Server::~Server()
