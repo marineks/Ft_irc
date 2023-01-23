@@ -259,9 +259,9 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		"MODE",
 		"NAMES",
 		"NICK",
+		"OPER",
 		"PART",
 		"PING",
-		"OPER",
 		"PRIVMSG",
 		"QUIT",
 		"TOPIC",
@@ -290,9 +290,9 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		// case 6: mode(this, client_fd, cmd_infos); break;
 		case 7: names(this, client_fd, cmd_infos); break;
 		case 8: nick(this, client_fd, cmd_infos); break;
-		case 9: part(this, client_fd, cmd_infos); break;
-		case 10: ping(this, client_fd, cmd_infos); break;
-		// case 11: oper(this, cmd_infos); break;
+		case 9: oper(this, client_fd, cmd_infos); break;
+		case 10: part(this, client_fd, cmd_infos); break;
+		case 11: ping(this, client_fd, cmd_infos); break;
 		case 12: privmsg(this, client_fd, cmd_infos); break;
 		case 13: quit(this, client_fd, cmd_infos); break;
 		case 14: topic(this, client_fd, cmd_infos); break;

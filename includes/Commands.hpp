@@ -32,7 +32,7 @@ void	kick(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	list(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	names(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	nick(Server *server, int const client_fd, cmd_struct cmd_infos);
-// void	oper(Server server, cmd_struct cmd_infos);
+void	oper(Server *server, int const client_fd, cmd_struct cmd_infos);
 int		pass(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	part(Server *server, int const client_fd, cmd_struct cmd_infos);
 int		ping(Server *server, int const client_fd, cmd_struct &cmd);
