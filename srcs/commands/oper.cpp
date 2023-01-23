@@ -3,6 +3,8 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
+static std::string	getName(std::string msg_to_parse);
+static std::string	getPassword(std::string msg_to_parse);
 /**
  * @brief The OPER command is used by a normal user to obtain IRC operator privileges.
  * 	Both parameters are required for the command to be successful.
@@ -23,11 +25,47 @@
  */
 void oper(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
+	Client&		client		= retrieveClient(server, client_fd);
+	std::string name		= getName(cmd_infos.message);
+	std::string password	= getPassword(cmd_infos.message);
 
-	(void) server;
-	(void) client_fd;
-	(void) cmd_infos;
+	if (name.empty() || password.empty())
+	{
+		sendServerRpl(client_fd, ERR_NEEDMOREPARAMS(client.getNickname(), cmd_infos.name));
+	}
+	else 
+	{
+		std::cout << "Name: |" << name << "|" << std::endl;
+		std::cout << "Password: |" << password << "|" << std::endl;
+	}
 
+}
+
+std::string	getName(std::string msg_to_parse)
+{
+	std::string name;
+
+	name.clear();
+	if (msg_to_parse.empty() == false || msg_to_parse.find(" ") != msg_to_parse.npos)
+	{
+		name.insert(0, msg_to_parse, 1,\
+					msg_to_parse.find_last_of(" ") - 1);
+	}
+	return (name);
+}
+
+std::string	getPassword(std::string msg_to_parse)
+{
+	std::string password;
+
+	password.clear();
+	if (msg_to_parse.empty() == false || msg_to_parse.find(" ") != msg_to_parse.npos)
+	{
+		password.insert(0, msg_to_parse,\
+					msg_to_parse.find_last_of(" ") + 1,\
+					msg_to_parse.size() - 1);
+	}
+	return (password);
 }
 
 // 
