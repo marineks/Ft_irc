@@ -94,6 +94,7 @@ int Server::manageServerLoop()
 					}
 					else if (read_count == 0) // when a client disconnects
 					{
+						std::cout << "CEST PAR ICI ?" << std::endl;
 						delClient(poll_fds, it->fd);
 						std::cout << "Disconnected\n";
 						if ((unsigned int)(poll_fds.size() - 1) == 0)

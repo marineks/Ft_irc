@@ -26,6 +26,9 @@ void	quit(Server *server, int const client_fd, cmd_struct cmd_infos)
 	Client 		&client = retrieveClient(server, client_fd);
 	std::string	reason	= getReason(cmd_infos.message);
 
-	sendServerRpl(client_fd, RPL_ERROR(user_id(client.getNickname(), client.getUsername()), reason));
-	sendServerRpl(client_fd, RPL_QUIT(user_id(client.getNickname(), client.getUsername()), reason));
+	(void)client;
+	(void)reason;
+	std::cout << "ASKSDKVJSKFGQK:WEF" << std::endl;
+	// sendServerRpl(client_fd, RPL_ERROR(user_id(client.getNickname(), client.getUsername()), reason));
+	// sendServerRpl(client_fd, RPL_QUIT(user_id(client.getNickname(), client.getUsername()), reason));
 }
