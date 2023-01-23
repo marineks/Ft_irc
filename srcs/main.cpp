@@ -5,9 +5,10 @@ int main (int argc, char **argv)
 	if (argc == 3)
 	{
 		Server server(argv[1], argv[2]);
-		// Server server;
 
-		// char port[5] = "6667";
+		char filename[39] = "srcs/config/ManageServOperators.config";
+		server.readFromConfigFile(filename);
+		
 		// The three following functions calls are just set up
 		server.setHints();
 		server.fillServinfo(argv[1]);

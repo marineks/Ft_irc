@@ -4,6 +4,15 @@
 #include "Irc.hpp"
 #include "Client.hpp"
 #include "Channel.hpp"
+#include <iostream>
+#include <fstream>
+
+struct server_op
+{
+	std::string name;
+	std::string	host;
+	std::string	password;
+};
 
 class Server
 {
@@ -13,9 +22,9 @@ class Server
 		int								_server_socket_fd;
 		std::map<const int, Client>		_clients;
 		std::map<std::string, Channel>	_channels;
-		// Commands						_cmd;
 		std::string						_port;
 		std::string						_password;
+		std::vector<server_op>			_irc_operators;
 	
 	public:
 		// Constructor & destructor
@@ -23,13 +32,15 @@ class Server
 		Server();
 		~Server();
 		// Accessors
-		void							setHints();
-		std::string						getPort() const;
-		std::string						getPassword() const;
+		void								setHints();
+		std::string							getPort() const;
+		std::string							getPassword() const;
 		void								setPassword(std::string new_pwd);
 		std::map<std::string, Channel>& 	getChannels();
 		std::map<const int, Client>&		getClients();
+		
 		// Running Server functions
+		int 		readFromConfigFile(char *filename);
 		int			fillServinfo(char *port);
 		int			launchServer();
 		int			manageServerLoop();

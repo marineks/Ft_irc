@@ -23,17 +23,10 @@
  */
 void oper(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
-	
 
-
-
-
-
-
-
-
-
-
+	(void) server;
+	(void) client_fd;
+	(void) cmd_infos;
 
 }
 
