@@ -92,9 +92,9 @@ static std::string	getRplList(std::string client_nick, std::map<std::string, Cha
 {
 	std::stringstream concat;
 		
-	concat << "322 " << client_nick << " " << channel->second.getName() << " "  \
-			<< channel->second.getClientList().size() \
-			<< (channel->second.getTopic().empty() ? " :No topic set for this channel yet."  : channel->second.getTopic()) \
+	concat << "322 " << client_nick << " #" << channel->second.getName() << " "  \
+			<< channel->second.getClientList().size() << " "\
+			<< (channel->second.getTopic().empty() ? ":No topic set for this channel yet."  : channel->second.getTopic()) \
 			<< "\r\n";
 	return (concat.str());			
 }
