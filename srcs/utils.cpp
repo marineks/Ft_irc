@@ -30,6 +30,8 @@ std::string	getListOfMembers(Channel &channel)
 	{
 		nick.clear();
 		nick = it->second.getNickname();
+		if (channel.isOperator(nick) == true)
+			members_list += "@";
 		members_list += nick;
 		members_list += " ";
 		it++;
