@@ -94,10 +94,21 @@ static std::string	findAnyChannel(std::string msg_to_parse)
 static std::string	getRplList(std::string client_nick, std::map<std::string, Channel>::iterator &channel)
 {
 	std::stringstream concat;
-		
-	concat << "322 " << client_nick << " #" << channel->second.getName() << " " \
-			<< channel->second.getClientList().size() << " " \
-			<< (channel->second.getTopic().empty() ? ":No topic set for this channel yet."  : channel->second.getTopic()) \
-			<< "\r\n";
+
+	if (channel->second.getPrivate() == true)
+	{
+		concat << "322 " << client_nick << " #" << channel->second.getName() << " " \
+		<< channel->second.getClientList().size() << " " \
+		<< ":The topic of this channel is private." \
+		<< "\r\n";
+	} 
+	else
+	{
+		concat << "322 " << client_nick << " #" << channel->second.getName() << " " \
+		<< channel->second.getClientList().size() << " " \
+		<< (channel->second.getTopic().empty() ? ":No topic set for this channel yet."  : channel->second.getTopic()) \
+		<< "\r\n";
+	}
+
 	return (concat.str());			
 }
