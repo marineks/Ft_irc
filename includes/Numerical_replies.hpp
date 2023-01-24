@@ -54,6 +54,7 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define RPL_ERROR(user_id, reason) (user_id + " ERROR :" + reason + "\r\n")
 
 // PRIVMSG
+# define ERR_CANNOTSENDTOCHAN(client, channel) (":localhost 404 " + client + " #" + channel + " :Cannot send to channel\r\n")
 # define ERR_NOSUCHNICK(client, target) ("401 " + client + " " + target + " :No such nick/channel\r\n")
 # define ERR_NORECIPIENT(client) ("411 " + client + " :No recipient given PRIVMSG\r\n")
 # define ERR_NOTEXTTOSEND(client) ("412 " + client + " :No text to send\r\n")

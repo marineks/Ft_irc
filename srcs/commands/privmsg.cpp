@@ -127,7 +127,18 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
       if (it_channel == channel_list.end())
          sendServerRpl(client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), target));
       else
-         broadcastToChannel(client_fd, it_client, it_channel, cmd_infos.message);
+      {
+         // If channel is on Moderation mode and the client does not have the Voice mode to talk in the channel
+         if (it_channel->second.getModeration() == true \
+            && it_channel->second.hasVoice(it_client->second.getNickname()) == false)
+         {
+            std::cout << "[SERVER] The channel is moderated and the user does not have the voice (+v) to talk." << std::endl;
+            sendServerRpl(client_fd, ERR_CANNOTSENDTOCHAN(it_client->second.getNickname(), target));
+         } 
+         else
+            broadcastToChannel(client_fd, it_client, it_channel, cmd_infos.message);
+      }
+         
    }
    // user case
    else
