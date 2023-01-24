@@ -33,11 +33,11 @@ int main (int argc, char **argv)
 			std::cerr << RED << "Caught exception : " << RESET << e.what() << std::endl;
 		}
 
-		return (EXIT_SUCCESS);
+		return (SUCCESS);
 	}
 	else
 	{
 		std::cout << "Correct usage is ./ircserv [port] [password] :)" << std::endl;
-		return (EXIT_FAILURE);
+		return (FAILURE);
 	}
 }

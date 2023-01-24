@@ -1,6 +1,9 @@
 NAME		= ircserv
 
-SRCS		= main.cpp Client.cpp ManageServer.cpp Server.cpp parsing.cpp Channel.cpp utils.cpp \
+SRCS		= main.cpp ManageServer.cpp parsing.cpp utils.cpp \
+				class/Client.cpp	\
+				class/Channel.cpp	\
+				class/Server.cpp	\
 				commands/join.cpp 	\
 				commands/ping.cpp 	\
 				commands/privmsg.cpp	\
