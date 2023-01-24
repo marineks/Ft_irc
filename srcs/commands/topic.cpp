@@ -5,6 +5,7 @@
 
 std::string	findChannelName(std::string msg_to_parse);
 std::string	findTopic(std::string msg_to_parse);
+static void	broadcastToChannel(Channel &channel, Client &client, std::string kicked, std::string reason);
 
 /**
  * @brief Command : TOPIC <channel> [<topic>]
@@ -52,44 +53,34 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	// ETAPE 2 - RECUPERER LE CHANNEL GRACE AU CHANNEL NAME
 	std::map<std::string, Channel>&			 channels = server->getChannels();
 	std::map<std::string, Channel>::iterator channel = channels.find(channel_name);
-	// // [!] Si channel n'existe pas, renvoyer une erreur
 	if (channel == channels.end())
 	{
 		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(client_nickname, channel_name));
 		return ;
 	}
-	// [!] Si user pas dans ce chan, renvoyer une erreur
 	if (channel->second.doesClientExist(client_nickname) == false)
 	{
-		std::cout << "You are not on the channel you want to see to the topic of." << std::endl;
 		sendServerRpl(client_fd, ERR_NOTONCHANNEL(client_nickname, channel_name));
 		return ;
 	}
 
-	// Gérer le topic
 	topic = findTopic(cmd_infos.message);
 	
-	if (topic.empty())
+	if (topic.empty()) // Afficher le topic
 	{
-		// afficher le topic
-		// PREVOIR CAR OU CHAN A AFFICHER EST VIDE
-		sendServerRpl(client_fd,  RPL_TOPIC(client_nickname, channel_name, channel->second.getTopic()));
-		std::cout << "The topic of this channel is " << channel->second.getTopic() << std::endl;
+		if (channel->second.getTopic().empty() == false)
+			sendServerRpl(client_fd,  RPL_TOPIC(client_nickname, channel_name, channel->second.getTopic()));
+		else
+			sendServerRpl(client_fd,  RPL_NOTOPIC(client_nickname, channel_name));
 	}
-	else if (topic == ":")
+	else  // reattribuer le topic
 	{
-		// erase le topic
-		topic.clear();
+		if (topic == ":") // erase le topic
+			topic.clear();
 		channel->second.setTopic(topic);
-		sendServerRpl(client_fd,  RPL_NOTOPIC(client_nickname, channel_name));
+		broadcastToChannel(channel->second, client, channel_name, topic);
 	}
-	else
-	{
-		// reattribuer le topic
-		channel->second.setTopic(topic);
-		sendServerRpl(client_fd,  RPL_TOPIC(client_nickname, channel_name, topic));
-		// sendServerRpl(client_fd,  RPL_NEWTOPIC(client_nickname, channel_name, topic));
-	}
+
 }
 
 // Possible output : | #test :New topic|
@@ -132,7 +123,19 @@ std::string	findTopic(std::string msg_to_parse)
 	else
 	{
 		topic.append(msg_to_parse, msg_to_parse.find(":"), std::string::npos);
-		std::cout << "The topic is : " << topic << std::endl;
 	}
 	return (topic);
+}
+
+
+static void	broadcastToChannel(Channel &channel, Client &client, std::string channel_name, std::string topic)
+{
+	std::map<std::string, Client>::iterator member = channel.getClientList().begin();
+	std::string								client_nickname = client.getNickname();
+	
+	while (member != channel.getClientList().end())
+	{
+		sendServerRpl(member->second.getClientFd(),  RPL_TOPIC(client_nickname, channel_name, topic));
+		member++;
+	}
 }
