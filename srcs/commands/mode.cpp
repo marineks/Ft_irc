@@ -49,36 +49,38 @@ std::string	getArg(std::string arg)
 	return (arg);
 }
 
-void	executeFlags(Server *server, int index, std::string datas[4])
+void	executeFlags(Server *server, int index, std::string datas[4], int &client_fd)
 {
 	// on va use channel et target
 	switch (index)
 	{
-		case 0: ban(server, datas) ; break; // ban
-		// case 1: invite(this, client_fd, cmd_infos); break; // invite
-		case 2: passwordChannel(server, datas); break; // limit_size channel
-		case 3: limit(server, datas); break;  // limit size
-		case 4: moderation(server, datas); break; // no external message
-		// case 6: extern(this, cmd_infos); break; // donne statut operateur 
-		case 6: operators(server, datas); break;
-		case 7: priv(server, datas); break; // secret
-		case 8: secret(server, datas); break; // topic protection 
-		case 9: topicProtection(server, datas); break; // voiced 
-		case 10: voice(server, datas); break; // private
+		case 0: ban(server, datas) ; break;
+		case 1: passwordChannel(server, datas, client_fd); break;
+		case 2: limit(server, datas, client_fd); break;  // limit size
+		case 3: moderation(server, datas, client_fd); break; // no external message
+		// case 4: extern(this, cmd_infos); break; // donne statut operateur 
+		case 5: operators(server, datas, client_fd); break;
+		case 6: priv(server, datas, client_fd); break;
+		case 7: secret(server, datas, client_fd); break; 
+		case 8: topicProtection(server, datas, client_fd); break;
+		case 9: voice(server, datas, client_fd); break;
 	}
 }
-void	iterFlags(Server *server, std::string datas[4])
+void	iterFlags(Server *server, std::string datas[4], int &client_fd)
 {
 	if (datas[2].size() < 2)
 		return ;
-	std::string flag = "biklmnopstv";
+	std::string flag = "bklmnopstv";
 	int index;
 	for (int i = 1; datas[2][i]; i++)
 	{
 		// std::cout << "flags[i]" << (int)flags[i] << std::endl;
 		// std::cout << "flags[i]" << flag.find(datas[2][i]) << std::endl;
 		index = flag.find(datas[2][i]);
-		executeFlags(server, index, datas);
+		if (index == (int)std::string::npos)
+			sendServerRpl(client_fd, ERR_UNKNOWNMODE(datas[0], datas[2][i]));
+		else
+			executeFlags(server, index, datas, client_fd);
 	}
 }
 
@@ -102,5 +104,5 @@ void	mode(Server *server, int client_fd, cmd_struct &cmd_infos)
 		std::cout << datas[0] << " is not an Operator sorray on " << datas[1] << std::endl;
 		return ;
 	}
-	iterFlags(server, datas);
+	iterFlags(server, datas, client_fd);
 }

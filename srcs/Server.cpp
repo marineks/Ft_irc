@@ -382,10 +382,13 @@ void	Server::banClientFromChannel(std::string &channelName, std::string client_n
 		std::cout << YELLOW << client_nickname << " already here\n" << RESET;
 }
 
-void	Server::managePassword(std::string datas[4], char sign)
+void	Server::managePassword(std::string datas[4], char sign, int &client_fd)
 {
 	if (this->isChannel(datas[1]) == false)
+	{
+		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(datas[0], datas[1]));
 		return ;
+	}
 	std::map<std::string, Channel>::iterator it;
 	it =_channels.find(datas[1]);
 	if (sign == '+')
@@ -394,10 +397,13 @@ void	Server::managePassword(std::string datas[4], char sign)
 		it->second.getPassword().clear();
 }
 
-void	Server::manageLimit(std::string datas[4])
+void	Server::manageLimit(std::string datas[4], int &client_fd)
 {
 	if (this->isChannel(datas[1]) == false)
+	{
+		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(datas[0], datas[1]));
 		return ;
+	}
 	std::map<std::string, Channel>::iterator it;
 	it = this->getChannels().find(datas[1]);
 	int limit = atoi(datas[3].c_str());
@@ -412,10 +418,13 @@ void	Server::manageLimit(std::string datas[4])
 	}
 }
 
-void	Server::manageSecret(std::string datas[4])
+void	Server::manageSecret(std::string datas[4], int &client_fd)
 {
 	if (this->isChannel(datas[1]) == false)
+	{
+		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(datas[0], datas[1]));
 		return ;
+	}
 	std::map<std::string, Channel>::iterator it;
 	it = _channels.find(datas[1]);
 	if (datas[2][0] == '+')
@@ -424,10 +433,13 @@ void	Server::manageSecret(std::string datas[4])
 		it->second.setSecret(0);
 }
 
-void	Server::managePrivate(std::string datas[4])
+void	Server::managePrivate(std::string datas[4], int &client_fd)
 {
 	if (this->isChannel(datas[1]) == false)
+	{
+		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(datas[0], datas[1]));
 		return ;
+	}
 	std::map<std::string, Channel>::iterator it;
 	it = _channels.find(datas[1]);
 	if (datas[2][0] == '+')
@@ -436,10 +448,13 @@ void	Server::managePrivate(std::string datas[4])
 		it->second.setPrivate(0);
 }
 
-void	Server::manageTopicProtection(std::string datas[4])
+void	Server::manageTopicProtection(std::string datas[4], int &client_fd)
 {
 	if (this->isChannel(datas[1]) == false)
+	{
+		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(datas[0], datas[1]));
 		return ;
+	}
 	std::map<std::string, Channel>::iterator it;
 	it = _channels.find(datas[1]);
 	if (datas[2][0] == '+')
@@ -448,16 +463,27 @@ void	Server::manageTopicProtection(std::string datas[4])
 		it->second.setTopicProtection(0);
 }
 
-void	Server::manageOperator(std::string datas[4])
+void	Server::manageOperator(std::string datas[4], int &client_fd)
 {
 	if (this->isChannel(datas[1]) == false)
+	{
+		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(datas[0], datas[1]));
 		return ;
+	}
 	std::map<std::string, Channel>::iterator it;
 	it = _channels.find(datas[1]);
+	if (it->second.getClientList().find(datas[3]) == it->second.getClientList().end())
+	{
+		
+	}
 	if (datas[2][0] == '+')
+	{
 		it->second.addOperator(datas[3]);
+		sendServerRpl(client_fd, RPL_YOUREOPER(datas[3]));
+	}
 	else if (datas[2][0] == '-')
 		it->second.removeOperator(datas[3]);
+	
 }
 
 bool	Server::is_operator(std::string &channelName, std::string &clientName)
@@ -469,10 +495,13 @@ bool	Server::is_operator(std::string &channelName, std::string &clientName)
 	return (it->second.isOperator(clientName));
 }
 
-void	Server::manageVoice(std::string datas[4])
+void	Server::manageVoice(std::string datas[4], int &client_fd)
 {
 	if (this->isChannel(datas[1]) == false)
+	{
+		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(datas[0], datas[1]));
 		return ;
+	}
 	std::map<std::string, Channel>::iterator it;
 	it = _channels.find(datas[1]);
 	if (datas[2][0] == '+')
@@ -481,10 +510,13 @@ void	Server::manageVoice(std::string datas[4])
 		it->second.removeOperator(datas[3]);
 }
 
-void	Server::manageModeration(std::string datas[4])
+void	Server::manageModeration(std::string datas[4], int &client_fd)
 {
 	if (this->isChannel(datas[1]) == false)
+	{
+		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(datas[0], datas[1]));
 		return ;
+	}
 	std::map<std::string, Channel>::iterator it;
 	it = _channels.find(datas[1]);
 	if (datas[2][0] == '+')

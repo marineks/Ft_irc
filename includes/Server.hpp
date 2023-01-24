@@ -53,15 +53,15 @@ class Server
 		void	addChannel(std::string &channelName);
 		void	addClientToChannel(std::string &channelName, Client &client);
 		void	banClientFromChannel(std::string &channelName, std::string client_nickname, std::string operator_nickname);
-		void	managePassword(std::string datas[4], char sign);
-		void	manageLimit(std::string datas[4]);
-		void	manageSecret(std::string datas[4]);
-		void	managePrivate(std::string datas[4]);
-		void	manageTopicProtection(std::string datas[4]);
-		void	manageOperator(std::string datas[4]);
+		void	managePassword(std::string datas[4], char sign, int &client_fd);
+		void	manageLimit(std::string datas[4], int &client_fd);
+		void	manageSecret(std::string datas[4], int &client_fd);
+		void	managePrivate(std::string datas[4], int &client_fd);
+		void	manageTopicProtection(std::string datas[4], int &client_fd);
+		void	manageOperator(std::string datas[4], int &client_fd);
 		bool	is_operator(std::string &channelName, std::string &clientName);
-		void	manageVoice(std::string datas[4]);
-		void	manageModeration(std::string datas[4]);
+		void	manageVoice(std::string datas[4], int &client_fd);
+		void	manageModeration(std::string datas[4], int &client_fd);
 	};
 
 #endif

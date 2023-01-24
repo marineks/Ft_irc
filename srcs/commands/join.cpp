@@ -81,6 +81,7 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 		if ((int)it_chan->second.getClientList().size() + 1 > it_chan->second.getLimit() && it_chan->second.getLimit() != -1)
 		{
 			std::cout << "Server is full Sorray\n";
+			sendServerRpl(client_fd, ERR_CHANNELISFULL(client_nickname, channel_name));
 			return ;
 		}
 		if (it_chan->second.isBanned(client_nickname) == true) {

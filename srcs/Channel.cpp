@@ -6,8 +6,8 @@
 *				################################
 */
 
-Channel::Channel(std::string const &channelName): _name(channelName), _limit(-1), _secret(0),\
-	_private(0), _topic_protection(0), _moderation(false)
+Channel::Channel(std::string const &channelName): _name(channelName), _limit(-1), _secret(false),\
+	_private(false), _topic_protection(false), _moderation(false)
 {
 	_banned_users.clear();
 	_clientList.clear();
@@ -30,9 +30,9 @@ std::vector<std::string>&			Channel::getBannedUsers()	{ return (_banned_users); 
 std::vector<std::string>&			Channel::getOperators() 	{ return (_operators); }
 int									Channel::getLimit()			{ return (_limit);}
 std::string&						Channel::getPassword()		{ return (_password);}
-int									Channel::getSecret()const	{ return (_secret);}
-int									Channel::getPrivate()const	{ return (_private);}
-int									Channel::getTopicProtection()const { return (_topic_protection);}
+bool								Channel::getSecret()const	{ return (_secret);}
+bool								Channel::getPrivate()const	{ return (_private);}
+bool								Channel::getTopicProtection()const { return (_topic_protection);}
 bool								Channel::getModeration()const {return (_moderation);}
 
 void		Channel::setPassword(std::string &password) { _password = password;}

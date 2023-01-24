@@ -17,9 +17,9 @@ class Channel
 		std::string						_topic;
 		int								_limit;
 		std::string						_password;
-		int								_secret;
-		int								_private;
-		int								_topic_protection;
+		bool							_secret;
+		bool							_private;
+		bool							_topic_protection;
 		bool							_moderation;
 	public:
 		Channel(std::string const &name);
@@ -33,9 +33,9 @@ class Channel
 		std::map <std::string, Client>&	getClientList();
 		int								getLimit();
 		std::string&					getPassword();
-		int								getSecret()const;
-		int								getPrivate()const;
-		int								getTopicProtection()const;
+		bool							getSecret()const;
+		bool							getPrivate()const;
+		bool							getTopicProtection()const;
 		bool							getModeration()const;
 
 		void							setPassword(std::string &password);

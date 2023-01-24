@@ -10,42 +10,42 @@ void	ban(Server *server, std::string datas[4])
 	server->printClientList();
 }
 
-void	passwordChannel(Server *server, std::string datas[4])
+void	passwordChannel(Server *server, std::string datas[4], int &client_fd)
 {
-	server->managePassword(datas, datas[2][0]);
+	server->managePassword(datas, datas[2][0], client_fd);
 }
 
-void	limit(Server *server, std::string datas[4])
+void	limit(Server *server, std::string datas[4], int &client_fd)
 {
-	server->manageLimit(datas);
+	server->manageLimit(datas, client_fd);
 }
 
-void	moderation(Server *server, std::string datas[4])
+void	moderation(Server *server, std::string datas[4], int &client_fd)
 {
-	server->manageModeration(datas);
+	server->manageModeration(datas, client_fd);
 }
 
-void	operators(Server *server, std::string datas[4])
+void	operators(Server *server, std::string datas[4], int &client_fd)
 {
-	server->manageOperator(datas);
+	server->manageOperator(datas, client_fd);
 }
 
-void	priv(Server *server, std::string datas[4])
+void	priv(Server *server, std::string datas[4], int &client_fd)
 {
-	server->managePrivate(datas);
+	server->managePrivate(datas, client_fd);
 }
 
-void	secret(Server *server, std::string datas[4])
+void	secret(Server *server, std::string datas[4], int &client_fd)
 {
-	server->manageSecret(datas);
+	server->manageSecret(datas, client_fd);
 }
 
-void	topicProtection(Server *server, std::string datas[4])
+void	topicProtection(Server *server, std::string datas[4], int &client_fd)
 {
-	server->manageTopicProtection(datas);
+	server->manageTopicProtection(datas, client_fd);
 }
 
-void	voice(Server *server, std::string datas[4])
+void	voice(Server *server, std::string datas[4], int &client_fd)
 {
-	server->manageVoice(datas);
+	server->manageVoice(datas, client_fd);
 }

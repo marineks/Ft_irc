@@ -57,7 +57,9 @@ void	sendServerRpl(int const client_fd, std::string reply);
 
 // MODE
 
-
+# define ERR_CHANNELISFULL(client, channel) ("471 " + client + " #" + channel + " :Cannot join channel (+l)\r\n")
+# define ERR_UNKNOWNMODE(client, mode_) ("472 " + client + " " + mode_ + " :is unknown mode char to me\r\n")
+# define RPL_YOUREOPER(client) ("381 " + client + " :You are now an IRC operator\r\n")
 
 
 
