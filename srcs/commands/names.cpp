@@ -41,8 +41,8 @@ void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 		std::map<std::string, Channel>				channels = server->getChannels();
 		std::map<std::string, Channel>::iterator	channel = channels.find(channel_to_name);
 		if (channel == channels.end() \
-			|| channel->second.doesClientExist(client.getNickname()) == false \
-				&& channel->second.getSecret() == true)
+			|| (channel->second.doesClientExist(client.getNickname()) == false \
+				&& channel->second.getSecret() == true))
 		{
 			sendServerRpl(client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
 			continue ;

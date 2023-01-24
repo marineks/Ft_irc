@@ -6,6 +6,7 @@
 #include "Channel.hpp"
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
 
 struct server_op
 {
