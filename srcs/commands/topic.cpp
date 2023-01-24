@@ -75,10 +75,16 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	}
 	else  // reattribuer le topic
 	{
-		if (topic == ":") // erase le topic
-			topic.clear();
-		channel->second.setTopic(topic);
-		broadcastToChannel(channel->second, client, channel_name, topic);
+		if (channel->second.getTopicProtection() == true \
+			&& channel->second.isOperator(client_nickname) == false)
+			sendServerRpl(client_fd, ERR_CHANOPRIVSNEEDED(client_nickname, channel_name));
+		else
+		{
+			if (topic == ":") // erase le topic
+				topic.clear();
+			channel->second.setTopic(topic);
+			broadcastToChannel(channel->second, client, channel_name, topic);
+		}
 	}
 
 }
