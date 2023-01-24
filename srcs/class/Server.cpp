@@ -134,6 +134,7 @@ int Server::launchServer()
 		std::cerr << RED << "Listen failed" << RESET << std::endl;
 		return (FAILURE);
 	}
+	freeaddrinfo(_servinfo);
 	return (SUCCESS);
 }
 
@@ -143,7 +144,7 @@ void Server::addClient(int client_socket, std::vector<pollfd> &poll_fds)
 	Client new_client(client_socket);
 
 	client_pollfd.fd = client_socket;
-	client_pollfd.events = POLLIN;
+	client_pollfd.events = POLLIN | POLLOUT; 
 	poll_fds.push_back(client_pollfd);
 
 	_clients.insert(std::pair<int, Client>(client_socket, new_client)); // insert a new nod in client map with the fd as key
@@ -217,8 +218,9 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 		it->second.setNickname(cmd);
 		if (isAlreadyUsed(this, client_fd, it->second.getNickname()) == true)
 		{
-			sendServerRpl(client_fd, ERR_NICKNAMEINUSE(it->second.getNickname(), cmd));
-			it->second.setNickname(cmd.append("_"));
+			addToClientBuffer(this, client_fd, ERR_NICKNAMEINUSE(it->second.getNickname(), cmd));
+			// sendServerRpl(client_fd, ERR_NICKNAMEINUSE(it->second.getNickname(), cmd));
+			it->second.setNickname(cmd.append("1"));
 		}
 	}
 	else if (cmd.find("USER") != std::string::npos)
@@ -274,8 +276,9 @@ void Server::parseMessage(int const client_fd, std::string message)
 			{
 				if (it->second.is_valid() == SUCCESS)
 				{
-					send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
-					std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << getWelcomeReply(it) << RESET << std::endl;
+					addToClientBuffer(this, client_fd, getWelcomeReply(it));
+					// send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
+					// std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << getWelcomeReply(it) << RESET << std::endl;
 					it->second.isWelcomeSent() = true;
 					it->second.isRegistrationDone() = true;
 				}		

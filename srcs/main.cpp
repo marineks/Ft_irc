@@ -25,8 +25,7 @@ int main (int argc, char **argv)
 		// Below, the main loop for server/client connection
 		try
 		{
-			if (server.manageServerLoop() == FAILURE)
-				throw;
+			server.manageServerLoop();
 		}
 		catch(const std::exception& e) 
 		{

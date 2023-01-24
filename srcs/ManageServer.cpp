@@ -1,5 +1,6 @@
 #include "Server.hpp"
 #include "Colors.hpp"
+#include "Commands.hpp"
 
 static int acceptSocket(int listenSocket)
 {
@@ -15,6 +16,7 @@ static void	tooManyClients(int client_socket)
 	close(client_socket);
 }
 
+// TODO paS LE DROIT A GETPEERNAME, RECODER A PARTIR D ACCEPT
 static sockaddr_in getClientAddress(int socket)
 {
 	sockaddr_in client;
@@ -47,20 +49,16 @@ int Server::manageServerLoop()
 
 	poll_fds.push_back(server_poll_fd);
 
-	while (1)
+	while (server_shutdown == false)
 	{
-		if (server_shutdown == true)
-		{
-			// tout free
-			break ;
-		}
-			
 		std::vector<pollfd> new_pollfds; // tmp struct hosting potential newly-created fds
 
 		if (poll((pollfd *)&poll_fds[0], (unsigned int)poll_fds.size(), -1) <= SUCCESS) // -1 == no timeout
 		{
+			if (errno == EINTR) //  EINTR  A signal occurred before any requested event; see signal(7).
+				break ;
 			std::cerr << RED << "Poll error" << RESET << std::endl;
-			return (FAILURE);
+			throw ; //TODO: mettre rreur pls tard avec errno (truc custom strerror)
 		}
 
 		std::vector<pollfd>::iterator it = poll_fds.begin();
@@ -86,10 +84,10 @@ int Server::manageServerLoop()
 				{
 					char message[BUF_SIZE_MSG];
 					int read_count;
-
-					memset(message, 0, sizeof(message)); // TODO: METTRE BUFFER POUR CHAQUE CLIENT (it->message) POUR REGLER CTRL X CTRL D NATURELLEMENT
+					
+					memset(message, 0, sizeof(message));
 					read_count = recv(it->fd, message, BUF_SIZE_MSG, 0); // Retrieves the Client's message
-
+					// string partielle
 					if (read_count <= FAILURE) // when recv returns an error
 					{
 						std::cerr << RED << "Recv() failed [456]" << RESET << std::endl;
@@ -99,7 +97,6 @@ int Server::manageServerLoop()
 					}
 					else if (read_count == 0) // when a client disconnects
 					{
-						std::cout << "CEST PAR ICI ?" << std::endl;
 						delClient(poll_fds, it->fd);
 						std::cout << "Disconnected\n";
 						if ((unsigned int)(poll_fds.size() - 1) == 0)
@@ -123,8 +120,22 @@ int Server::manageServerLoop()
 						it++;
 					}
 				}
+			} 
+			else if (it->revents & POLLOUT) // = "Alert me when I can send() data to this socket without blocking."
+			{
+				Client &client = retrieveClient(this, it->fd);
+				// if (client)
+				// {
+					
+					sendServerRpl(it->fd, client.getBuffer());
+				// }
+				// else
+				// {
+				// 	std::cout << "[SERVER] Did not found connexion to client sorry" << std::endl;
+				// }
+				
 			}
-			else if (it->revents & POLLERR) // voir si il faut it++ ?
+			else if (it->revents & POLLERR)
 			{
 				if (it->fd == _server_socket_fd)
 				{
