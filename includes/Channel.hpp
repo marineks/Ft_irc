@@ -18,6 +18,7 @@ class Channel
 		std::string						_topic;
 		int								_limit;
 		std::string						_password;
+		bool							_keyMode;
 		bool							_secret;
 		bool							_private;
 		bool							_topic_protection;
@@ -35,12 +36,14 @@ class Channel
 		std::map <std::string, Client>&	getClientList();
 		int								getLimit();
 		std::string&					getPassword();
+		bool							getKeyMode() const;
 		bool							getSecret()const;
 		bool							getPrivate()const;
 		bool							getTopicProtection()const;
 		bool							getModeration()const;
 
 		void							setPassword(std::string &password);
+		void							setKeyMode(bool value);
 		void							setLimit(int &value);
 		void							setTopic(std::string& newTopic);
 		void							setSecret(int i);

@@ -13,6 +13,7 @@ Channel::Channel(std::string const &channelName): _name(channelName), _limit(-1)
 	_clientList.clear();
 	_topic.clear();
 	_password.clear();
+	_keyMode = false;
 }
 
 Channel::~Channel() {}
@@ -31,12 +32,14 @@ std::vector<std::string>&			Channel::getKickedUsers()	{ return (_kicked_users); 
 std::vector<std::string>&			Channel::getOperators() 	{ return (_operators); }
 int									Channel::getLimit()			{ return (_limit); }
 std::string&						Channel::getPassword()		{ return (_password); }
+bool								Channel::getKeyMode() const	{ return (_keyMode); }
 bool								Channel::getSecret()const	{ return (_secret); }
 bool								Channel::getPrivate()const	{ return (_private); }
 bool								Channel::getModeration()const {return (_moderation); }
 bool								Channel::getTopicProtection()const { return (_topic_protection); }
 
 void		Channel::setPassword(std::string &password) { _password = password;}
+void		Channel::setKeyMode(bool value)				{ _keyMode = value; }
 void		Channel::setLimit(int &value)				{ _limit = value;}
 void		Channel::setTopic(std::string& newTopic)	{ _topic = newTopic;}
 void		Channel::setSecret(int i)					{_secret = i;}

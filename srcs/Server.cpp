@@ -434,9 +434,15 @@ void	Server::managePassword(std::string datas[4], char sign, int &client_fd)
 	std::map<std::string, Channel>::iterator it;
 	it =_channels.find(datas[1]);
 	if (sign == '+')
+	{
 		it->second.setPassword(datas[3]);
+		it->second.setKeyMode(true);
+	}
 	else if (sign == '-')
+	{
 		it->second.getPassword().clear();
+		it->second.setKeyMode(false);
+	}
 }
 
 void	Server::manageLimit(std::string datas[4], int &client_fd)
