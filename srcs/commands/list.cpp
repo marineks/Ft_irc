@@ -41,14 +41,15 @@ void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 		} 
 		else 
 		{
-			std::map<std::string, Channel>::iterator it = server->getChannels().begin();
-			while (it != server->getChannels().end())
+			std::map<std::string, Channel>::iterator it;
+			for (it = server->getChannels().begin(); it != server->getChannels().end(); it++)
 			{
 				RPL_LIST.clear();
+				if (it->second.getSecret() == true && it->second.doesClientExist(client_nick) == false)
+					continue;
 				RPL_LIST = getRplList(client_nick, it);
 				send(client_fd, RPL_LIST.c_str(), RPL_LIST.size(), 0);
 				std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LIST << RESET << std::endl;
-				it++;
 			}
 		}
 	}
@@ -56,13 +57,15 @@ void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 	{
 		std::map<std::string, Channel>			 channels = server->getChannels();
 		std::map<std::string, Channel>::iterator channel = channels.find(channel_to_display);
-		if (channel != channels.end())
+		if (channel != channels.end()  \
+			|| (channel->second.doesClientExist(client.getNickname()) == false \
+				&& channel->second.getSecret() == true))
 		{	
 			RPL_LIST = getRplList(client_nick, channel);
 			send(client_fd, RPL_LIST.c_str(), RPL_LIST.size(), 0);
 
 		} else {
-			std::cout << "[Server] The channel " << channel_to_display << " does not exist." << std::endl;
+			std::cout << "[Server] The channel " << channel_to_display << " does not exist or is secret." << std::endl;
 			send(client_fd, RPL_LISTEND.c_str(), RPL_LISTEND.size(), 0);
 			std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LISTEND << RESET << std::endl;
 		}
@@ -92,8 +95,8 @@ static std::string	getRplList(std::string client_nick, std::map<std::string, Cha
 {
 	std::stringstream concat;
 		
-	concat << "322 " << client_nick << " #" << channel->second.getName() << " "  \
-			<< channel->second.getClientList().size() << " "\
+	concat << "322 " << client_nick << " #" << channel->second.getName() << " " \
+			<< channel->second.getClientList().size() << " " \
 			<< (channel->second.getTopic().empty() ? ":No topic set for this channel yet."  : channel->second.getTopic()) \
 			<< "\r\n";
 	return (concat.str());			

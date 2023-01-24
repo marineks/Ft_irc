@@ -3,14 +3,35 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
+
+// VERSION DE DIM
+// std::string	getTargettedChannel(std::string targettedChannelName)
+// {
+// 	// for (int i = 0; targettedChannelName[i]; i++)
+// 	// 	std::cout << "str[i] = " << (int)targettedChannelName[i] << std::endl;
+	
+// 	std::string substr_hashtag;
+	
+// 	targettedChannelName.erase(0, targettedChannelName.find(' ') + 1);
+	
+// 	// substr_hashtag = targettedChannelName.substr(0, targettedChannelName.find(" "));
+		
+// 	std::cout << "targettedChannelName |" << substr_hashtag << "|" << std::endl;
+// 	return (substr_hashtag);
+// }
+
 std::string	getTargettedChannel(std::string targettedChannelName)
 {
-	// for (int i = 0; targettedChannelName[i]; i++)
-	// 	std::cout << "str[i] = " << (int)targettedChannelName[i] << std::endl;
-	targettedChannelName.erase(0, targettedChannelName.find(' ') + 1);
 	std::string substr_hashtag;
-	substr_hashtag = targettedChannelName.substr(0, targettedChannelName.find(" "));
-	// std::cout << "targettedChannelName " << substr_hashtag << "|" << std::endl;
+	substr_hashtag.clear();
+
+	targettedChannelName.erase(0, targettedChannelName.find(' ') + 1);
+
+	if (targettedChannelName.find("#") != targettedChannelName.npos)
+		substr_hashtag.insert(0, targettedChannelName, targettedChannelName.find("#") + 1, targettedChannelName.find(" ") - 1);
+	else // exemple : si user (/MODE dyoula +i) => on veut juste l'ignorer ou on store le nom qd meme?
+		substr_hashtag.insert(0, targettedChannelName, 0, targettedChannelName.find(" "));
+	std::cout << "targettedChannelName |" << substr_hashtag << "|" << std::endl;
 	return (substr_hashtag);
 }
 
@@ -66,6 +87,7 @@ void	executeFlags(Server *server, int index, std::string datas[4], int &client_f
 		case 9: voice(server, datas, client_fd); break;
 	}
 }
+
 void	iterFlags(Server *server, std::string datas[4], int &client_fd)
 {
 	if (datas[2].size() < 2)
@@ -75,7 +97,7 @@ void	iterFlags(Server *server, std::string datas[4], int &client_fd)
 	for (int i = 1; datas[2][i]; i++)
 	{
 		// std::cout << "flags[i]" << (int)flags[i] << std::endl;
-		// std::cout << "flags[i]" << flag.find(datas[2][i]) << std::endl;
+		std::cout << "flags[i]" << flag.find(datas[2][i]) << std::endl;
 		index = flag.find(datas[2][i]);
 		if (index == (int)std::string::npos)
 			sendServerRpl(client_fd, ERR_UNKNOWNMODE(datas[0], datas[2][i]));
@@ -92,6 +114,7 @@ void	mode(Server *server, int client_fd, cmd_struct &cmd_infos)
 	// 	std::cout << RED << "Mode out\n" << RESET;
 	// 	return ;
 	// }
+	std::cout << "CMD MSG |" << cmd_infos.message << "|" << std::endl;
 	std::string datas[4]; // 0 nick_operator, 1 channel, 2 Flags, 3 arg	
 	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
 	datas[0] = it_client->second.getNickname();
