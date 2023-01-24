@@ -115,10 +115,8 @@ void		sendChanInfos(Channel &channel, std::string channel_name, Client &client)
 		sendServerRpl(member->second.getClientFd(), RPL_JOIN(user_id(nick, username), channel_name));
 		if (channel.getTopic().empty() == false)
 		{
-			std::cout << "je rentre jamais dedans wllh" << std::endl;
 			client_id	= ":" + member->second.getNickname() + "!" + member->second.getUsername() + "@localhost";
-			sendServerRpl(member->second.getClientFd(), RPL_TOPIC(client_id, channel_name, channel.getTopic()));
-			sendServerRpl(member->second.getClientFd(), RPL_DISPLAYTOPIC(client_id, channel_name));
+			sendServerRpl(member->second.getClientFd(), RPL_TOPIC(nick, channel_name, channel.getTopic()));
 		}
 		
 		std::string	list_of_members = getListOfMembers(channel);
