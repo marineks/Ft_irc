@@ -9,6 +9,7 @@ class Channel
 {
 	private:
 		std::map<std::string, Client>	_clientList;
+		std::vector<std::string>		_kicked_users;
 		std::vector<std::string>		_banned_users;
 		std::vector<std::string>		_operators;
 		std::vector<std::string>		_voiced;
@@ -29,6 +30,7 @@ class Channel
 		std::string&					getName();
 		std::string&					getTopic() ;
 		std::vector<std::string>&		getOperators() ;
+		std::vector<std::string>&		getKickedUsers() ;
 		std::vector<std::string>&		getBannedUsers() ;
 		std::map <std::string, Client>&	getClientList();
 		int								getLimit();
@@ -57,6 +59,7 @@ class Channel
 		bool							isOperator(std::string &operatorName);
 		void							printOperators(void);
 		/* Client status */
+		void							addToKicked(std::string &banned_name);
 		void							addToBanned(std::string &banned_name);
 		void							removeFromBanned(std::string &banned_name);
 		bool							isBanned(std::string &banned_name);

@@ -3,7 +3,7 @@
 
 # include "Irc.hpp"
 # include "Server.hpp"
-# define VALID_LEN 15
+# define VALID_LEN 16
 
 class Server;
 
@@ -31,24 +31,30 @@ void	invite(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	join(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	kick(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	list(Server *server, int const client_fd, cmd_struct cmd_infos);
-void	passwordChannel(Server *server, std::string datas[4], int &client_fd);
-void	limit(Server *server, std::string datas[4], int &client_fd);
 void 	mode(Server *server, int client_fd, cmd_struct &cmd_infos);
-void	moderation(Server *server, std::string datas[4], int &client_fd);
 void	names(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	nick(Server *server, int const client_fd, cmd_struct cmd_infos);
-// void	oper(Server server, cmd_struct cmd_infos);
-void	operators(Server *server, std::string datas[4], int &client_fd);
+void	notice(Server *server, int const client_fd, cmd_struct cmd_infos);
+void	oper(Server *server, int const client_fd, cmd_struct cmd_infos);
 int		pass(Server *server, int const client_fd, cmd_struct cmd_infos);
-void	priv(Server *server, std::string datas[4], int &client_fd);
-void	secret(Server *server, std::string datas[4], int &client_fd);
 void	topic(Server *server, int const client_fd, cmd_struct cmd_infos);
-void	topicProtection(Server *server, std::string datas[4], int &client_fd);
-void	voice(Server *server, std::string datas[4], int &client_fd);
-// void	unban(Server server, cmd_struct cmd_infos);
 void	part(Server *server, int const client_fd, cmd_struct cmd_infos);
 int		ping(Server *server, int const client_fd, cmd_struct &cmd);
 void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	quit(Server *server, int const client_fd, cmd_struct cmd_infos);
+
+// #######################
+// ######  MODES   #######
+// #######################
+
+void	passwordChannel(Server *server, std::string datas[4], int &client_fd);
+void	limit(Server *server, std::string datas[4], int &client_fd);
+void	moderation(Server *server, std::string datas[4], int &client_fd);
+void	operators(Server *server, std::string datas[4], int &client_fd);
+void	priv(Server *server, std::string datas[4], int &client_fd);
+void	secret(Server *server, std::string datas[4], int &client_fd);
+void	topicProtection(Server *server, std::string datas[4], int &client_fd);
+void	voice(Server *server, std::string datas[4], int &client_fd);
+// void	unban(Server server, cmd_struct cmd_infos);
 
 #endif

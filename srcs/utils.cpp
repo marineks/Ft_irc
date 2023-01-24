@@ -30,6 +30,8 @@ std::string	getListOfMembers(Channel &channel)
 	{
 		nick.clear();
 		nick = it->second.getNickname();
+		if (channel.isOperator(nick) == true)
+			members_list += "@";
 		members_list += nick;
 		members_list += " ";
 		it++;
@@ -42,8 +44,6 @@ std::string	getListOfMembers(Channel &channel)
 std::string	getChannelName(std::string msg_to_parse)
 {
 	std::cout << "The msg_to_parse looks like this : |" << msg_to_parse << "|" << std::endl;
-	// Expected output : | #foobar|
-	// Expected output 2 : | #foo,#bar fubar,foobar|
 
 	std::string channel_name;
 	size_t i = 0;

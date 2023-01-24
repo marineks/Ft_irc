@@ -1,21 +1,22 @@
 NAME		= ircserv
 
 SRCS		= main.cpp Client.cpp ManageServer.cpp Server.cpp parsing.cpp Channel.cpp utils.cpp \
-				commands/invite.cpp	\
-				commands/join.cpp 	\
-				commands/list.cpp 	\
-				commands/mode.cpp 	\
+				commands/invite.cpp			\
+				commands/join.cpp 			\
+				commands/list.cpp 			\
+				commands/mode.cpp 			\
 				commands/modeUtils.cpp		\
-				commands/nick.cpp	\
-				commands/oper.cpp	\
-				commands/pass.cpp	\
-				commands/ping.cpp 	\
-				commands/privmsg.cpp	\
-				commands/topic.cpp	\
-				commands/names.cpp	\
-				commands/part.cpp	\
-				commands/quit.cpp   \
-				commands/kick.cpp
+				commands/nick.cpp			\
+				commands/notice.cpp			\
+				commands/oper.cpp			\
+				commands/pass.cpp			\
+				commands/ping.cpp 			\
+				commands/privmsg.cpp		\
+				commands/topic.cpp			\
+				commands/names.cpp			\
+				commands/part.cpp			\
+				commands/quit.cpp   		\
+				commands/kick.cpp 	
 
 DIR_SRCS	= srcs/
 

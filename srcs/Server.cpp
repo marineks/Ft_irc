@@ -7,6 +7,7 @@ Server::Server(std::string port, std::string password)
 {
 	std::cout << YELLOW << "Server Constructor" << RESET << std::endl;
 	memset(&_hints, 0, sizeof(_hints));
+	// memset(&_irc_operators, 0, sizeof(_irc_operators));
 }
 
 Server::~Server()
@@ -38,9 +39,48 @@ std::map<std::string, Channel>&	Server::getChannels()		{ return (_channels); }
 
 std::map<const int, Client>&	Server::getClients()		{ return (_clients); }
 
+std::vector<server_op>&			Server::getIrcOperators()	{ return (_irc_operators); }
+
 void							Server::setPassword(std::string new_pwd)
 {
 	_password = new_pwd;
+}
+
+/**
+ * @brief Get the name, host and password of all the irc operators from a file
+ * 
+ * @param file Str of the config file with all of infos
+ * @return int Returns SUCCESS (0) or FAILURE (-1)
+ */
+int 		Server::readFromConfigFile(char *filename)
+{
+	std::ifstream				data;
+	std::string					buffer;
+	std::vector<std::string>	operators;
+
+	data.open(filename);
+	if (!data)
+		return (FAILURE);
+	while (getline(data, buffer)) {
+		operators.push_back(buffer);
+	}
+	data.close();
+
+	std::vector<std::string>::iterator it;
+	for (it = operators.begin(); it != operators.end(); it++)
+	{
+		std::string	line = *it;
+		server_op	op;
+		
+		int len = line.size() - (line.size() - line.find_first_of(' '));
+
+		op.name.insert(0, line, 0, len);
+		op.host.insert(0, line, len + 1, line.find_last_of(' ') - len - 1);
+		op.password.insert(0, line, line.find_last_of(' ') + 1, line.size() - 1);
+		
+		_irc_operators.push_back(op);
+	}
+   return (SUCCESS);
 }
 
 /**
@@ -259,9 +299,10 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		"MODE",
 		"NAMES",
 		"NICK",
+		"NOTICE",
+		"OPER",
 		"PART",
 		"PING",
-		"OPER",
 		"PRIVMSG",
 		"QUIT",
 		"TOPIC",
@@ -290,13 +331,14 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		case 6: mode(this, client_fd, cmd_infos); break;
 		case 7: names(this, client_fd, cmd_infos); break;
 		case 8: nick(this, client_fd, cmd_infos); break;
-		case 9: part(this, client_fd, cmd_infos); break;
-		case 10: ping(this, client_fd, cmd_infos); break;
-		// case 11: oper(this, cmd_infos); break;
-		case 12: privmsg(this, client_fd, cmd_infos); break;
-		case 13: quit(this, client_fd, cmd_infos); break;
-		case 14: topic(this, client_fd, cmd_infos); break;
-		// case 15: user(cmd_infos); break;
+    case 9: notice(this, client_fd, cmd_infos); break;
+		case 10: oper(this, client_fd, cmd_infos); break;
+		case 11: part(this, client_fd, cmd_infos); break;
+		case 12: ping(this, client_fd, cmd_infos); break;
+		case 13: privmsg(this, client_fd, cmd_infos); break;
+		case 14: quit(this, client_fd, cmd_infos); break;
+		case 15: topic(this, client_fd, cmd_infos); break;
+		// case 16: user(cmd_infos); break;
 		default:
 			std::cout << PURPLE << "This command is not supported by our services." << RESET << std::endl;
 	}
