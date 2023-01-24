@@ -6,6 +6,9 @@
 #include "Channel.hpp"
 #include <iostream>
 #include <fstream>
+#include <csignal>
+
+extern bool	server_shutdown;
 
 struct server_op
 {

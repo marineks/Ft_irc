@@ -49,12 +49,17 @@ int Server::manageServerLoop()
 
 	while (1)
 	{
+		if (server_shutdown == true)
+		{
+			// tout free
+			break ;
+		}
+			
 		std::vector<pollfd> new_pollfds; // tmp struct hosting potential newly-created fds
 
 		if (poll((pollfd *)&poll_fds[0], (unsigned int)poll_fds.size(), -1) <= SUCCESS) // -1 == no timeout
 		{
 			std::cerr << RED << "Poll error" << RESET << std::endl;
-			;
 			return (FAILURE);
 		}
 
@@ -82,7 +87,7 @@ int Server::manageServerLoop()
 					char message[BUF_SIZE_MSG];
 					int read_count;
 
-					memset(message, 0, sizeof(message));
+					memset(message, 0, sizeof(message)); // TODO: METTRE BUFFER POUR CHAQUE CLIENT (it->message) POUR REGLER CTRL X CTRL D NATURELLEMENT
 					read_count = recv(it->fd, message, BUF_SIZE_MSG, 0); // Retrieves the Client's message
 
 					if (read_count <= FAILURE) // when recv returns an error
@@ -150,5 +155,6 @@ int Server::manageServerLoop()
 		// 	it_map->second.printClient();
 		// }
 	}
+
 	return (SUCCESS);
 }
