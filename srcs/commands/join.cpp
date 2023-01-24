@@ -100,7 +100,6 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
  *  
  * [:msanjuan_!msanjuan@localhost 353 msanjuan_ = #hello :@msanjuan_ ]
  */
-//TODO: mettre cette fonction dans la classe chan!!!!!! pour que topic soit updaté!!
 void		sendChanInfos(Channel &channel, std::string channel_name, Client &client)
 {
 	// int			client_fd	= client.getClientFd();
