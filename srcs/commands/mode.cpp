@@ -124,44 +124,14 @@ static void	fillModeInfos(mode_struct &mode_infos, std::string command)
 	// example : |#cool +k COOLKEY|
 	// peut-etre mettre une condition pour gérer si on met un truc après le 4eme argument
 	std::cout << "Command to parse : |" << command << "|" << std::endl;
-
-	// std::vector<std::string>	infos_vector;
+	
 	size_t						pos;
-	// std::string					delimiter = " ";
-	// std::string 				param;
-
-	// split les params de command dans un vector de string
-	// while ((pos = command.find(delimiter)) != std::string::npos)
-	// {
-	// 	param = command.substr(0, pos);
-	// 	infos_vector.push_back(param);
-	// 	command.erase(0, pos + delimiter.length());
-	// }
-	// infos_vector.push_back(command);
-	// std::cout << "param dans le vector :\n" << std::endl;
-	// int i = 0;
-	// for (std::vector<std::string>::iterator it = infos_vector.begin(); it != infos_vector.end(); ++it)
-	// {
-	// 	std::cout << i <<" : |" << *it << "|" << std::endl;
-	// 	i++;
-	// }
-	// if (infos_vector.size() == 1)
-	// 	mode_infos.target = infos_vector[0];
-	// else if (infos_vector.size() == 2)
-	// {
-	// 	mode_infos.target = infos_vector[0];
-	// 	mode_infos.mode = infos_vector[1];
-	// }
-	// else
-	// {
-
-	// }
 
 	// TARGET
 	pos = command.find(" ");
 	if (pos == std::string::npos) // n'a pas trouvé d'espace et donc un seul argument
 	{
-		mode_infos.target = command.substr(0); // ou mode_infos.target = command.substr(0, string::npos);
+		mode_infos.target = command.substr(0);
 		return ;
 	}
 	else
@@ -174,7 +144,7 @@ static void	fillModeInfos(mode_struct &mode_infos, std::string command)
 	pos = command.find(" ");
 	if (pos == std::string::npos)
 	{
-		mode_infos.mode = command.substr(0); // ou mode_infos.target = command.substr(0, string::npos);
+		mode_infos.mode = command.substr(0);
 		return ;
 	}
 	else
@@ -189,23 +159,70 @@ static void	fillModeInfos(mode_struct &mode_infos, std::string command)
 
 }
 
+static void	checkInfosForChannel(Server *server, mode_struct mode_infos, int const client_fd)
+{
+	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
+
+	mode_infos.target.erase(0,1); // erase '#'
+	std::cout << "CHANNEL - target : |" << mode_infos.target << "|" << std::endl;
+
+	// Check si le chan existe
+	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
+	if (it_channel_target == server->getChannels().end())
+		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(it_client->second.getNickname(), mode_infos.target));
+
+
+}
+
+static void	checkInfosForUser(Server *server, mode_struct mode_infos, int const client_fd)
+{
+	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
+
+	// Check si la target existe parmis les clients
+	std::map<const int, Client>::iterator it_user_target = server->getClients().begin();
+      while (it_user_target != server->getClients().end())
+      {
+         if (it_user_target->second.getNickname() == mode_infos.target)
+             break;
+         it_user_target++;
+      }
+	if (it_user_target == server->getClients().end())
+	{
+		sendServerRpl(client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), mode_infos.target));
+		return ;
+	}
+	//  If <target> is a different nick than the user who sent the command
+	if (it_user_target->second.getNickname() != it_client->second.getNickname())
+	{
+		sendServerRpl(client_fd, ERR_USERSDONTMATCH(it_client->second.getNickname())); 
+		return ;
+	}
+
+	
+}
+
+
 void	mode(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
-	(void)server;
-	(void)client_fd;
+	
 	mode_struct	mode_infos;
 	
 	std::cout << "\nMessage : |" << cmd_infos.message << "|" << std::endl;
 	cmd_infos.message.erase(0,1);
-	fillModeInfos(mode_infos, cmd_infos.message);
-
-	// 1er check : target is correct si non, ERR_RPL et on sort de la fonction
-	std::cout << "target : |" << mode_infos.target << "|" << std::endl;
 	
-
-	// 2eme check des modes :
+	// parse la commande
+	fillModeInfos(mode_infos, cmd_infos.message);
+	
+	std::cout << "target : |" << mode_infos.target << "|" << std::endl;
 	std::cout << "mode : |" << mode_infos.mode << "|" << std::endl;
 	std::cout << "params : |" << mode_infos.params << "|" << std::endl;
+
+	if (mode_infos.target[0] == '#') // channel case
+		checkInfosForChannel(server, mode_infos, client_fd);
+	else // user case
+		checkInfosForUser(server, mode_infos, client_fd);
+
+
 
 
 

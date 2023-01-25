@@ -22,6 +22,10 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define ERR_CHANOPRIVSNEEDED(client, channel) ("482 " + client + " #" +  channel + " :You're not channel operator\r\n")
 # define RPL_KICK(user_id, channel, kicked, reason) (user_id + " KICK #" + channel + " " + kicked + " " + reason + "\r\n")
 
+// MODE
+#define ERR_USERSDONTMATCH(client) ("502 " + client + " :Cant change mode for other users\r\n") 
+// #define ERR_NOSUCHCHANNEL(client, channel) ("403 " + client + " #" + channel + " :No such channel\r\n")
+
 // NAMES
 # define RPL_NAMREPLY(client, symbol, channel, list_of_nicks) (":localhost 353 " + client + " " + symbol + " #" + channel + " :" + list_of_nicks + "\r\n")
 # define RPL_ENDOFNAMES(client, channel) (":localhost 366 " + client + " #" + channel + " :End of /NAMES list.\r\n")
