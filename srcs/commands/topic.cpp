@@ -47,7 +47,6 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	if (channel_name.empty())
 	{
 		addToClientBuffer(server, client_fd, ERR_NEEDMOREPARAMS(client_nickname, cmd_infos.name));
-		// sendServerRpl(client_fd, ERR_NEEDMOREPARAMS(client_nickname, cmd_infos.name));
 		return ;
 	}
 	
@@ -57,13 +56,11 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	if (channel == channels.end())
 	{
 		addToClientBuffer(server, client_fd, ERR_NOSUCHCHANNEL(client_nickname, channel_name));
-		// sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(client_nickname, channel_name));
 		return ;
 	}
 	if (channel->second.doesClientExist(client_nickname) == false)
 	{
 		addToClientBuffer(server, client_fd, ERR_NOTONCHANNEL(client_nickname, channel_name));
-		// sendServerRpl(client_fd, ERR_NOTONCHANNEL(client_nickname, channel_name));
 		return ;
 	}
 
@@ -72,16 +69,9 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	if (topic.empty()) // Afficher le topic
 	{
 		if (channel->second.getTopic().empty() == false)
-		{
 			addToClientBuffer(server, client_fd, RPL_TOPIC(client_nickname, channel_name, channel->second.getTopic()));
-			// sendServerRpl(client_fd,  RPL_TOPIC(client_nickname, channel_name, channel->second.getTopic()));
-		}
-			
 		else
-		{
 			addToClientBuffer(server, client_fd, RPL_NOTOPIC(client_nickname, channel_name));
-			// sendServerRpl(client_fd,  RPL_NOTOPIC(client_nickname, channel_name));
-		}
 	}
 	else  // reattribuer le topic
 	{
@@ -146,7 +136,6 @@ static void	broadcastToChannel(Server *server, Channel &channel, Client &client,
 	while (member != channel.getClientList().end())
 	{
 		addToClientBuffer(server, member->second.getClientFd(), RPL_TOPIC(client_nickname, channel_name, topic));
-		// sendServerRpl(member->second.getClientFd(),  RPL_TOPIC(client_nickname, channel_name, topic));
 		member++;
 	}
 }

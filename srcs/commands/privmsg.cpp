@@ -97,10 +97,7 @@ static void  broadcastToChannel(Server *server, int const client_fd, std::map<co
    while (member != it_channel->second.getClientList().end())
    {
       if (member->second.getClientFd() != client_fd)   // prevent to send the message to the sender
-      {
          addToClientBuffer(server, member->second.getClientFd(), RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), message));
-         // sendServerRpl(member->second.getClientFd(), RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), message));
-      }
       member++;
    }
 }
@@ -122,15 +119,9 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
 
    // Error syntaxe message
    if (target.empty())        // pas de destinataire
-   {
       addToClientBuffer(server, client_fd, ERR_NORECIPIENT(it_client->second.getNickname()));
-      // sendServerRpl(client_fd, ERR_NORECIPIENT(it_client->second.getNickname()));
-   }
    if (msg_to_send.empty())   // pas de message
-   {
       addToClientBuffer(server, client_fd, ERR_NOTEXTTOSEND(it_client->second.getNickname()));
-      // sendServerRpl(client_fd, ERR_NOTEXTTOSEND(it_client->second.getNickname()));
-   }
 
    // Channel case
    if (target[0] == '#')
@@ -138,10 +129,7 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
       std::map<std::string, Channel>::iterator it_channel = channel_list.find(target.substr(1)); // find channel name by skipping the '#' character
 
       if (it_channel == channel_list.end())
-      {
          addToClientBuffer(server, client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), target));
-         // sendServerRpl(client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), target));
-      }
       else
          broadcastToChannel(server, client_fd, it_client, it_channel, cmd_infos.message);
    }
@@ -170,11 +158,7 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
             broadcastToChannel(server, client_fd, it_client, it_channel, cmd_infos.message);
          }
          else
-         {
-            addToClientBuffer(server, it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
-            // sendServerRpl(it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
-         }
-            
+            addToClientBuffer(server, it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));    
       }  
    }
 }

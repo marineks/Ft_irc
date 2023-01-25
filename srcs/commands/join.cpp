@@ -48,10 +48,7 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::string	channel_name;
 
 	if (containsAtLeastOneAlphaChar(cmd_infos.message) == false)
-	{
 		addToClientBuffer(server, client_fd, ERR_NEEDMOREPARAMS(client_nickname, cmd_infos.name));
-		// sendServerRpl(client_fd, ERR_NEEDMOREPARAMS(client_nickname, cmd_infos.name));
-	}
 	while (containsAtLeastOneAlphaChar(cmd_infos.message) == true)
 	{
 		channel_name.clear();
@@ -116,12 +113,10 @@ void		sendChanInfos(Server *server, Channel &channel, std::string channel_name, 
 	while (member != channel.getClientList().end())
 	{
 		addToClientBuffer(server, member->second.getClientFd(), RPL_JOIN(user_id(nick, username), channel_name));
-		// sendServerRpl(member->second.getClientFd(), RPL_JOIN(user_id(nick, username), channel_name));
 		if (channel.getTopic().empty() == false)
 		{
 			client_id	= ":" + member->second.getNickname() + "!" + member->second.getUsername() + "@localhost";
 			addToClientBuffer(server, member->second.getClientFd(), RPL_TOPIC(nick, channel_name, channel.getTopic()));
-			// sendServerRpl(member->second.getClientFd(), RPL_TOPIC(nick, channel_name, channel.getTopic()));
 		}
 		
 		std::string	list_of_members = getListOfMembers(channel);
@@ -129,8 +124,6 @@ void		sendChanInfos(Server *server, Channel &channel, std::string channel_name, 
 
 		addToClientBuffer(server, member->second.getClientFd(), RPL_NAMREPLY(username, symbol, channel_name, list_of_members));
 		addToClientBuffer(server, member->second.getClientFd(), RPL_ENDOFNAMES(username, channel_name));
-		// sendServerRpl(member->second.getClientFd(), RPL_NAMREPLY(username, symbol, channel_name, list_of_members));
-		// sendServerRpl(member->second.getClientFd(), RPL_ENDOFNAMES(username, channel_name));
 		member++;
 	}
 }

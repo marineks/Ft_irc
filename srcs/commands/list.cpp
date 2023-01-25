@@ -37,8 +37,6 @@ void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 	{
 		if (server->getChannels().empty()) {
 			addToClientBuffer(server, client_fd, RPL_LISTEND);
-			// send(client_fd, RPL_LISTEND.c_str(), RPL_LISTEND.size(), 0);
-			// std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LISTEND << RESET << std::endl;
 		} 
 		else 
 		{
@@ -48,8 +46,6 @@ void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 				RPL_LIST.clear();
 				RPL_LIST = getRplList(client_nick, it);
 				addToClientBuffer(server, client_fd, RPL_LIST);
-				// send(client_fd, RPL_LIST.c_str(), RPL_LIST.size(), 0);
-				// std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LIST << RESET << std::endl;
 				it++;
 			}
 		}
@@ -62,13 +58,9 @@ void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 		{	
 			RPL_LIST = getRplList(client_nick, channel);
 			addToClientBuffer(server, client_fd, RPL_LIST);
-			// send(client_fd, RPL_LIST.c_str(), RPL_LIST.size(), 0);
 
 		} else {
-			// std::cout << "[Server] The channel " << channel_to_display << " does not exist." << std::endl;
 			addToClientBuffer(server, client_fd, RPL_LISTEND);
-			// send(client_fd, RPL_LISTEND.c_str(), RPL_LISTEND.size(), 0);
-			// std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LISTEND << RESET << std::endl;
 		}
 	}
 	return ;

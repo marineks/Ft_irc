@@ -44,15 +44,12 @@ void	nick(Server *server, int const client_fd, cmd_struct cmd_infos)
 
 	if (nickname.empty()) {
 		addToClientBuffer(server, client_fd, ERR_NONICKNAMEGIVEN(client.getNickname()));
-		// sendServerRpl(client_fd, ERR_NONICKNAMEGIVEN(client.getNickname()));
 	} 
 	else if (containsInvalidCharacters(nickname)) {
 		addToClientBuffer(server, client_fd,  ERR_ERRONEUSNICKNAME(client.getNickname(), nickname));
-		// sendServerRpl(client_fd, ERR_ERRONEUSNICKNAME(client.getNickname(), nickname));
 	} 
 	else if (isAlreadyUsed(server, client_fd, nickname) == true) {
 		addToClientBuffer(server, client_fd, ERR_NICKNAMEINUSE(client.getNickname(), nickname));
-		// sendServerRpl(client_fd, ERR_NICKNAMEINUSE(client.getNickname(), nickname));
 	} else {
 		
 		client.setOldNickname(client.getNickname());
@@ -60,7 +57,6 @@ void	nick(Server *server, int const client_fd, cmd_struct cmd_infos)
 		
 		client.setNickname(nickname);
 		addToClientBuffer(server, client_fd, RPL_NICK(client.getOldNickname(), client.getUsername(), client.getNickname()));
-		// sendServerRpl(client_fd, RPL_NICK(client.getOldNickname(), client.getUsername(), client.getNickname()));
 	}
 }
 

@@ -36,22 +36,18 @@ void oper(Server *server, int const client_fd, cmd_struct cmd_infos)
 	if (name.empty() || password.empty())
 	{
 		addToClientBuffer(server, client_fd, ERR_NEEDMOREPARAMS(client.getNickname(), cmd_infos.name));
-		// sendServerRpl(client_fd, ERR_NEEDMOREPARAMS(client.getNickname(), cmd_infos.name));
 	}
 	else if (isNameValid(server, name) == false)
 	{
 		addToClientBuffer(server, client_fd, ERR_NOOPERHOST(client.getNickname()));
-		// sendServerRpl(client_fd, ERR_NOOPERHOST(client.getNickname()));
 	}
 	else if (isPasswordValid(server, password, name) == false)
 	{
 		addToClientBuffer(server, client_fd, ERR_PASSWDMISMATCH(client.getNickname()));
-		// sendServerRpl(client_fd, ERR_PASSWDMISMATCH(client.getNickname()));
 	}
 	else
 	{
 		addToClientBuffer(server, client_fd, RPL_YOUREOPER(client.getNickname()));
-		// sendServerRpl(client_fd, RPL_YOUREOPER(client.getNickname()));
 	}
 }
 

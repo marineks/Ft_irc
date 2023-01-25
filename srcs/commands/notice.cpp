@@ -29,11 +29,7 @@ static void  broadcastToChannel(Server *server, int const client_fd, std::map<co
     while (member != it_channel->second.getClientList().end())
    {
       if (member->second.getClientFd() != client_fd)   // prevent to send the message to the sender
-      {
-         addToClientBuffer(server, member->second.getClientFd(), RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), message));
-         // sendServerRpl(member->second.getClientFd(), RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), message));
-      }
-          
+         addToClientBuffer(server, member->second.getClientFd(), RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), message));    
       member++;
    }
 }
@@ -77,10 +73,6 @@ void	notice(Server *server, int const client_fd, cmd_struct cmd_infos)
       if (it_target == client_list.end())
          return ;
       else
-      {
-         addToClientBuffer(server, it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
-         // sendServerRpl(it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
-      }
-        
+         addToClientBuffer(server, it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message)); 
    }
 }

@@ -43,7 +43,6 @@ void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 		if (channel == channels.end()) // + "|| isSecretModeOn(channel_name) == true  && doesClientExist() == false"
 		{
 			addToClientBuffer(server, client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
-			// sendServerRpl(client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
 			continue ;
 		}
 			
@@ -57,8 +56,6 @@ void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 
 		addToClientBuffer(server, client_fd, RPL_NAMREPLY(client.getNickname(), symbol, channel_to_name, list_of_members));
 		addToClientBuffer(server, client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
-		// sendServerRpl(client_fd, RPL_NAMREPLY(client.getNickname(), symbol, channel_to_name, list_of_members));
-		// sendServerRpl(client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
 	}
 	
 }

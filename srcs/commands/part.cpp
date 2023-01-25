@@ -45,21 +45,18 @@ void				part(Server *server, int const client_fd, cmd_struct cmd_infos)
 		if (it == channels.end()) // a) if chan does not exist
 		{
 			addToClientBuffer(server, client_fd, ERR_NOSUCHCHANNEL(nick, channel));
-			// sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(nick, channel));
 			continue ;
 		}
 		else if (it != channels.end() \
 				&& it->second.doesClientExist(nick) == false) // b) if chan exists and client not in it
 		{
 			addToClientBuffer(server, client_fd, ERR_NOTONCHANNEL(nick, channel));
-			// sendServerRpl(client_fd, ERR_NOTONCHANNEL(nick, channel));
 			continue ;
 		}
 		else // c) if successful command
 		{
 			it->second.getClientList().erase(nick);
 			addToClientBuffer(server, client_fd, RPL_PART(user_id(nick, client.getUsername()), channel, reason));
-			// sendServerRpl(client_fd, RPL_PART(user_id(nick, client.getUsername()), channel, reason));
 			broadcastToAllChannelMembers(server, it->second, client.getUsername(), nick, reason);
 		}
 	}
@@ -93,8 +90,6 @@ static void			broadcastToAllChannelMembers(Server *server, Channel &channel, std
 	while (member != channel.getClientList().end())
 	{
 		addToClientBuffer(server, member->second.getClientFd(), RPL_PART(user_id(nick, user), channel.getName(), reason));
-		// sendServerRpl(member->second.getClientFd(),	
-		// 	RPL_PART(user_id(nick, user), channel.getName(), reason));
 		member++;
 	}
 }
