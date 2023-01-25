@@ -1,6 +1,6 @@
 NAME		= ircserv
 
-SRCS		= main.cpp ManageServer.cpp parsing.cpp utils.cpp \
+SRCS		= main.cpp ManageServer.cpp ManageServerUtils.cpp parsing.cpp utils.cpp \
 				class/Client.cpp	\
 				class/Channel.cpp	\
 				class/Server.cpp	\

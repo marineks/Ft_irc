@@ -48,6 +48,7 @@ class Server
 		int			fillServinfo(char *port);
 		int			launchServer();
 		int			manageServerLoop();
+		int			handlePolloutEvent(std::vector<pollfd>& poll_fds, std::vector<pollfd>::iterator &it, const int current_fd);
 		// Manage Clients functions
 		void		addClient(int client_socket, std::vector<pollfd> &poll_fds);
 		// void 		delClient(std::vector<pollfd> &poll_fds, int current_fd);

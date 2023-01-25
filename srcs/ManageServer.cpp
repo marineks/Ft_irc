@@ -108,21 +108,8 @@ int Server::manageServerLoop()
 			}
 			else if (it->revents & POLLOUT) // = "Alert me when I can send() data to this socket without blocking."
 			{
-				client = getClient(this, it->fd);
-				if (!client)
-					std::cout << "[Server] Did not found connexion to client sorry" << std::endl;
-				else
-				{
-					sendServerRpl(it->fd, client->getSendBuffer());
-					if (client->getReadBuffer().find("\r\n") != std::string::npos)
-						client->getReadBuffer().clear();
-					client->getSendBuffer().clear();
-					if (client->getDeconnexionStatus() == true)
-					{
-						delClient(poll_fds, it, it->fd);
-						break ;
-					}
-				}
+				if (handlePolloutEvent(poll_fds, it, it->fd) == BREAK)
+					break;
 				it++;
 			}
 			else if (it->revents & POLLERR)

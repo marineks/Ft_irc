@@ -5,6 +5,7 @@
 
 #define SUCCESS 0
 #define FAILURE -1
+#define BREAK 2
 
 #define BACKLOG 10          // Nb max of clients queuing
 #define MAX_CLIENT_NB 4     // Nb max of clients overall
