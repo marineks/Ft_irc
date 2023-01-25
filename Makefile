@@ -6,6 +6,7 @@ SRCS		= main.cpp Client.cpp ManageServer.cpp Server.cpp parsing.cpp Channel.cpp 
 				commands/privmsg.cpp	\
 				commands/topic.cpp	\
 				commands/list.cpp 	\
+				commands/mode.cpp	\
 				commands/invite.cpp	\
 				commands/nick.cpp	\
 				commands/notice.cpp	\
