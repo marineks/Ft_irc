@@ -22,6 +22,7 @@ Client::~Client()
 *					#################
 */
 int				Client::getClientFd() const { return (_client_fd); }
+std::string&	Client::getBuffer()  		{ return (_buffer); }
 std::string&	Client::getNickname()  		{ return (_nickname); }
 std::string&	Client::getOldNickname()  	{ return (_old_nickname); }
 std::string 	Client::getUsername() const { return (_fullname); }
@@ -31,6 +32,11 @@ bool&			Client::getConnexionPassword()	{ return (_connexion_password); }
 bool&			Client::isRegistrationDone() 	{ return (_registrationDone); }
 bool&			Client::isWelcomeSent()			{ return (_welcomeSent); }
 bool&			Client::hasAllInfo() 			{ return (_hasAllInfo); }
+
+void	Client::setBuffer(std::string const &buf)
+{
+	_buffer += buf;
+}
 
 void	Client::setNickname(std::string const &nickname)
 {

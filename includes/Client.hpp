@@ -7,6 +7,7 @@ class Client
 {
 	private:
 		int				_client_fd;
+		std::string		_buffer;
 		std::string		_nickname;
 		std::string		_old_nickname;
 		std::string		_fullname;
@@ -20,8 +21,12 @@ class Client
 		Client(int client_fd);
 		~Client();
 		
+		// Server infos
 		int				getClientFd()const;
 		void			setNickname(std::string const &nickname);
+		std::string&	getBuffer();
+		void			setBuffer(std::string const &buf);
+		// Client Registration infos
 		std::string&	getNickname();
 		void			setOldNickname(std::string const &nickname);
 		std::string&	getOldNickname();

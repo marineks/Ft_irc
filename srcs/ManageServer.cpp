@@ -91,16 +91,16 @@ int Server::manageServerLoop()
 					if (read_count <= FAILURE) // when recv returns an error
 					{
 						std::cerr << RED << "Recv() failed [456]" << RESET << std::endl;
-						delClient(poll_fds, it->fd);
-						if ((unsigned int)(poll_fds.size() - 1) == 0)
-							break;
+						delClient(poll_fds, it, it->fd);
+						break;
 					}
 					else if (read_count == 0) // when a client disconnects
 					{
-						delClient(poll_fds, it->fd);
+						std::cout << &*poll_fds.begin() << '\n';
+						delClient(poll_fds, it, it->fd);
+						std::cout << &*poll_fds.begin() << '\n';
 						std::cout << "Disconnected\n";
-						if ((unsigned int)(poll_fds.size() - 1) == 0)
-							break;
+						break ;
 					}
 					else
 					{
@@ -113,8 +113,8 @@ int Server::manageServerLoop()
 						{ 
 							std::cout << "[SERVER] Caught exception : ";
 							std::cerr << e.what() << std::endl;
-							delClient(poll_fds, it->fd);
 							std::cout << "[SERVER] Client #"<< it->fd << " deleted." << std::endl;
+							delClient(poll_fds, it, it->fd);
 							break ;
 						}
 						it++;
@@ -123,17 +123,18 @@ int Server::manageServerLoop()
 			} 
 			else if (it->revents & POLLOUT) // = "Alert me when I can send() data to this socket without blocking."
 			{
-				Client &client = retrieveClient(this, it->fd);
-				// if (client)
-				// {
-					
-					sendServerRpl(it->fd, client.getBuffer());
-				// }
-				// else
-				// {
-				// 	std::cout << "[SERVER] Did not found connexion to client sorry" << std::endl;
-				// }
-				
+				Client *client = getClient(this, it->fd);
+				if (!client)
+				{
+					std::cout << "[SERVER] Did not found connexion to client sorry" << std::endl;
+				}
+				else
+				{
+					sendServerRpl(it->fd, client->getBuffer());
+					client->getBuffer().clear();
+					// NOTE : est ce que je mets en place un should close ?
+				}
+				it++;
 			}
 			else if (it->revents & POLLERR)
 			{
@@ -144,9 +145,8 @@ int Server::manageServerLoop()
 				}
 				else
 				{
-					delClient(poll_fds, it->fd);
-					if ((unsigned int)(poll_fds.size() - 1) == 0)
-						break;
+					delClient(poll_fds, it, it->fd);
+					break;
 				}
 			}
 			else

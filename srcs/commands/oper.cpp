@@ -35,21 +35,24 @@ void oper(Server *server, int const client_fd, cmd_struct cmd_infos)
 
 	if (name.empty() || password.empty())
 	{
-		sendServerRpl(client_fd, ERR_NEEDMOREPARAMS(client.getNickname(), cmd_infos.name));
+		addToClientBuffer(server, client_fd, ERR_NEEDMOREPARAMS(client.getNickname(), cmd_infos.name));
+		// sendServerRpl(client_fd, ERR_NEEDMOREPARAMS(client.getNickname(), cmd_infos.name));
 	}
 	else if (isNameValid(server, name) == false)
 	{
-		sendServerRpl(client_fd, ERR_NOOPERHOST(client.getNickname()));
+		addToClientBuffer(server, client_fd, ERR_NOOPERHOST(client.getNickname()));
+		// sendServerRpl(client_fd, ERR_NOOPERHOST(client.getNickname()));
 	}
 	else if (isPasswordValid(server, password, name) == false)
 	{
-		sendServerRpl(client_fd, ERR_PASSWDMISMATCH(client.getNickname()));
+		addToClientBuffer(server, client_fd, ERR_PASSWDMISMATCH(client.getNickname()));
+		// sendServerRpl(client_fd, ERR_PASSWDMISMATCH(client.getNickname()));
 	}
 	else
 	{
-		sendServerRpl(client_fd, RPL_YOUREOPER(client.getNickname()));
+		addToClientBuffer(server, client_fd, RPL_YOUREOPER(client.getNickname()));
+		// sendServerRpl(client_fd, RPL_YOUREOPER(client.getNickname()));
 	}
-
 }
 
 static bool			isNameValid(Server *server, std::string name)

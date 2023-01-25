@@ -4,7 +4,7 @@
 #include "Commands.hpp"
 
 static bool			containsAtLeastOneAlphaChar(std::string str);
-static void			broadcastToAllChannelMembers(Channel &channel, std::string user, std::string nick, std::string reason);
+static void			broadcastToAllChannelMembers(Server *server, Channel &channel, std::string user, std::string nick, std::string reason);
 
 /**
  * @brief The PART command removes the client from the given channel(s).
@@ -44,20 +44,23 @@ void				part(Server *server, int const client_fd, cmd_struct cmd_infos)
 		std::map<std::string, Channel>::iterator it			= channels.find(channel);
 		if (it == channels.end()) // a) if chan does not exist
 		{
-			sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(nick, channel));
+			addToClientBuffer(server, client_fd, ERR_NOSUCHCHANNEL(nick, channel));
+			// sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(nick, channel));
 			continue ;
 		}
 		else if (it != channels.end() \
 				&& it->second.doesClientExist(nick) == false) // b) if chan exists and client not in it
 		{
-			sendServerRpl(client_fd, ERR_NOTONCHANNEL(nick, channel));
+			addToClientBuffer(server, client_fd, ERR_NOTONCHANNEL(nick, channel));
+			// sendServerRpl(client_fd, ERR_NOTONCHANNEL(nick, channel));
 			continue ;
 		}
 		else // c) if successful command
 		{
 			it->second.getClientList().erase(nick);
-			sendServerRpl(client_fd, RPL_PART(user_id(nick, client.getUsername()), channel, reason));
-			broadcastToAllChannelMembers(it->second, client.getUsername(), nick, reason);
+			addToClientBuffer(server, client_fd, RPL_PART(user_id(nick, client.getUsername()), channel, reason));
+			// sendServerRpl(client_fd, RPL_PART(user_id(nick, client.getUsername()), channel, reason));
+			broadcastToAllChannelMembers(server, it->second, client.getUsername(), nick, reason);
 		}
 	}
 }
@@ -83,14 +86,15 @@ static bool			containsAtLeastOneAlphaChar(std::string str)
 	return (false);
 }
 
-static void			broadcastToAllChannelMembers(Channel &channel, std::string user, std::string nick, std::string reason)
+static void			broadcastToAllChannelMembers(Server *server, Channel &channel, std::string user, std::string nick, std::string reason)
 {
 	std::map<std::string, Client>::iterator member = channel.getClientList().begin();
 	
 	while (member != channel.getClientList().end())
 	{
-		sendServerRpl(member->second.getClientFd(),	\
-			RPL_PART(user_id(nick, user), channel.getName(), reason));
+		addToClientBuffer(server, member->second.getClientFd(), RPL_PART(user_id(nick, user), channel.getName(), reason));
+		// sendServerRpl(member->second.getClientFd(),	\
+		// 	RPL_PART(user_id(nick, user), channel.getName(), reason));
 		member++;
 	}
 }

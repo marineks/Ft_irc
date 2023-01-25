@@ -21,7 +21,8 @@ void	invite(Server *server, int const client_fd, cmd_struct cmd_infos)
 	
 	if (client_nickname.empty() || channel_name.empty())
 	{
-		sendServerRpl(client_fd, ERR_NEEDMOREPARAMS(client_nickname, cmd_infos.name));
+		addToClientBuffer(server, client_fd, ERR_NEEDMOREPARAMS(client_nickname, cmd_infos.name));
+		// sendServerRpl(client_fd, ERR_NEEDMOREPARAMS(client_nickname, cmd_infos.name));
 		return ;
 	}
 
@@ -30,35 +31,38 @@ void	invite(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::map<std::string, Channel>::iterator channel = channels.find(channel_name);
 	if (channel == channels.end())
 	{
-		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(client_nickname, channel_name));
+		addToClientBuffer(server, client_fd, ERR_NOSUCHCHANNEL(client_nickname, channel_name));
+		// sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(client_nickname, channel_name));
 		return ;
 	}
 	
 	// Check that the person inviting is a member of said channel
 	if (channel->second.doesClientExist(client_nickname) == false)
 	{
-		sendServerRpl(client_fd, ERR_NOTONCHANNEL(client_nickname, channel_name));
+		addToClientBuffer(server, client_fd, ERR_NOTONCHANNEL(client_nickname, channel_name));
+		// sendServerRpl(client_fd, ERR_NOTONCHANNEL(client_nickname, channel_name));
 		return ;
 	}
 	
-	// Check that, if the channel is on invite-only mode, the user inviting is an operator
-	// TODO: attendre les modes de Dim pour cette condition
-
 	// Check that the invited user is not already on the channel
 	if (channel->second.doesClientExist(invited_client) == true)
 	{
-		sendServerRpl(client_fd, ERR_USERONCHANNEL(client_nickname, invited_client, channel_name));
+		addToClientBuffer(server, client_fd, ERR_USERONCHANNEL(client_nickname, invited_client, channel_name));
+		// sendServerRpl(client_fd, ERR_USERONCHANNEL(client_nickname, invited_client, channel_name));
 		return ;
 	}
 	
 	// If all checks are successful => send a RPL_INVITING + invite to the inviting user 
-	sendServerRpl(client_fd, RPL_INVITING(client_nickname, invited_client, channel_name));
+	addToClientBuffer(server, client_fd, RPL_INVITING(client_nickname, invited_client, channel_name));
+	// sendServerRpl(client_fd, RPL_INVITING(client_nickname, invited_client, channel_name));
 	
 	std::map<std::string, Client> clients = channel->second.getClientList();
 	std::map<std::string, Client>::iterator invited = clients.find(invited_client);
 	std::string user_id = ":" +	invited->second.getNickname() + "!" + invited->second.getUsername() + "@localhost";
 	std::string invite = user_id + ":Knock knock! You are invited to join the channel #" + channel_name + " by " + client_nickname + " .\r\n";
-	send(invited->second.getClientFd(), invite.c_str(), invite.size(), 0);
+	
+	addToClientBuffer(server, invited->second.getClientFd(), invite);
+	// send(invited->second.getClientFd(), invite.c_str(), invite.size(), 0);
 }
 
 // Exemple of user input : "INVITE Wiz #foo_bar"

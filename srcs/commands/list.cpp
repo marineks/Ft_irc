@@ -36,8 +36,9 @@ void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 	if (channel_to_display.empty()) // "/LIST" => list all channels
 	{
 		if (server->getChannels().empty()) {
-			send(client_fd, RPL_LISTEND.c_str(), RPL_LISTEND.size(), 0);
-			std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LISTEND << RESET << std::endl;
+			addToClientBuffer(server, client_fd, RPL_LISTEND);
+			// send(client_fd, RPL_LISTEND.c_str(), RPL_LISTEND.size(), 0);
+			// std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LISTEND << RESET << std::endl;
 		} 
 		else 
 		{
@@ -46,8 +47,9 @@ void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 			{
 				RPL_LIST.clear();
 				RPL_LIST = getRplList(client_nick, it);
-				send(client_fd, RPL_LIST.c_str(), RPL_LIST.size(), 0);
-				std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LIST << RESET << std::endl;
+				addToClientBuffer(server, client_fd, RPL_LIST);
+				// send(client_fd, RPL_LIST.c_str(), RPL_LIST.size(), 0);
+				// std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LIST << RESET << std::endl;
 				it++;
 			}
 		}
@@ -59,12 +61,14 @@ void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 		if (channel != channels.end())
 		{	
 			RPL_LIST = getRplList(client_nick, channel);
-			send(client_fd, RPL_LIST.c_str(), RPL_LIST.size(), 0);
+			addToClientBuffer(server, client_fd, RPL_LIST);
+			// send(client_fd, RPL_LIST.c_str(), RPL_LIST.size(), 0);
 
 		} else {
-			std::cout << "[Server] The channel " << channel_to_display << " does not exist." << std::endl;
-			send(client_fd, RPL_LISTEND.c_str(), RPL_LISTEND.size(), 0);
-			std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LISTEND << RESET << std::endl;
+			// std::cout << "[Server] The channel " << channel_to_display << " does not exist." << std::endl;
+			addToClientBuffer(server, client_fd, RPL_LISTEND);
+			// send(client_fd, RPL_LISTEND.c_str(), RPL_LISTEND.size(), 0);
+			// std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << RPL_LISTEND << RESET << std::endl;
 		}
 	}
 	return ;

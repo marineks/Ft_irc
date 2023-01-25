@@ -19,7 +19,7 @@
  * 
  */
 
-static void  broadcastToChannel(int const client_fd, std::map<const int, Client>::iterator it_client, std::map<std::string, Channel>::iterator it_channel, std::string message)
+static void  broadcastToChannel(Server *server, int const client_fd, std::map<const int, Client>::iterator it_client, std::map<std::string, Channel>::iterator it_channel, std::string message)
 {
    // TODO: check a faire avec les modes
          // checker si user membre du channel -> si oui : boucle for to send to every user in the channel
@@ -29,7 +29,11 @@ static void  broadcastToChannel(int const client_fd, std::map<const int, Client>
     while (member != it_channel->second.getClientList().end())
    {
       if (member->second.getClientFd() != client_fd)   // prevent to send the message to the sender
-          sendServerRpl(member->second.getClientFd(), RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), message));
+      {
+         addToClientBuffer(server, member->second.getClientFd(), RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), message));
+         // sendServerRpl(member->second.getClientFd(), RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), message));
+      }
+          
       member++;
    }
 }
@@ -58,7 +62,7 @@ void	notice(Server *server, int const client_fd, cmd_struct cmd_infos)
       if (it_channel == channel_list.end())
          return ;
       else
-         broadcastToChannel(client_fd, it_client, it_channel, cmd_infos.message);
+         broadcastToChannel(server, client_fd, it_client, it_channel, cmd_infos.message);
    }
    // user case
    else
@@ -73,6 +77,10 @@ void	notice(Server *server, int const client_fd, cmd_struct cmd_infos)
       if (it_target == client_list.end())
          return ;
       else
-        sendServerRpl(it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message)); 
+      {
+         addToClientBuffer(server, it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
+         // sendServerRpl(it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), cmd_infos.message));
+      }
+        
    }
 }

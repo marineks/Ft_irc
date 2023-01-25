@@ -151,22 +151,26 @@ void Server::addClient(int client_socket, std::vector<pollfd> &poll_fds)
 	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
 }
 
-void Server::delClient(std::vector<pollfd> &poll_fds, int current_fd)
+void Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it, int current_fd)
 {
 	std::cout << "je suis dans le del\n";
 	std::cout << "Deconnection of client : " << current_fd << std::endl;
 	int key = current_fd;
-	std::vector<pollfd>::iterator iterator;
-	for (iterator = poll_fds.begin(); iterator != poll_fds.end(); iterator++)
-	{
-		if (iterator->fd == current_fd)
-		{
-			close(current_fd);
-			poll_fds.erase(iterator);
-			_clients.erase(key);
-			break;
-		}
-	}
+
+	close(current_fd);
+	poll_fds.erase(it);
+	_clients.erase(key);
+	// std::vector<pollfd>::iterator iterator;
+	// for (iterator = poll_fds.begin(); iterator != poll_fds.end(); iterator++)
+	// {
+	// 	if (iterator->fd == current_fd)
+	// 	{
+	// 		close(current_fd);
+	// 		poll_fds.erase(iterator);
+	// 		_clients.erase(key);
+	// 		break;
+	// 	}
+	// }
 	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
 }
 
@@ -276,14 +280,18 @@ void Server::parseMessage(int const client_fd, std::string message)
 			{
 				if (it->second.is_valid() == SUCCESS)
 				{
+					std::cout << "Mais est ce que jaurais pas toutes les infos" << std::endl;
 					addToClientBuffer(this, client_fd, getWelcomeReply(it));
 					// send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
-					// std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << getWelcomeReply(it) << RESET << std::endl;
 					it->second.isWelcomeSent() = true;
 					it->second.isRegistrationDone() = true;
 				}		
 				else
 					throw Server::InvalidClientException();
+			}
+			else
+			{
+				std::cout << "je ne suis dans aucune de ces propals" << std::endl;
 			}
 		}
 		else
