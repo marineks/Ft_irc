@@ -29,8 +29,10 @@
  * When the server is done processing the modes, a MODE command is sent to all members of the channel containing the mode changes. 
  * Servers MAY choose to hide sensitive information when sending the mode changes.
  * 
- * Exemple :
+ * Exemples :
  * - +o : /mode #cool +o MEAT (MEAT devient opérateur sur #cool)
+ * Message à send aux users du channel : ':irc.example.com MODE #cool +o MEAT'; 
+ * The irc.example.com server gave channel operator privileges to MEAT on #cool.
  * - +k : /mode #cool +k COOLKEY (protège le channel par le mot de passe COOLKEY)
  * - +s : /mode #cool +s (le channel devient secret)
  * - plusieur modes : /mode #cool +ts (le channel est en mode +t +s)
@@ -62,7 +64,52 @@
  * 
  */
 
+
+/*
+A CODER POUR l'USER : +i / +o
+- Invisible User Mode :
+This mode is standard, and the mode letter used for it is "+i".
+If a user is set to ‘invisible’, they will not show up in commands such as WHO or NAMES unless they share a channel with the user that submitted the command. 
+In addition, some servers hide all channels from the WHOIS reply of an invisible user they do not share with the user that submitted the command.
+
+- Oper User Mode :
+This mode is standard, and the mode letter used for is it "+o".
+If a user has this mode, this indicates that they are a network operator.
+
+
+A CODER POUR LE CHANNEL : +o / +k / +s / +t
+- Key Channel Mode :
+This mode is standard, and the mode letter used for it is "+k".
+This mode letter sets a ‘key’ that must be supplied in order to join this channel. 
+If this mode is set, its’ value is the key that is required. 
+Servers may validate the value (eg. to forbid spaces, as they make it harder to use the key in JOIN messages). 
+If the value is invalid, they SHOULD return ERR_INVALIDMODEPARAM. However, clients MUST be able to handle any of the following:
+
+    ERR_INVALIDMODEPARAM
+    ERR_INVALIDKEY
+    MODE echoed with a different key (eg. truncated or stripped of invalid characters)
+    the key changed ignored, and no MODE echoed if no other mode change was valid.
+
+If this mode is set on a channel, and a client sends a JOIN request for that channel, they must supply <key> in order for the command to succeed. 
+If they do not supply a <key>, or the key they supply does not match the value of this mode, they will receive an ERR_BADCHANNELKEY (475) reply and the command will fail.
+
+- Secret Channel Mode :
+This mode is standard, and the mode letter used for it is "+s".
+This channel mode controls whether the channel is ‘secret’, and does not have any value.
+A channel that is set to secret will not show up in responses to the LIST or NAMES command unless the client sending the command is joined to the channel. 
+Likewise, secret channels will not show up in the RPL_WHOISCHANNELS (319) numeric unless the user the numeric is being sent to is joined to that channel.
+
+- Protected Topic Mode :
+This mode is standard, and the mode letter used for it is "+t".
+This channel mode controls whether channel privileges are required to set the topic, and does not have any value.
+If this mode is enabled, users must have channel privileges such as halfop or operator status in order to change the topic of a channel. 
+In a channel that does not have this mode enabled, anyone may set the topic of the channel using the TOPIC command.
+
+*/
+
 void	mode(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
-
+	(void)server;
+	(void)client_fd;
+	(void)cmd_infos;
 }
