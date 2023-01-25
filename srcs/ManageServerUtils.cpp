@@ -21,3 +21,18 @@ int	Server::handlePolloutEvent(std::vector<pollfd>& poll_fds, std::vector<pollfd
 	}
 	return (SUCCESS);
 }
+
+int	Server::handlePollerEvent(std::vector<pollfd>& poll_fds, std::vector<pollfd>::iterator &it, const int current_fd)
+{
+	if (it->fd == _server_socket_fd)
+	{
+		std::cerr << RED << "[Server] Listen socket error" << RESET << std::endl;
+		return (FAILURE);
+	}
+	else
+	{
+		delClient(poll_fds, it, it->fd);
+		return (BREAK);
+	}
+}
+

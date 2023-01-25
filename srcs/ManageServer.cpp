@@ -114,16 +114,10 @@ int Server::manageServerLoop()
 			}
 			else if (it->revents & POLLERR)
 			{
-				if (it->fd == _server_socket_fd)
-				{
-					std::cerr << RED << "[Server] Listen socket error" << RESET << std::endl;
-					return (FAILURE);
-				}
+				if (handlePollerEvent(poll_fds, it, it->fd) == BREAK)
+					break ;
 				else
-				{
-					delClient(poll_fds, it, it->fd);
-					break;
-				}
+					return (FAILURE);
 			}
 			else
 				it++;
