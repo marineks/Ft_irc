@@ -107,9 +107,21 @@ In a channel that does not have this mode enabled, anyone may set the topic of t
 
 */
 
+// syntax command : /mode <channel> <+ ou -> <mode> [parametres]
+
+struct mode_struct
+{
+	std::string	prefix;
+	std::string	name;
+	std::string	message;
+};
+
 void	mode(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
 	(void)server;
 	(void)client_fd;
-	(void)cmd_infos;
+	
+	std::cout << "\nMessage : |" << cmd_infos.message << "|" << std::endl;
+
+
 }
