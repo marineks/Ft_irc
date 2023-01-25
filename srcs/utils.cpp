@@ -17,18 +17,11 @@ void	sendServerRpl(int const client_fd, std::string client_buffer)
 	send(client_fd, client_buffer.c_str(), client_buffer.size(), 0);
 	while (getline(buf, reply))
 	{
-		std::cout << "[Server] Message sent to client " \
-				  << client_fd << " >> " << CYAN << reply << RESET << std::endl;
+		std::cout << std::endl << "[Server] Message sent to client " \
+				  << client_fd << "       >> " << CYAN << reply << RESET << std::endl;
 	}
 }
 
-// void	sendServerRpl(int const client_fd, std::string reply)
-// {
-// 	send(client_fd, reply.c_str(),reply.size(), 0);
-// 	std::cout << "[Server] Message sent to client " \
-// 			  << client_fd << " >> " << CYAN << reply << RESET << std::endl;
-// }
-// TODO PROTEGER
 Client&	retrieveClient(Server *server, int const client_fd)
 {
 	std::map<const int, Client>&		client_list = server->getClients();

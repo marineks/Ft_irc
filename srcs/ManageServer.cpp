@@ -16,27 +16,29 @@ static void	tooManyClients(int client_socket)
 	close(client_socket);
 }
 
-// TODO paS LE DROIT A GETPEERNAME, RECODER A PARTIR D ACCEPT
-static sockaddr_in getClientAddress(int socket)
-{
-	sockaddr_in client;
-	socklen_t addrSize = sizeof(struct sockaddr_in);
-	if (getpeername(socket, (struct sockaddr *)&client, &addrSize) != SUCCESS)
-	{
-		std::cerr << RED << "Get Client Address Error" << RESET << std::endl;
-		throw;
-	}
-	return (client);
-}
+// static sockaddr_in getClientAddress(int socket)
+// {
+// 	sockaddr_in client;
+// 	socklen_t addrSize = sizeof(struct sockaddr_in);
+// 	if (getpeername(socket, (struct sockaddr *)&client, &addrSize) != SUCCESS)
+// 	{
+// 		std::cerr << RED << "Get Client Address Error" << RESET << std::endl;
+// 		throw;
+// 	}
+// 	return (client);
+// }
 
 static void print(std::string type, int client_socket, char *message)
 {
-	sockaddr_in client = getClientAddress(client_socket);
-	std::cout << PURPLE << type
-			  << RESET << client_socket << " "
-			  << inet_ntoa(client.sin_addr) << " "
-			  << ntohs(client.sin_port) << std::endl
-			  << BLUE << (message == NULL ? "\n" : message) << RESET << std::endl;
+	// sockaddr_in client = getClientAddress(client_socket); ient 4
+	if (message)
+	{
+		std::cout  << type << client_socket << " << "
+		//   << inet_ntoa(client.sin_addr) << " "
+		//   << ntohs(client.sin_port) 
+		 << BLUE << message << RESET << std::endl;
+	}
+	
 }
 
 int Server::manageServerLoop()
@@ -57,11 +59,12 @@ int Server::manageServerLoop()
 		{
 			if (errno == EINTR) //  EINTR  A signal occurred before any requested event; see signal(7).
 				break ;
-			std::cerr << RED << "Poll error" << RESET << std::endl;
+			std::cerr << RED << "[Server] Poll error" << RESET << std::endl;
 			throw ; //TODO: mettre rreur pls tard avec errno (truc custom strerror)
 		}
 
 		std::vector<pollfd>::iterator it = poll_fds.begin();
+		Client *client;
 		while (it != poll_fds.end())
 		{
 			if (it->revents & POLLIN) // => If the event that occured is a POLLIN (aka "data is ready to recv() on this socket")
@@ -82,12 +85,13 @@ int Server::manageServerLoop()
 				}
 				else // => If the dedicated fd for the Client/Server connection already exists
 				{
+					client = getClient(this, it->fd);
 					char message[BUF_SIZE_MSG];
 					int read_count;
 					
 					memset(message, 0, sizeof(message));
 					read_count = recv(it->fd, message, BUF_SIZE_MSG, 0); // Retrieves the Client's message
-					// string partielle
+
 					if (read_count <= FAILURE) // when recv returns an error
 					{
 						std::cerr << RED << "Recv() failed [456]" << RESET << std::endl;
@@ -96,34 +100,28 @@ int Server::manageServerLoop()
 					}
 					else if (read_count == 0) // when a client disconnects
 					{
-						std::cout << &*poll_fds.begin() << '\n';
-						delClient(poll_fds, it, it->fd);
-						std::cout << &*poll_fds.begin() << '\n';
 						std::cout << "Disconnected\n";
+						delClient(poll_fds, it, it->fd);
 						break ;
 					}
 					else
 					{
-						print("[CLIENT] Recv : ", it->fd, message); // si affichage incoherent regarder ici
-						try 
-						{
-							parseMessage(it->fd, message);
-						}
+						print("[Client] Message received from client ", it->fd, message); // si affichage incoherent regarder ici
+						try { parseMessage(it->fd, message); }
 						catch(const std::exception& e) 
 						{ 
 							std::cout << "[SERVER] Caught exception : ";
 							std::cerr << e.what() << std::endl;
-							std::cout << "[SERVER] Client #"<< it->fd << " deleted." << std::endl;
-							delClient(poll_fds, it, it->fd);
+							client->setDeconnexionStatus(true);
 							break ;
 						}
 						it++;
 					}
 				}
-			} 
+			}
 			else if (it->revents & POLLOUT) // = "Alert me when I can send() data to this socket without blocking."
 			{
-				Client *client = getClient(this, it->fd);
+				client = getClient(this, it->fd);
 				if (!client)
 				{
 					std::cout << "[SERVER] Did not found connexion to client sorry" << std::endl;
@@ -132,7 +130,11 @@ int Server::manageServerLoop()
 				{
 					sendServerRpl(it->fd, client->getBuffer());
 					client->getBuffer().clear();
-					// NOTE : est ce que je mets en place un should close ?
+					if (client->getDeconnexionStatus() == true)
+					{
+						delClient(poll_fds, it, it->fd);
+						break ;
+					}
 				}
 				it++;
 			}
@@ -153,6 +155,7 @@ int Server::manageServerLoop()
 				it++;
 		}
 		poll_fds.insert(poll_fds.end(), new_pollfds.begin(), new_pollfds.end()); // Add the range of NEW_pollfds in poll_fds (helps recalculating poll_fds.end() in the for loop)
+
 		// std::cout << "j'ai insert\n"
 		// 		  << std::endl;
 

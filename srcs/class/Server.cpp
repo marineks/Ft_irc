@@ -7,12 +7,11 @@ Server::Server(std::string port, std::string password)
 {
 	std::cout << YELLOW << "Server Constructor" << RESET << std::endl;
 	memset(&_hints, 0, sizeof(_hints));
-	// memset(&_irc_operators, 0, sizeof(_irc_operators));
 }
 
 Server::~Server()
 {
-	std::cout << YELLOW << "Server destructor" << RESET << std::endl;
+	std::cout << YELLOW << "Server shutting down..." << RESET << std::endl;
 }
 
 const char * 	Server::InvalidClientException::what (void) const throw() 
@@ -153,25 +152,15 @@ void Server::addClient(int client_socket, std::vector<pollfd> &poll_fds)
 
 void Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it, int current_fd)
 {
-	std::cout << "je suis dans le del\n";
-	std::cout << "Deconnection of client : " << current_fd << std::endl;
+	std::cout << "[Server] Deconnection of client #" << current_fd << std::endl;
+
 	int key = current_fd;
 
 	close(current_fd);
-	poll_fds.erase(it);
 	_clients.erase(key);
-	// std::vector<pollfd>::iterator iterator;
-	// for (iterator = poll_fds.begin(); iterator != poll_fds.end(); iterator++)
-	// {
-	// 	if (iterator->fd == current_fd)
-	// 	{
-	// 		close(current_fd);
-	// 		poll_fds.erase(iterator);
-	// 		_clients.erase(key);
-	// 		break;
-	// 	}
-	// }
-	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
+	poll_fds.erase(it);
+
+	std::cout << "[Server] " << PURPLE << "Client deleted. Total Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
 }
 
 /**
@@ -280,7 +269,6 @@ void Server::parseMessage(int const client_fd, std::string message)
 			{
 				if (it->second.is_valid() == SUCCESS)
 				{
-					std::cout << "Mais est ce que jaurais pas toutes les infos" << std::endl;
 					addToClientBuffer(this, client_fd, getWelcomeReply(it));
 					// send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
 					it->second.isWelcomeSent() = true;
@@ -288,10 +276,6 @@ void Server::parseMessage(int const client_fd, std::string message)
 				}		
 				else
 					throw Server::InvalidClientException();
-			}
-			else
-			{
-				std::cout << "je ne suis dans aucune de ces propals" << std::endl;
 			}
 		}
 		else
@@ -351,7 +335,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		case 15: topic(this, client_fd, cmd_infos); break;
 		// case 16: user(cmd_infos); break;
 		default:
-			std::cout << PURPLE << "This command is not supported by our services." << RESET << std::endl;
+			std::cout  << "[Server]" << PURPLE << " The command (" << cmd_infos.name << ") is not supported by our services." << RESET << std::endl << std::endl;
 	}
 }
 
