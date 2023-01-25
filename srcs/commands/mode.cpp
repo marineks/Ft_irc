@@ -198,7 +198,7 @@ static void	checkInfosForUser(Server *server, mode_struct mode_infos, int const 
 		return ;
 	}
 
-	
+	// si pas de <modestring> : RPL :lair.nl.eu.dal.net 221 tiffanymanolis +iH	
 }
 
 
