@@ -6,7 +6,7 @@ void	addToClientBuffer(Server *server, int const client_fd, std::string reply)
 {
 	Client &client = retrieveClient(server, client_fd);
 
-	client.setBuffer(reply);
+	client.setSendBuffer(reply);
 }
 
 void	sendServerRpl(int const client_fd, std::string client_buffer)

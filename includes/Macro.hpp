@@ -11,6 +11,6 @@
 #define BUF_SIZE_MSG 4096
 
 /*		MESSAGE		*/
-#define ERR_FULL_SERV "Server already full"
+#define ERR_FULL_SERV "[Server] You cannot join, the server is already full"
 
 #endif

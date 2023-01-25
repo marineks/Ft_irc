@@ -92,7 +92,7 @@ int Server::fillServinfo(char *port)
 {
 	if (getaddrinfo(NULL, port, &_hints, &_servinfo) < 0)
 	{
-		std::cerr << RED << "Flop du addrinfo" << RESET << std::endl;
+		std::cerr << RED << "[Server] Flop du addrinfo" << RESET << std::endl;
 		return (FAILURE);
 	}
 	return (SUCCESS);
@@ -114,23 +114,23 @@ int Server::launchServer()
 	_server_socket_fd = socket(_servinfo->ai_family, _servinfo->ai_socktype, _servinfo->ai_protocol);
 	if (_server_socket_fd == FAILURE)
 	{
-		std::cerr << RED << "Flop de la socket :(" << RESET << std::endl;
+		std::cerr << RED << "[Server] Flop de la socket :(" << RESET << std::endl;
 		return (FAILURE);
 	}
 	int optvalue = 1; // enables the re-use of a port if the IP address is different
 	if (setsockopt(_server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &optvalue, sizeof(optvalue)) == FAILURE)
 	{
-		std::cerr << RED << "Impossible to reuse" << RESET << std::endl;
+		std::cerr << RED << "[Server] Impossible to reuse" << RESET << std::endl;
 		return (FAILURE);
 	}
 	if (bind(_server_socket_fd, _servinfo->ai_addr, _servinfo->ai_addrlen) == FAILURE)
 	{
-		std::cerr << RED << "Bind failed" << RESET << std::endl;
+		std::cerr << RED << "[Server] Bind failed" << RESET << std::endl;
 		return (FAILURE);
 	}
 	if (listen(_server_socket_fd, BACKLOG) == FAILURE)
 	{
-		std::cerr << RED << "Listen failed" << RESET << std::endl;
+		std::cerr << RED << "[Server] Listen failed" << RESET << std::endl;
 		return (FAILURE);
 	}
 	freeaddrinfo(_servinfo);
@@ -147,7 +147,7 @@ void Server::addClient(int client_socket, std::vector<pollfd> &poll_fds)
 	poll_fds.push_back(client_pollfd);
 
 	_clients.insert(std::pair<int, Client>(client_socket, new_client)); // insert a new nod in client map with the fd as key
-	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
+	std::cout << PURPLE << "[Server] Added client #" << client_socket << " successfully" << RESET << std::endl;
 }
 
 void Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it, int current_fd)
@@ -203,7 +203,7 @@ std::string	cleanStr(std::string str)
 void Server::fillClients(std::map<const int, Client> &client_list, int client_fd, std::string cmd)
 {
 	std::map<const int, Client>::iterator it = client_list.find(client_fd);
-	
+
 	if (cmd.find("NICK") != std::string::npos)
 	{
 		cmd.erase(cmd.find("NICK"), 4);

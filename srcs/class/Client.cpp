@@ -6,15 +6,13 @@
 *				################################
 */
 Client::Client(int client_fd)
-: _client_fd(client_fd), _to_deconnect(false), _connexion_password(false), _registrationDone(false), _welcomeSent(false), _hasAllInfo(false)
+: _client_fd(client_fd), _to_deconnect(false), _connexion_password(false),\
+ _registrationDone(false), _welcomeSent(false), _hasAllInfo(false)
 {
 	std::cout << YELLOW << "Client constructor for Client #" << client_fd << RESET << std::endl;
 }
 
-Client::~Client()
-{
-	// std::cout << YELLOW << "Client destructor" << RESET << std::endl;
-}
+Client::~Client() {}
 
 /*
 *					#################
@@ -22,7 +20,8 @@ Client::~Client()
 *					#################
 */
 int				Client::getClientFd() const { return (_client_fd); }
-std::string&	Client::getBuffer()  		{ return (_buffer); }
+std::string&	Client::getSendBuffer()  	{ return (_sendbuf); }
+std::string&	Client::getReadBuffer()  	{ return (_readbuf); }
 std::string&	Client::getNickname()  		{ return (_nickname); }
 std::string&	Client::getOldNickname()  	{ return (_old_nickname); }
 std::string 	Client::getUsername() const { return (_fullname); }
@@ -34,9 +33,14 @@ bool&			Client::isWelcomeSent()			{ return (_welcomeSent); }
 bool&			Client::hasAllInfo() 			{ return (_hasAllInfo); }
 bool&			Client::getDeconnexionStatus()	{ return (_to_deconnect); }
 
-void	Client::setBuffer(std::string const &buf)
+void	Client::setReadBuffer(std::string const &buf)
 {
-	_buffer += buf;
+	_readbuf += buf;
+}
+
+void	Client::setSendBuffer(std::string const &buf)
+{
+	_sendbuf += buf;
 }
 
 void	Client::setDeconnexionStatus(bool status)
@@ -98,7 +102,6 @@ void	Client::printClient()const
 			<< "nickname: " << _nickname << "\n" \
 			<< "Fullname: " << _fullname << "\n"
 			<< "Real name: " << _realname << RESET << "\n";
-
 }
 
 int	Client::is_valid() const
