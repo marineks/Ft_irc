@@ -105,7 +105,7 @@ static void			broadcastToChannel(Server *server, Channel &channel, Client &clien
 	{
 		addToClientBuffer(server, member->second.getClientFd(), \
 			RPL_KICK(user_id(client.getNickname(), client.getUsername()), channel.getName(), kicked, reason));
-		// sendServerRpl(member->second.getClientFd(),	\
+		// sendServerRpl(member->second.getClientFd(),	
 		// 	RPL_KICK(user_id(client.getNickname(), client.getUsername()), channel.getName(), kicked, reason));
 		member++;
 	}

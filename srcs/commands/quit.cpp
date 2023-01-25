@@ -56,7 +56,7 @@ static void	broadcastToChan(Server *server, Channel &channel, int const client_f
 		{
 			addToClientBuffer(server, member->second.getClientFd(), \
 				RPL_QUIT(user_id(nick, user), reason));
-			// sendServerRpl(member->second.getClientFd(),	\
+			// sendServerRpl(member->second.getClientFd(),	
 			// 	RPL_QUIT(user_id(nick, user), reason));
 		}
 			

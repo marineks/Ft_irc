@@ -93,7 +93,7 @@ static void			broadcastToAllChannelMembers(Server *server, Channel &channel, std
 	while (member != channel.getClientList().end())
 	{
 		addToClientBuffer(server, member->second.getClientFd(), RPL_PART(user_id(nick, user), channel.getName(), reason));
-		// sendServerRpl(member->second.getClientFd(),	\
+		// sendServerRpl(member->second.getClientFd(),	
 		// 	RPL_PART(user_id(nick, user), channel.getName(), reason));
 		member++;
 	}
