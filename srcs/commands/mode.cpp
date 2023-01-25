@@ -111,17 +111,103 @@ In a channel that does not have this mode enabled, anyone may set the topic of t
 
 struct mode_struct
 {
-	std::string	prefix;
-	std::string	name;
-	std::string	message;
+	std::string	target;
+	std::string	mode;
+	std::string	params;
 };
+
+
+
+static void	fillModeInfos(mode_struct &mode_infos, std::string command)
+{
+	// example : |tiffanymanolis +i|
+	// example : |#cool +k COOLKEY|
+	// peut-etre mettre une condition pour gérer si on met un truc après le 4eme argument
+	std::cout << "Command to parse : |" << command << "|" << std::endl;
+
+	// std::vector<std::string>	infos_vector;
+	size_t						pos;
+	// std::string					delimiter = " ";
+	// std::string 				param;
+
+	// split les params de command dans un vector de string
+	// while ((pos = command.find(delimiter)) != std::string::npos)
+	// {
+	// 	param = command.substr(0, pos);
+	// 	infos_vector.push_back(param);
+	// 	command.erase(0, pos + delimiter.length());
+	// }
+	// infos_vector.push_back(command);
+	// std::cout << "param dans le vector :\n" << std::endl;
+	// int i = 0;
+	// for (std::vector<std::string>::iterator it = infos_vector.begin(); it != infos_vector.end(); ++it)
+	// {
+	// 	std::cout << i <<" : |" << *it << "|" << std::endl;
+	// 	i++;
+	// }
+	// if (infos_vector.size() == 1)
+	// 	mode_infos.target = infos_vector[0];
+	// else if (infos_vector.size() == 2)
+	// {
+	// 	mode_infos.target = infos_vector[0];
+	// 	mode_infos.mode = infos_vector[1];
+	// }
+	// else
+	// {
+
+	// }
+
+	// TARGET
+	pos = command.find(" ");
+	if (pos == std::string::npos) // n'a pas trouvé d'espace et donc un seul argument
+	{
+		mode_infos.target = command.substr(0); // ou mode_infos.target = command.substr(0, string::npos);
+		return ;
+	}
+	else
+	{
+		mode_infos.target = command.substr(0, pos);
+		command.erase(0, pos + 1); // supprime la target + l'espace
+	}
+
+	// MODE
+	pos = command.find(" ");
+	if (pos == std::string::npos)
+	{
+		mode_infos.mode = command.substr(0); // ou mode_infos.target = command.substr(0, string::npos);
+		return ;
+	}
+	else
+	{
+		mode_infos.mode = command.substr(0, pos);
+		command.erase(0, pos + 1); // supprime la target + l'espace
+	}
+
+	// PARAM
+	mode_infos.params = command.substr(0);
+
+
+}
 
 void	mode(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
 	(void)server;
 	(void)client_fd;
+	mode_struct	mode_infos;
 	
 	std::cout << "\nMessage : |" << cmd_infos.message << "|" << std::endl;
+	cmd_infos.message.erase(0,1);
+	fillModeInfos(mode_infos, cmd_infos.message);
+
+	// 1er check : target is correct si non, ERR_RPL et on sort de la fonction
+	std::cout << "target : |" << mode_infos.target << "|" << std::endl;
+	
+
+	// 2eme check des modes :
+	std::cout << "mode : |" << mode_infos.mode << "|" << std::endl;
+	std::cout << "params : |" << mode_infos.params << "|" << std::endl;
 
 
+
+	
 }
