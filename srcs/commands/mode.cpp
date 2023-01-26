@@ -151,6 +151,7 @@ static void	fillModeInfos(mode_struct &mode_infos, std::string command)
 
 	// PARAM
 	mode_infos.params = command.substr(0);
+	std::cout << "param : " << mode_infos.params << std::endl;
 }
 
 /* Set new mode in channel
@@ -183,7 +184,18 @@ Donne droit operateur à un user
 
 */
 
-static void	operatorChannelMode(Server *server, mode_struct mode_infos, int const client_fd)
+static void	broadcastToAllChannelMembers(Server *server, Channel &channel, std::string reply)
+{
+	std::map<std::string, Client>::iterator member = channel.getClientList().begin();
+	
+	while (member != channel.getClientList().end())
+	{
+		addToClientBuffer(server, member->second.getClientFd(), reply);
+		member++;
+	}
+}
+
+static void	operatorChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string str)
 {
 	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
 	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
@@ -216,20 +228,31 @@ static void	operatorChannelMode(Server *server, mode_struct mode_infos, int cons
 		return ;
 	}
 
+	// Checker si param est dans la liste des operators du channel
+	std::vector<std::string>::iterator it;
+	for (it = it_channel_target->second.getOperators().begin(); it != it_channel_target->second.getOperators().end(); it++)
+	{
+		if (*it == mode_infos.params)
+			break;
+	}
+	// checker si c'est pour rajouter ou enlever le mode
+	if (str.front() == '+')
+	{
+		if (it != it_channel_target->second.getOperators().end()) // si param est deja operator
+			return ;
 		
-
-
-
-	
-			// if ()
-			// if (str.front() == '+')
-			// {
-				
-			// }
-			// else // si c'est -
-			// {
-
-			// }
+		// add au operator et send la reply en broadcast
+		it_channel_target->second.getOperators().push_back(mode_infos.params);
+		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSGWITHPARAM(it_client->second.getNickname(), mode_infos.target, "+o", mode_infos.params));
+	}
+	else // si c'est '-'
+	{
+		if (it == it_channel_target->second.getOperators().end()) // si param n'est pas operator
+			return ;
+		// retirer du vector et send la reply en broadcast
+		it_channel_target->second.getOperators().erase(it);
+		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSGWITHPARAM(it_client->second.getNickname(), mode_infos.target, "-o", mode_infos.params));
+	}
 }
 
 static void	changeChannelMode(Server *server, mode_struct mode_infos, int const client_fd)
@@ -262,9 +285,12 @@ static void	changeChannelMode(Server *server, mode_struct mode_infos, int const 
 	{
 		std::string str = *it;
 		if (str.find("o") != std::string::npos)
-			operatorChannelMode(server, mode_infos, client_fd);
+			operatorChannelMode(server, mode_infos, client_fd, str);
+	std::cout << "check operators du channel :" << std::endl;
+	for (std::vector<std::string>::iterator it = it_channel_target->second.getOperators().begin(); it != it_channel_target->second.getOperators().end(); it++)
+		std::cout << *it << std::endl;
+		
 	}
-	// boucle sur le vector
 	// Faire les 4 mode avec des find
 
 }
