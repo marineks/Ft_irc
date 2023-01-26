@@ -208,8 +208,18 @@ static void	modeForChannel(Server *server, mode_struct mode_infos, int const cli
 			addToClientBuffer(server, client_fd, RPL_CHANNELMODEISWITHKEY(it_client->second.getNickname(), mode_infos.target, it_channel_target->second.getMode(), it_channel_target->second.getChannelPassword()));
 		else
 			addToClientBuffer(server, client_fd, RPL_CHANNELMODEIS(it_client->second.getNickname(), mode_infos.target, it_channel_target->second.getMode()));
+		return ;
 	}
 
+	// Check si le client est operator du channel - ERR_CHANOPRIVSNEEDED (482)
+	std::vector<std::string>::iterator it;
+	for (it = it_channel_target->second.getOperators().begin(); it != it_channel_target->second.getOperators().end(); it++)
+	{
+		if (*it == it_client->second.getNickname())
+			break;
+	}
+	if (it == it_channel_target->second.getOperators().end())
+		addToClientBuffer(server, client_fd, ERR_CHANOPRIVSNEEDED(it_client->second.getNickname(), mode_infos.target));
 
 }
 
@@ -219,12 +229,12 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
 
 	// Check si la target existe parmis les clients
 	std::map<const int, Client>::iterator it_user_target = server->getClients().begin();
-      while (it_user_target != server->getClients().end())
-      {
-         if (it_user_target->second.getNickname() == mode_infos.target)
-             break;
-         it_user_target++;
-      }
+    while (it_user_target != server->getClients().end())
+    {
+    	if (it_user_target->second.getNickname() == mode_infos.target)
+        	break;
+    	it_user_target++;
+    }
 	if (it_user_target == server->getClients().end())
 	{
 		sendServerRpl(client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), mode_infos.target));
