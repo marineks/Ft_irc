@@ -24,7 +24,7 @@ std::string&	Client::getSendBuffer()  	{ return (_sendbuf); }
 std::string&	Client::getReadBuffer()  	{ return (_readbuf); }
 std::string&	Client::getNickname()  		{ return (_nickname); }
 std::string&	Client::getOldNickname()  	{ return (_old_nickname); }
-std::string 	Client::getUsername() const { return (_fullname); }
+std::string 	Client::getUsername() const { return (_username); }
 std::string		Client::getRealname() const { return (_realname); }
 
 bool&			Client::getConnexionPassword()	{ return (_connexion_password); }
@@ -61,7 +61,7 @@ void	Client::setOldNickname(std::string const &nickname)
 
 void	Client::setUsername(std::string const &username)
 {
-	_fullname = username;
+	_username = username;
 }
 
 void	Client::setRealname(std::string const &realname)
@@ -100,13 +100,13 @@ void	Client::printClient()const
 	std::cout << "Print client" << std::endl;
 	std::cout << YELLOW << "fd: " << _client_fd << "\n" \
 			<< "nickname: " << _nickname << "\n" \
-			<< "Fullname: " << _fullname << "\n"
+			<< "Username: " << _username << "\n"
 			<< "Real name: " << _realname << RESET << "\n";
 }
 
 int	Client::is_valid() const
 {
-	if (_fullname.empty())
+	if (_username.empty())
 		return (FAILURE);
 	if (_nickname.empty())
 		return (FAILURE);

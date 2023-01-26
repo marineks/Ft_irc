@@ -25,7 +25,7 @@ class Server
 class User
 {
 	private:
-		std::string			_fullname;
+		std::string			_username;
 		char				_nickname[9]; // check_if_available
 		std::vector<std::string>	_oldNames;
 		int					_mode; // se renseigner sur les modes
