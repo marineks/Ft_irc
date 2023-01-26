@@ -42,5 +42,6 @@ int		ping(Server *server, int const client_fd, cmd_struct &cmd);
 void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	quit(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	topic(Server *server, int const client_fd, cmd_struct cmd_infos);
+void	user(Server *server, int const client_fd, cmd_struct cmd_infos);
 
 #endif

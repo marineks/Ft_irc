@@ -203,30 +203,15 @@ std::string	cleanStr(std::string str)
 void Server::fillClients(std::map<const int, Client> &client_list, int client_fd, std::string cmd)
 {
 	std::map<const int, Client>::iterator it = client_list.find(client_fd);
+	cmd_struct cmd_infos;
+	parseCommand(cmd, cmd_infos);
 
 	if (cmd.find("NICK") != std::string::npos)
-	{
-		cmd.erase(cmd.find("NICK"), 4);
-		cmd = cleanStr(cmd);
-		it->second.setNickname(cmd);
-		if (isAlreadyUsed(this, client_fd, it->second.getNickname()) == true)
-		{
-			addToClientBuffer(this, client_fd, ERR_NICKNAMEINUSE(it->second.getNickname(), cmd));
-			// sendServerRpl(client_fd, ERR_NICKNAMEINUSE(it->second.getNickname(), cmd));
-			it->second.setNickname(cmd.append("1"));
-		}
-	}
+		nick(this, client_fd, cmd_infos);
 	else if (cmd.find("USER") != std::string::npos)
-	{
-		cmd.erase(cmd.find("USER "), 5);
-		it->second.setUsername(cmd.substr(cmd.find(" "), cmd.find(" ") + 1));
-		it->second.setUsername(cleanStr(it->second.getUsername()));
-		it->second.setRealname(cmd.substr(cmd.find(":") + 1, cmd.length() - cmd.find(":") + 1));
-	}
+		user(this, client_fd, cmd_infos);
 	else if (cmd.find("PASS") != std::string::npos)
 	{
-		cmd_struct cmd_infos;
-		parseCommand(cmd, cmd_infos);
 		if (pass(this, client_fd, cmd_infos) == SUCCESS)
 			it->second.setConnexionPassword(true);
 		else
@@ -326,14 +311,14 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		// case 6: mode(this, client_fd, cmd_infos); break;
 		case 7: names(this, client_fd, cmd_infos); break;
 		case 8: nick(this, client_fd, cmd_infos); break;
-    case 9: notice(this, client_fd, cmd_infos); break;
+    	case 9: notice(this, client_fd, cmd_infos); break;
 		case 10: oper(this, client_fd, cmd_infos); break;
 		case 11: part(this, client_fd, cmd_infos); break;
 		case 12: ping(this, client_fd, cmd_infos); break;
 		case 13: privmsg(this, client_fd, cmd_infos); break;
 		case 14: quit(this, client_fd, cmd_infos); break;
 		case 15: topic(this, client_fd, cmd_infos); break;
-		// case 16: user(cmd_infos); break;
+		case 16: user(this, client_fd, cmd_infos); break;
 		default:
 			std::cout  << "[Server]" << PURPLE << " The command (" << cmd_infos.name << ") is not supported by our services." << RESET << std::endl << std::endl;
 	}
