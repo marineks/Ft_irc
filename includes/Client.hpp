@@ -31,7 +31,8 @@ class Client
 		void			setRealname(std::string const &realname);
 		std::string		getRealname()const;
 		std::string&	getMode();
-		void			setMode(std::string const &mode);
+		void			addMode(std::string const mode);
+		void			removeMode(std::string const mode);
 		bool&			getConnexionPassword();
 		void			setConnexionPassword(bool boolean);
 		bool&			isRegistrationDone();

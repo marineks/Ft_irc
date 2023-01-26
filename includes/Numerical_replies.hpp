@@ -23,6 +23,11 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define RPL_KICK(user_id, channel, kicked, reason) (user_id + " KICK #" + channel + " " + kicked + " " + reason + "\r\n")
 
 // MODE
+// << MODE tiff -i
+	// >> :tiff MODE tiff :-i
+	// quand un mode est attribué
+	// :tiffanymanolis MODE tiffanymanolis :+iH
+#define MODE_USERMSG(client, mode) (":" + client + " MODE " + client + " :" + mode + "\r\n")
 #define ERR_UMODEUNKNOWNFLAG(client) (":localhost 501 " + client + " :Unknown MODE flag\r\n")
 #define ERR_USERSDONTMATCH(client) ("502 " + client + " :Cant change mode for other users\r\n")
 #define RPL_UMODEIS(client, mode) (":localhost 221 " + client + " " + mode + "\r\n")

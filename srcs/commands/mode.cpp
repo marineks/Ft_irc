@@ -201,17 +201,71 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
 	// If <mode> is not given
 	if (mode_infos.mode.empty() == true)
 		sendServerRpl(client_fd, RPL_UMODEIS(it_client->second.getNickname(), it_client->second.getMode()));
+	
 	// Attribue un mode à l'user (modes autorisés 'i' & 'o' ?)
-	if (mode_infos.mode.find("i") != std::string::npos || mode_infos.mode.find("o") != std::string::npos)
+	if (mode_infos.mode[0] == '+' || mode_infos.mode[0] == '-')
 	{
-		std::cout << "prout" << std::endl;
+		std::string::iterator pos = mode_infos.mode.begin();
+		while (pos != mode_infos.mode.end())
+		{
+			std::cout << "debut de la mega boucle : " << *pos << std::endl;
+			if (*pos == '+')
+			{
+				pos++;
+				while (*pos != '+' && *pos != '-' && pos != mode_infos.mode.end())
+				{
+					std::cout << "debut boucle + : " << *pos << std::endl;
+					if (*pos == 'i')
+					{
+						if (it_user_target->second.getMode().find("i") == std::string::npos)
+						{
+							it_user_target->second.addMode("i");
+							sendServerRpl(client_fd, MODE_USERMSG(it_client->second.getNickname(), "+i"));
+						}
+					}
+					if (*pos == 'o')
+					{
+						if (it_user_target->second.getMode().find("o") == std::string::npos)
+						{
+							it_user_target->second.addMode("o");
+							sendServerRpl(client_fd, MODE_USERMSG(it_client->second.getNickname(), "+o"));
+						}	
+					}
+					pos++;
+				}
+			}
+			else // si c'est '-'
+			{
+				pos++;
+				while (*pos != '+' && *pos != '-' && pos != mode_infos.mode.end())
+				{
+					std::cout << "boucle - : " << *pos << std::endl;
+					if (*pos == 'i')
+					{
+						if (it_user_target->second.getMode().find("i") != std::string::npos)
+						{
+							it_user_target->second.removeMode("i");
+							sendServerRpl(client_fd, MODE_USERMSG(it_client->second.getNickname(), "-i"));
+						}
+					}
+					if (*pos == 'o')
+					{
+						if (it_user_target->second.getMode().find("o") != std::string::npos)
+						{
+							it_user_target->second.removeMode("o");
+							sendServerRpl(client_fd, MODE_USERMSG(it_client->second.getNickname(), "-o"));
+						}
+					}
+					pos++;
+				}
+			}
+		}
+		std::cout << "sortie de la mega boucle" << std::endl;
+		if (mode_infos.mode.find("O") != std::string::npos || mode_infos.mode.find("r") != std::string::npos || mode_infos.mode.find("w") != std::string::npos)
+			sendServerRpl(client_fd, ERR_UMODEUNKNOWNFLAG(it_client->second.getNickname()));
 	}
-	else if (mode_infos.mode.find("O") != std::string::npos || mode_infos.mode.find("r") != std::string::npos || mode_infos.mode.find("w") != std::string::npos)
-		sendServerRpl(client_fd, ERR_UMODEUNKNOWNFLAG(it_client->second.getNickname()));
-	// << MODE tiff -i
-	// >> :tiff MODE tiff :-i
-	// quand un mode est attribué
-	// :tiffanymanolis MODE tiffanymanolis :+iH
+	
+	
 
 
 }
@@ -219,7 +273,6 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
 
 void	mode(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
-	
 	mode_struct	mode_infos;
 	
 	std::cout << "\nMessage : |" << cmd_infos.message << "|" << std::endl;

@@ -54,12 +54,18 @@ void	Client::setRealname(std::string const &realname)
 	_realname = realname;
 }
 
-void	Client::setMode(std::string const &mode)
+void	Client::addMode(std::string const mode)
 {
 	if (_mode.empty() == true)
 		_mode = "+" + mode;
 	else 
 		_mode += mode;
+}
+
+void	Client::removeMode(std::string const mode)
+{
+	size_t pos = _mode.find(mode);
+	_mode.erase(pos);
 }
 
 void	Client::setConnexionPassword(bool boolean)
