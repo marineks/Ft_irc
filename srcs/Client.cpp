@@ -26,7 +26,7 @@ std::string&	Client::getNickname()  		{ return (_nickname); }
 std::string&	Client::getOldNickname()  	{ return (_old_nickname); }
 std::string 	Client::getUsername() const { return (_fullname); }
 std::string		Client::getRealname() const { return (_realname); }
-std::string&	Client::getMode() const		{ return (_mode); }
+std::string&	Client::getMode()			{ return (_mode); }
 
 bool&			Client::getConnexionPassword()	{ return (_connexion_password); }
 bool&			Client::isRegistrationDone() 	{ return (_registrationDone); }
@@ -56,7 +56,7 @@ void	Client::setRealname(std::string const &realname)
 
 void	Client::setMode(std::string const &mode)
 {
-	if (_mode.empty == true)
+	if (_mode.empty() == true)
 		_mode = "+" + mode;
 	else 
 		_mode += mode;

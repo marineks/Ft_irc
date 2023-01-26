@@ -159,7 +159,7 @@ static void	fillModeInfos(mode_struct &mode_infos, std::string command)
 
 }
 
-static void	checkInfosForChannel(Server *server, mode_struct mode_infos, int const client_fd)
+static void	modeForChannel(Server *server, mode_struct mode_infos, int const client_fd)
 {
 	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
 
@@ -174,7 +174,7 @@ static void	checkInfosForChannel(Server *server, mode_struct mode_infos, int con
 
 }
 
-static void	checkInfosForUser(Server *server, mode_struct mode_infos, int const client_fd)
+static void	modeForUser(Server *server, mode_struct mode_infos, int const client_fd)
 {
 	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
 
@@ -198,7 +198,22 @@ static void	checkInfosForUser(Server *server, mode_struct mode_infos, int const 
 		return ;
 	}
 
-	// si pas de <modestring> : RPL :lair.nl.eu.dal.net 221 tiffanymanolis +iH	
+	// If <mode> is not given
+	if (mode_infos.mode.empty() == true)
+		sendServerRpl(client_fd, RPL_UMODEIS(it_client->second.getNickname(), it_client->second.getMode()));
+	// Attribue un mode à l'user (modes autorisés 'i' & 'o' ?)
+	if (mode_infos.mode.find("i") != std::string::npos || mode_infos.mode.find("o") != std::string::npos)
+	{
+		std::cout << "prout" << std::endl;
+	}
+	else if (mode_infos.mode.find("O") != std::string::npos || mode_infos.mode.find("r") != std::string::npos || mode_infos.mode.find("w") != std::string::npos)
+		sendServerRpl(client_fd, ERR_UMODEUNKNOWNFLAG(it_client->second.getNickname()));
+	// << MODE tiff -i
+	// >> :tiff MODE tiff :-i
+	// quand un mode est attribué
+	// :tiffanymanolis MODE tiffanymanolis :+iH
+
+
 }
 
 
@@ -218,13 +233,8 @@ void	mode(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::cout << "params : |" << mode_infos.params << "|" << std::endl;
 
 	if (mode_infos.target[0] == '#') // channel case
-		checkInfosForChannel(server, mode_infos, client_fd);
+		modeForChannel(server, mode_infos, client_fd);
 	else // user case
-		checkInfosForUser(server, mode_infos, client_fd);
-
-
-
-
-
+		modeForUser(server, mode_infos, client_fd);
 	
 }

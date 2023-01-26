@@ -23,7 +23,9 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define RPL_KICK(user_id, channel, kicked, reason) (user_id + " KICK #" + channel + " " + kicked + " " + reason + "\r\n")
 
 // MODE
-#define ERR_USERSDONTMATCH(client) ("502 " + client + " :Cant change mode for other users\r\n") 
+#define ERR_UMODEUNKNOWNFLAG(client) (":localhost 501 " + client + " :Unknown MODE flag\r\n")
+#define ERR_USERSDONTMATCH(client) ("502 " + client + " :Cant change mode for other users\r\n")
+#define RPL_UMODEIS(client, mode) (":localhost 221 " + client + " " + mode + "\r\n")
 // #define ERR_NOSUCHCHANNEL(client, channel) ("403 " + client + " #" + channel + " :No such channel\r\n")
 
 // NAMES
