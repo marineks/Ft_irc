@@ -44,6 +44,8 @@ void		quit(Server *server, int const client_fd, cmd_struct cmd_infos)
 			}
 		}
 	}
+	// close the connection (no need for irssi, but nc needs it)
+	client.setDeconnexionStatus(true);
 }
 
 static void	broadcastToChan(Server *server, Channel &channel, int const client_fd, std::string nick, std::string user, std::string reason)
