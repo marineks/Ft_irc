@@ -7,7 +7,7 @@ bool			containsAtLeastOneAlphaChar(std::string str);
 std::string		retrieveKey(std::string msg_to_parse);
 void			addChannel(Server *server, std::string const &channelName);
 void			addClientToChannel(Server *server, std::string &channelName, Client &client);
-void			sendChanInfos(Channel &channel, std::string channel_name, Client &client);
+void			sendChanInfos(Server *server, Channel &channel, std::string channel_name, Client &client);
 /**
  * @brief The JOIN command indicates that the client wants to join the given channel(s), 
  * 	each channel using the given key for it. The server receiving the command checks 
@@ -48,7 +48,7 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::string	channel_name;
 
 	if (containsAtLeastOneAlphaChar(cmd_infos.message) == false)
-		sendServerRpl(client_fd, ERR_NEEDMOREPARAMS(client_nickname, cmd_infos.name));
+		addToClientBuffer(server, client_fd, ERR_NEEDMOREPARAMS(client_nickname, cmd_infos.name));
 	while (containsAtLeastOneAlphaChar(cmd_infos.message) == true)
 	{
 		channel_name.clear();
@@ -79,13 +79,14 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 		// vérifier si le client est banned avant de le join au channel
 		std::map<std::string, Channel>::iterator it_chan = server->getChannels().find(channel_name);
 		if (it_chan->second.isBanned(client_nickname) == true) {
-			sendServerRpl(client_fd, ERR_BANNEDFROMCHAN(client_nickname, channel_name));
+			addToClientBuffer(server, client_fd, ERR_BANNEDFROMCHAN(client_nickname, channel_name));
+			// sendServerRpl(client_fd, ERR_BANNEDFROMCHAN(client_nickname, channel_name));
 		} 
 		else {
 			addClientToChannel(server, channel_name, client);
 			if (it_chan->second.getOperators().empty())
 				it_chan->second.addFirstOperator(client.getNickname());
-			sendChanInfos(it_chan->second, channel_name, client);
+			sendChanInfos(server, it_chan->second, channel_name, client);
 		}
 	}
 	
@@ -100,7 +101,7 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
  *  
  * [:msanjuan_!msanjuan@localhost 353 msanjuan_ = #hello :@msanjuan_ ]
  */
-void		sendChanInfos(Channel &channel, std::string channel_name, Client &client)
+void		sendChanInfos(Server *server, Channel &channel, std::string channel_name, Client &client)
 {
 	// int			client_fd	= client.getClientFd();
 	std::string	nick		= client.getNickname();
@@ -111,17 +112,18 @@ void		sendChanInfos(Channel &channel, std::string channel_name, Client &client)
 
 	while (member != channel.getClientList().end())
 	{
-		sendServerRpl(member->second.getClientFd(), RPL_JOIN(user_id(nick, username), channel_name));
+		addToClientBuffer(server, member->second.getClientFd(), RPL_JOIN(user_id(nick, username), channel_name));
 		if (channel.getTopic().empty() == false)
 		{
 			client_id	= ":" + member->second.getNickname() + "!" + member->second.getUsername() + "@localhost";
-			sendServerRpl(member->second.getClientFd(), RPL_TOPIC(nick, channel_name, channel.getTopic()));
+			addToClientBuffer(server, member->second.getClientFd(), RPL_TOPIC(nick, channel_name, channel.getTopic()));
 		}
 		
 		std::string	list_of_members = getListOfMembers(channel);
 		std::string symbol			= "=";
-		sendServerRpl(member->second.getClientFd(), RPL_NAMREPLY(username, symbol, channel_name, list_of_members));
-		sendServerRpl(member->second.getClientFd(), RPL_ENDOFNAMES(username, channel_name));
+
+		addToClientBuffer(server, member->second.getClientFd(), RPL_NAMREPLY(username, symbol, channel_name, list_of_members));
+		addToClientBuffer(server, member->second.getClientFd(), RPL_ENDOFNAMES(username, channel_name));
 		member++;
 	}
 }

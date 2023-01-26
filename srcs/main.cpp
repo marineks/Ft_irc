@@ -1,9 +1,18 @@
 #include "Server.hpp"
 
+bool server_shutdown = false;
+
+static void	signal_handler(int signal)
+{
+	(void)signal;
+	server_shutdown = true;
+}
+
 int main (int argc, char **argv)
 {
 	if (argc == 3)
 	{
+		signal(SIGINT, signal_handler);
 		Server server(argv[1], argv[2]);
 
 		char filename[39] = "srcs/config/ManageServOperators.config";
@@ -16,10 +25,12 @@ int main (int argc, char **argv)
 		// Below, the main loop for server/client connection
 		try
 		{
-			if (server.manageServerLoop() == FAILURE)
-				throw;
+			server.manageServerLoop();
 		}
-		catch(const std::exception& e) { std::cerr << e.what() << '\n'; }
+		catch(const std::exception& e) 
+		{
+			std::cerr << RED << "Caught exception : " << RESET << e.what() << std::endl;
+		}
 
 		return (SUCCESS);
 	}

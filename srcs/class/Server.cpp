@@ -7,12 +7,11 @@ Server::Server(std::string port, std::string password)
 {
 	std::cout << YELLOW << "Server Constructor" << RESET << std::endl;
 	memset(&_hints, 0, sizeof(_hints));
-	// memset(&_irc_operators, 0, sizeof(_irc_operators));
 }
 
 Server::~Server()
 {
-	std::cout << YELLOW << "Server destructor" << RESET << std::endl;
+	std::cout << YELLOW << "Server shutting down..." << RESET << std::endl;
 }
 
 const char * 	Server::InvalidClientException::what (void) const throw() 
@@ -93,7 +92,7 @@ int Server::fillServinfo(char *port)
 {
 	if (getaddrinfo(NULL, port, &_hints, &_servinfo) < 0)
 	{
-		std::cerr << RED << "Flop du addrinfo" << RESET << std::endl;
+		std::cerr << RED << "[Server] Flop du addrinfo" << RESET << std::endl;
 		return (FAILURE);
 	}
 	return (SUCCESS);
@@ -115,25 +114,26 @@ int Server::launchServer()
 	_server_socket_fd = socket(_servinfo->ai_family, _servinfo->ai_socktype, _servinfo->ai_protocol);
 	if (_server_socket_fd == FAILURE)
 	{
-		std::cerr << RED << "Flop de la socket :(" << RESET << std::endl;
+		std::cerr << RED << "[Server] Flop de la socket :(" << RESET << std::endl;
 		return (FAILURE);
 	}
 	int optvalue = 1; // enables the re-use of a port if the IP address is different
 	if (setsockopt(_server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &optvalue, sizeof(optvalue)) == FAILURE)
 	{
-		std::cerr << RED << "Impossible to reuse" << RESET << std::endl;
+		std::cerr << RED << "[Server] Impossible to reuse" << RESET << std::endl;
 		return (FAILURE);
 	}
 	if (bind(_server_socket_fd, _servinfo->ai_addr, _servinfo->ai_addrlen) == FAILURE)
 	{
-		std::cerr << RED << "Bind failed" << RESET << std::endl;
+		std::cerr << RED << "[Server] Bind failed" << RESET << std::endl;
 		return (FAILURE);
 	}
 	if (listen(_server_socket_fd, BACKLOG) == FAILURE)
 	{
-		std::cerr << RED << "Listen failed" << RESET << std::endl;
+		std::cerr << RED << "[Server] Listen failed" << RESET << std::endl;
 		return (FAILURE);
 	}
+	freeaddrinfo(_servinfo);
 	return (SUCCESS);
 }
 
@@ -143,30 +143,24 @@ void Server::addClient(int client_socket, std::vector<pollfd> &poll_fds)
 	Client new_client(client_socket);
 
 	client_pollfd.fd = client_socket;
-	client_pollfd.events = POLLIN;
+	client_pollfd.events = POLLIN | POLLOUT; 
 	poll_fds.push_back(client_pollfd);
 
 	_clients.insert(std::pair<int, Client>(client_socket, new_client)); // insert a new nod in client map with the fd as key
-	std::cout << PURPLE << "ADDED CLIENT SUCCESSFULLY" << RESET << std::endl;
+	std::cout << PURPLE << "[Server] Added client #" << client_socket << " successfully" << RESET << std::endl;
 }
 
-void Server::delClient(std::vector<pollfd> &poll_fds, int current_fd)
+void Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it, int current_fd)
 {
-	std::cout << "je suis dans le del\n";
-	std::cout << "Deconnection of client : " << current_fd << std::endl;
+	std::cout << "[Server] Deconnection of client #" << current_fd << std::endl;
+
 	int key = current_fd;
-	std::vector<pollfd>::iterator iterator;
-	for (iterator = poll_fds.begin(); iterator != poll_fds.end(); iterator++)
-	{
-		if (iterator->fd == current_fd)
-		{
-			close(current_fd);
-			poll_fds.erase(iterator);
-			_clients.erase(key);
-			break;
-		}
-	}
-	std::cout << CYAN << "Client deleted \nTotal Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
+
+	close(current_fd);
+	_clients.erase(key);
+	poll_fds.erase(it);
+
+	std::cout << "[Server] " << PURPLE << "Client deleted. Total Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
 }
 
 /**
@@ -209,7 +203,7 @@ std::string	cleanStr(std::string str)
 void Server::fillClients(std::map<const int, Client> &client_list, int client_fd, std::string cmd)
 {
 	std::map<const int, Client>::iterator it = client_list.find(client_fd);
-	
+
 	if (cmd.find("NICK") != std::string::npos)
 	{
 		cmd.erase(cmd.find("NICK"), 4);
@@ -217,8 +211,9 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 		it->second.setNickname(cmd);
 		if (isAlreadyUsed(this, client_fd, it->second.getNickname()) == true)
 		{
-			sendServerRpl(client_fd, ERR_NICKNAMEINUSE(it->second.getNickname(), cmd));
-			it->second.setNickname(cmd.append("_"));
+			addToClientBuffer(this, client_fd, ERR_NICKNAMEINUSE(it->second.getNickname(), cmd));
+			// sendServerRpl(client_fd, ERR_NICKNAMEINUSE(it->second.getNickname(), cmd));
+			it->second.setNickname(cmd.append("1"));
 		}
 	}
 	else if (cmd.find("USER") != std::string::npos)
@@ -274,8 +269,8 @@ void Server::parseMessage(int const client_fd, std::string message)
 			{
 				if (it->second.is_valid() == SUCCESS)
 				{
-					send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
-					std::cout << "[Server] Message sent to client " << client_fd << " >> " << CYAN << getWelcomeReply(it) << RESET << std::endl;
+					addToClientBuffer(this, client_fd, getWelcomeReply(it));
+					// send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
 					it->second.isWelcomeSent() = true;
 					it->second.isRegistrationDone() = true;
 				}		
@@ -340,7 +335,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		case 15: topic(this, client_fd, cmd_infos); break;
 		// case 16: user(cmd_infos); break;
 		default:
-			std::cout << PURPLE << "This command is not supported by our services." << RESET << std::endl;
+			std::cout  << "[Server]" << PURPLE << " The command (" << cmd_infos.name << ") is not supported by our services." << RESET << std::endl << std::endl;
 	}
 }
 

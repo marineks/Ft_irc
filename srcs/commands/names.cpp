@@ -42,7 +42,7 @@ void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 		std::map<std::string, Channel>::iterator	channel = channels.find(channel_to_name);
 		if (channel == channels.end()) // + "|| isSecretModeOn(channel_name) == true  && doesClientExist() == false"
 		{
-			sendServerRpl(client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
+			addToClientBuffer(server, client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
 			continue ;
 		}
 			
@@ -54,8 +54,8 @@ void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 		list_of_members.clear();
 		list_of_members = getListOfMembers(channel->second);
 
-		sendServerRpl(client_fd, RPL_NAMREPLY(client.getNickname(), symbol, channel_to_name, list_of_members));
-		sendServerRpl(client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
+		addToClientBuffer(server, client_fd, RPL_NAMREPLY(client.getNickname(), symbol, channel_to_name, list_of_members));
+		addToClientBuffer(server, client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
 	}
 	
 }

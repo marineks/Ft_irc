@@ -7,6 +7,9 @@ class Client
 {
 	private:
 		int				_client_fd;
+		std::string		_readbuf;
+		std::string		_sendbuf;
+		bool			_to_deconnect;
 		std::string		_nickname;
 		std::string		_old_nickname;
 		std::string		_fullname;
@@ -21,8 +24,16 @@ class Client
 		Client(int client_fd);
 		~Client();
 		
+		// Server infos
 		int				getClientFd()const;
 		void			setNickname(std::string const &nickname);
+		std::string&	getReadBuffer();
+		void			setReadBuffer(std::string const &buf);
+		std::string&	getSendBuffer();
+		void			setSendBuffer(std::string const &buf);
+		bool&			getDeconnexionStatus();
+		void			setDeconnexionStatus(bool status);
+		// Client Registration infos
 		std::string&	getNickname();
 		void			setOldNickname(std::string const &nickname);
 		std::string&	getOldNickname();

@@ -6,6 +6,9 @@
 #include "Channel.hpp"
 #include <iostream>
 #include <fstream>
+#include <csignal>
+
+extern bool	server_shutdown;
 
 struct server_op
 {
@@ -45,9 +48,14 @@ class Server
 		int			fillServinfo(char *port);
 		int			launchServer();
 		int			manageServerLoop();
+		int			handlePolloutEvent(std::vector<pollfd>& poll_fds, std::vector<pollfd>::iterator &it, const int current_fd);
+		int			handlePollerEvent(std::vector<pollfd>& poll_fds, std::vector<pollfd>::iterator &it);
+
+		
 		// Manage Clients functions
 		void		addClient(int client_socket, std::vector<pollfd> &poll_fds);
-		void 		delClient(std::vector<pollfd> &poll_fds, int current_fd);
+		// void 		delClient(std::vector<pollfd> &poll_fds, int current_fd);
+		void 		delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::iterator &it, int current_fd);
 		void 		fillClients(std::map<const int, Client> &client_list, int client_fd, std::string cmd);
 		// Parsing & Commands functions
 		void		parseMessage(const int client_fd, std::string message);
