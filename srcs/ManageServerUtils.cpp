@@ -22,7 +22,7 @@ int	Server::handlePolloutEvent(std::vector<pollfd>& poll_fds, std::vector<pollfd
 	return (SUCCESS);
 }
 
-int	Server::handlePollerEvent(std::vector<pollfd>& poll_fds, std::vector<pollfd>::iterator &it, const int current_fd)
+int	Server::handlePollerEvent(std::vector<pollfd>& poll_fds, std::vector<pollfd>::iterator &it)
 {
 	if (it->fd == _server_socket_fd)
 	{

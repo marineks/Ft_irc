@@ -65,7 +65,7 @@ std::string	retrieveNickname(std::string msg_to_parse)
 	std::string nickname;
 	
 	char *str = const_cast<char *>(msg_to_parse.data());
-	nickname = strtok(str, " ");
+	nickname = strtok(str, " "); // BUG SEGFAULT QD PAS DESPACE SUR NC
 	
 	if (nickname.empty())
 		nickname.clear();

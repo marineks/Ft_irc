@@ -114,7 +114,7 @@ int Server::manageServerLoop()
 			}
 			else if (it->revents & POLLERR)
 			{
-				if (handlePollerEvent(poll_fds, it, it->fd) == BREAK)
+				if (handlePollerEvent(poll_fds, it) == BREAK)
 					break ;
 				else
 					return (FAILURE);
