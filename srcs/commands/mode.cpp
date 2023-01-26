@@ -299,8 +299,12 @@ static void	secretChannelMode(Server *server, mode_struct mode_infos, int const 
 static void	keyChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string str)
 {
 	std::cout << "je suis dans le mode k" << std::endl;
-	// std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
-	// std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
+	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
+	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
+
+	(void)it_client;
+	(void)it_channel_target;
+	(void)str;
 
 	
 }
