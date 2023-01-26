@@ -23,6 +23,8 @@ Channel::~Channel() {}
 
 std::string&						Channel::getName() 			{ return (_name); }
 std::string&						Channel::getTopic() 		{ return (_topic); }
+std::string&						Channel::getMode()			{ return (_mode); }
+std::string&						Channel::getChannelPassword()	{ return (_channel_password); }
 std::map <std::string, Client>&		Channel::getClientList()	{ return (_clientList); }
 std::vector<std::string>&			Channel::getBannedUsers()	{ return (_banned_users); }
 std::vector<std::string>&			Channel::getKickedUsers()	{ return (_kicked_users); }
@@ -31,6 +33,11 @@ std::vector<std::string>&			Channel::getOperators() 	{ return (_operators); }
 void		Channel::setTopic(std::string& newTopic)
 {
 	_topic = newTopic;
+}
+
+void		Channel::setChannelPassword(std::string password)
+{
+	_channel_password = password;
 }
 
 bool		Channel::doesClientExist(std::string &clientName)
@@ -187,4 +194,24 @@ void	Channel::printOperators(void)
 	{
 		std::cout << *it << std::endl;
 	}
+}
+
+/*
+*				################################
+*				###	    MODES FUNCTIONS      ###
+*				################################
+*/
+
+void	Channel::addMode(std::string const mode)
+{
+	if (_mode.empty() == true)
+		_mode = "+" + mode;
+	else 
+		_mode += mode;
+}
+
+void	Channel::removeMode(std::string const mode)
+{
+	size_t pos = _mode.find(mode);
+	_mode.erase(pos, 1);
 }

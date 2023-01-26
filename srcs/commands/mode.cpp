@@ -107,8 +107,6 @@ In a channel that does not have this mode enabled, anyone may set the topic of t
 
 */
 
-// syntax command : /mode <channel> <+ ou -> <mode> [parametres]
-
 struct mode_struct
 {
 	std::string	target;
@@ -155,8 +153,42 @@ static void	fillModeInfos(mode_struct &mode_infos, std::string command)
 	mode_infos.params = command.substr(0);
 }
 
+/* Set new mode in channel
+<< MODE #yo +t
+>> :tiffanymanolis!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #yo +t
+
+Consulté le mode du channel
+<< MODE #yo
+>> :halcyon.il.us.dal.net 324 tiffanymanolis #yo +t
+
+Enlever un mode du channel
+<< MODE #yo -t
+>> :tiffanymanolis!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #yo -t
+
+Avec key :
+<< MODE #yo +k lolilol
+>> :tiffanymanolis!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #yo +k lolilol
+
+Sans param avec k :
+<< MODE #yo +k
+
+Afficher le mode avec +k :
+<< MODE #yo
+>> :bifrost.ca.us.dal.net 324 tiffanymanolis #yo +k lol
+
+Créer un opérateur et plusieur mode avec arguments :
+<< MODE #yo +ok tiffanymanolis
+>> :tiffanymanolis!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #yo +o tiffanymanolis
+(ça doit mettre le @ devant le nom de l'user)
+
+ERROR not channel operateur :
+<< MODE #yo +ko tiffanymanolis
+>> :halcyon.il.us.dal.net 482 tiffanymanolis #yo :You're not channel operator
+*/
+
 static void	modeForChannel(Server *server, mode_struct mode_infos, int const client_fd)
 {
+	// syntax command : /mode <channel> <+ ou -> <mode> [parametres]
 	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
 
 	mode_infos.target.erase(0,1); // erase '#'
@@ -167,7 +199,16 @@ static void	modeForChannel(Server *server, mode_struct mode_infos, int const cli
 	if (it_channel_target == server->getChannels().end())
 		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(it_client->second.getNickname(), mode_infos.target));
 
-	
+	// If <mode> is not given
+	if (mode_infos.mode.empty() == true)
+	{
+		// Check si le client est membre du channel et si le channel a un mdp
+		if (it_channel_target->second.getClientList().find(it_client->second.getNickname()) != it_channel_target->second.getClientList().end() \
+		&& it_channel_target->second.getChannelPassword().empty() == true) 
+			addToClientBuffer(server, client_fd, RPL_CHANNELMODEISWITHKEY(it_client->second.getNickname(), mode_infos.target, it_channel_target->second.getMode(), it_channel_target->second.getChannelPassword()));
+		else
+			addToClientBuffer(server, client_fd, RPL_CHANNELMODEIS(it_client->second.getNickname(), mode_infos.target, it_channel_target->second.getMode()));
+	}
 
 
 }
@@ -265,7 +306,7 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
 	}
 }
 
-void	mode(Server *server, int const client_fd, cmd_struct cmd_infos)
+void	modeFunction(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
 	mode_struct	mode_infos;
 	
