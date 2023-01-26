@@ -11,13 +11,10 @@
 int	parseCommand(std::string cmd_line, cmd_struct &cmd_infos)
 {
 	// COMMAND
-	for (std::string::size_type i = 0; i < cmd_line.size(); i++)
-	{
-		if (isupper(cmd_line[i]))
-			cmd_infos.name.push_back(cmd_line[i]);
-		if (!(isupper(cmd_line[i])) && cmd_infos.name.empty() == false)
-			break;
-	}
+	std::string copy = cmd_line;
+	if (cmd_line[0] == ':')
+		copy.erase(0, copy.find_first_of(' '));
+	cmd_infos.name.insert(0, copy, 0, copy.find_first_of(' '));
 	
 	// PREFIX
 	size_t prefix_length = cmd_line.find(cmd_infos.name, 0);
@@ -28,9 +25,12 @@ int	parseCommand(std::string cmd_line, cmd_struct &cmd_infos)
 	cmd_infos.message = cmd_line.substr(msg_beginning, std::string::npos);
 	cmd_infos.message.erase(cmd_infos.message.find("\r"), 1);
 
+	for (size_t i = 0; i < cmd_infos.name.size(); i++)
+		cmd_infos.name[i] = std::toupper(cmd_infos.name[i]);
+	
 	// DEBUG
 	// std::cout << "Command : " << RED << cmd_infos.name << RESET << std::endl;
 	// std::cout << "Prefix : " << BLUE << cmd_infos.prefix << RESET << std::endl;
-	// std::cout << "Message : |" << GREEN << cmd_infos.message << RESET << std::endl;
+	// std::cout << "Message : " << GREEN << cmd_infos.message << RESET << std::endl;
 	return (SUCCESS);
 }

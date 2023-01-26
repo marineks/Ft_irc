@@ -255,7 +255,6 @@ void Server::parseMessage(int const client_fd, std::string message)
 				if (it->second.is_valid() == SUCCESS)
 				{
 					addToClientBuffer(this, client_fd, getWelcomeReply(it));
-					// send(client_fd, getWelcomeReply(it).c_str(), getWelcomeReply(it).size(), 0);
 					it->second.isWelcomeSent() = true;
 					it->second.isRegistrationDone() = true;
 				}		
@@ -306,7 +305,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		case 1: invite(this, client_fd, cmd_infos); break;
 		case 2: join(this, client_fd, cmd_infos); break;
 		case 3: kick(this, client_fd, cmd_infos); break;
-		// case 4: kill(cmd_infos); break;
+		case 4: kill(this, client_fd, cmd_infos); break;
 		case 5: list(this, client_fd, cmd_infos); break;
 		// case 6: mode(this, client_fd, cmd_infos); break;
 		case 7: names(this, client_fd, cmd_infos); break;
