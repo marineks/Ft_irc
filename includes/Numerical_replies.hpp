@@ -24,13 +24,15 @@ void	sendServerRpl(int const client_fd, std::string client_buffer);
 # define RPL_KICK(user_id, channel, kicked, reason) (user_id + " KICK #" + channel + " " + kicked + " " + reason + "\r\n")
 
 // MODE
+/* user mode */
 #define MODE_USERMSG(client, mode) (":" + client + " MODE " + client + " :" + mode + "\r\n")
 #define ERR_UMODEUNKNOWNFLAG(client) (":localhost 501 " + client + " :Unknown MODE flag\r\n")
 #define ERR_USERSDONTMATCH(client) ("502 " + client + " :Cant change mode for other users\r\n")
 #define RPL_UMODEIS(client, mode) (":localhost 221 " + client + " " + mode + "\r\n")
-
-#define MODE_CHANNELMSG(client, channel, mode) (":" + client + " MODE #" + channel + " " + mode + "\r\n")
-#define MODE_CHANNELMSGWITHPARAM(client, channel, mode, param) (":" + client + " MODE #" + channel + " " + mode + " " + param + "\r\n")
+/* channel mode */
+#define MODE_CHANNELMSG(client, channel, mode) (":localhost MODE #" + channel + " " + mode + "\r\n")
+// #define MODE_CHANNELMSG(client, channel, mode) (":" + client + " MODE #" + channel + " " + mode + "\r\n")
+#define MODE_CHANNELMSGWITHPARAM(client, channel, mode, param) (":localhost MODE #" + channel + " " + mode + " " + param + "\r\n")
 #define RPL_CHANNELMODEIS(client, channel, mode) (":localhost 324 " + client + " #" + channel + " " + mode + "\r\n")
 #define RPL_CHANNELMODEISWITHKEY(client, channel, mode, password) (":localhost 324 " + client + " #" + channel + " " + mode + " " + password + "\r\n")
 #define ERR_CHANOPRIVSNEEDED(client, channel) (":localhost 482 " + client + " #" + channel + " :You're not channel operator\r\n")

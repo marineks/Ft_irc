@@ -114,6 +114,17 @@ struct mode_struct
 	std::string	params;
 };
 
+static void	broadcastToAllChannelMembers(Server *server, Channel &channel, std::string reply)
+{
+	std::map<std::string, Client>::iterator member = channel.getClientList().begin();
+	
+	while (member != channel.getClientList().end())
+	{
+		addToClientBuffer(server, member->second.getClientFd(), reply);
+		member++;
+	}
+}
+
 static void	fillModeInfos(mode_struct &mode_infos, std::string command)
 {
 	// example : |tiffanymanolis +i|
@@ -180,16 +191,6 @@ Créer un opérateur et plusieur mode avec arguments :
 
 */
 
-static void	broadcastToAllChannelMembers(Server *server, Channel &channel, std::string reply)
-{
-	std::map<std::string, Client>::iterator member = channel.getClientList().begin();
-	
-	while (member != channel.getClientList().end())
-	{
-		addToClientBuffer(server, member->second.getClientFd(), reply);
-		member++;
-	}
-}
 
 static void	operatorChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string str)
 {
@@ -254,6 +255,7 @@ static void	topicChannelMode(Server *server, mode_struct mode_infos, int const c
 {
 	std::cout << "je suis dans le mode t" << std::endl;
 	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
+	(void)it_client;
 	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
 
 	size_t pos = it_channel_target->second.getMode().find("t");
@@ -277,6 +279,7 @@ static void	secretChannelMode(Server *server, mode_struct mode_infos, int const 
 {
 	std::cout << "je suis dans le mode s" << std::endl;
 	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
+	(void)it_client;
 	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
 
 	size_t pos = it_channel_target->second.getMode().find("s");
