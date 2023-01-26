@@ -6,6 +6,8 @@ void	sendServerRpl(int const client_fd, std::string client_buffer);
 
 # define user_id(nickname, username) (":" + nickname + "!" + username + "@localhost")
 
+# define ERR_UNKNOWNCOMMAND(client, command) (":localhost 421 " + client + " " + command + " :Unknown command\r\n")
+
 // INVITE
 # define ERR_NEEDMOREPARAMS(client, command) (":localhost 461 " + client + " " + command + " :Not enough parameters.\r\n")
 # define ERR_NOSUCHCHANNEL(client, channel) (":localhost 403 " + client + " #" + channel + " :No such channel\r\n")
