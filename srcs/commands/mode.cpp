@@ -208,13 +208,11 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
 		std::string::iterator pos = mode_infos.mode.begin();
 		while (pos != mode_infos.mode.end())
 		{
-			std::cout << "debut de la mega boucle : " << *pos << std::endl;
 			if (*pos == '+')
 			{
 				pos++;
 				while (*pos != '+' && *pos != '-' && pos != mode_infos.mode.end())
 				{
-					std::cout << "debut boucle + : " << *pos << std::endl;
 					if (*pos == 'i')
 					{
 						if (it_user_target->second.getMode().find("i") == std::string::npos)
@@ -239,7 +237,6 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
 				pos++;
 				while (*pos != '+' && *pos != '-' && pos != mode_infos.mode.end())
 				{
-					std::cout << "boucle - : " << *pos << std::endl;
 					if (*pos == 'i')
 					{
 						if (it_user_target->second.getMode().find("i") != std::string::npos)
@@ -260,16 +257,10 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
 				}
 			}
 		}
-		std::cout << "sortie de la mega boucle" << std::endl;
 		if (mode_infos.mode.find("O") != std::string::npos || mode_infos.mode.find("r") != std::string::npos || mode_infos.mode.find("w") != std::string::npos)
 			sendServerRpl(client_fd, ERR_UMODEUNKNOWNFLAG(it_client->second.getNickname()));
 	}
-	
-	
-
-
 }
-
 
 void	mode(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
@@ -289,5 +280,4 @@ void	mode(Server *server, int const client_fd, cmd_struct cmd_infos)
 		modeForChannel(server, mode_infos, client_fd);
 	else // user case
 		modeForUser(server, mode_infos, client_fd);
-	
 }
