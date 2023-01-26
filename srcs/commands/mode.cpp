@@ -178,10 +178,6 @@ Créer un opérateur et plusieur mode avec arguments :
 >> :tiffanymanolis!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #yo +o tiffanymanolis
 (ça doit mettre le @ devant le nom de l'user)
 
-Donne droit operateur à un user
-<< MODE #yo +o tiffanymanolis
->> :tiff!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #yo +o tiffanymanolis (nickname / CMD / mode / target) si '-' même message
-
 */
 
 static void	broadcastToAllChannelMembers(Server *server, Channel &channel, std::string reply)
@@ -236,7 +232,7 @@ static void	operatorChannelMode(Server *server, mode_struct mode_infos, int cons
 			break;
 	}
 	// checker si c'est pour rajouter ou enlever le mode
-	if (str.front() == '+')
+	if (str[0] == '+')
 	{
 		if (it != it_channel_target->second.getOperators().end()) // si param est deja operator
 			return ;
@@ -253,7 +249,12 @@ static void	operatorChannelMode(Server *server, mode_struct mode_infos, int cons
 		it_channel_target->second.getOperators().erase(it);
 		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSGWITHPARAM(it_client->second.getNickname(), mode_infos.target, "-o", mode_infos.params));
 	}
+	// std::cout << "check operators du channel :" << std::endl;
+	// for (std::vector<std::string>::iterator it = it_channel_target->second.getOperators().begin(); it != it_channel_target->second.getOperators().end(); it++)
+	// 	std::cout << *it << std::endl;
 }
+
+
 
 static void	changeChannelMode(Server *server, mode_struct mode_infos, int const client_fd)
 {
@@ -286,10 +287,7 @@ static void	changeChannelMode(Server *server, mode_struct mode_infos, int const 
 		std::string str = *it;
 		if (str.find("o") != std::string::npos)
 			operatorChannelMode(server, mode_infos, client_fd, str);
-	std::cout << "check operators du channel :" << std::endl;
-	for (std::vector<std::string>::iterator it = it_channel_target->second.getOperators().begin(); it != it_channel_target->second.getOperators().end(); it++)
-		std::cout << *it << std::endl;
-		
+	
 	}
 	// Faire les 4 mode avec des find
 
