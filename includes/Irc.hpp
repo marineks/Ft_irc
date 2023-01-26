@@ -14,6 +14,7 @@
 # include <unistd.h>
 # include <sstream>
 # include <string>
+# include <cerrno>  
 
 # include "Macro.hpp"
 # include "Colors.hpp"

@@ -1,6 +1,9 @@
 NAME		= ircserv
 
-SRCS		= main.cpp Client.cpp ManageServer.cpp Server.cpp parsing.cpp Channel.cpp utils.cpp \
+SRCS		= main.cpp ManageServer.cpp ManageServerUtils.cpp parsing.cpp utils.cpp \
+				class/Client.cpp	\
+				class/Channel.cpp	\
+				class/Server.cpp	\
 				commands/join.cpp 	\
 				commands/ping.cpp 	\
 				commands/privmsg.cpp	\
@@ -26,7 +29,7 @@ CXX			= c++
 
 DEP			= ${OBJS:%.o=%.d}
 
-CPPFLAGS	= -Wall -Wextra -Werror -MMD -MP -g3 -std=c++98 -c -I includes/ 
+CPPFLAGS	= -Wall -Wextra -Werror -MMD -MP -g3 -D_GLIBCXX_DEBUG -std=c++98 -c -I includes/ 
 
 RM 			= rm -f
 

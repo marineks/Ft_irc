@@ -29,9 +29,8 @@ int	parseCommand(std::string cmd_line, cmd_struct &cmd_infos)
 	cmd_infos.message.erase(cmd_infos.message.find("\r"), 1);
 
 	// DEBUG
-	std::cout << "Command : " << RED << cmd_infos.name << RESET << std::endl;
-	std::cout << "Prefix : " << BLUE << cmd_infos.prefix << RESET << std::endl;
-	std::cout << "Message : " << GREEN << cmd_infos.message << RESET << std::endl;
-
+	// std::cout << "Command : " << RED << cmd_infos.name << RESET << std::endl;
+	// std::cout << "Prefix : " << BLUE << cmd_infos.prefix << RESET << std::endl;
+	// std::cout << "Message : " << GREEN << cmd_infos.message << RESET << std::endl;
 	return (SUCCESS);
 }

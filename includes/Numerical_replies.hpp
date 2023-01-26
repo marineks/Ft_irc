@@ -1,7 +1,8 @@
 #ifndef NUMERICAL_REPLIES_HPP
 #define NUMERICAL_REPLIES_HPP
 
-void	sendServerRpl(int const client_fd, std::string reply);
+// void	sendServerRpl(int const client_fd, std::string reply);
+void	sendServerRpl(int const client_fd, std::string client_buffer);
 
 # define user_id(nickname, username) (":" + nickname + "!" + username + "@localhost")
 
@@ -40,7 +41,7 @@ void	sendServerRpl(int const client_fd, std::string reply);
 # define RPL_PART(user_id, channel, reason) (user_id + " PART #" + channel + " " + (reason.empty() ? "." : reason ) + "\r\n")
 
 // PASS
-# define ERR_PASSWDMISMATCH(client) ("464 " + client + " :Password incorrect.\r\n")
+# define ERR_PASSWDMISMATCH(client) (":localhost 464 " + client + " :Password incorrect.\r\n")
 
 // PING
 # define RPL_PONG(user_id, token) (user_id + " PONG " + token + "\r\n")

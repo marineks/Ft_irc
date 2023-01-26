@@ -150,8 +150,6 @@ bool	Channel::isBanned(std::string &banned_name)
 *				################################
 */
 
-// NOTE: Parfois Dim envoie la référence de la str, parfois pas => se décider pour harmoniser
-// TODO: Refacto cette fonction avec la AddOperator
 void	Channel::addFirstOperator(std::string operatorName)
 {
 	if (_operators.empty())

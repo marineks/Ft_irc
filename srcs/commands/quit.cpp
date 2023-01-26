@@ -3,7 +3,7 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
-static void			broadcastToChan(Channel &channel, int const client_fd, std::string nick, std::string user, std::string reason);
+static void			broadcastToChan(Server *server, Channel &channel, int const client_fd, std::string nick, std::string user, std::string reason);
 
 /**
  * @brief The QUIT command is used to terminate a client’s connection to the server. 
@@ -39,22 +39,25 @@ void		quit(Server *server, int const client_fd, cmd_struct cmd_infos)
 			if (member->second.getClientFd() == client_fd) // erase user from the chan + inform the others 
 			{
 				chan_members.erase(client.getNickname());
-				broadcastToChan(chan->second, client_fd, client.getNickname(), client.getUsername(), reason);
+				broadcastToChan(server, chan->second, client_fd, client.getNickname(), client.getUsername(), reason);
 				break ;
 			}
 		}
 	}
 }
 
-static void	broadcastToChan(Channel &channel, int const client_fd, std::string nick, std::string user, std::string reason)
+static void	broadcastToChan(Server *server, Channel &channel, int const client_fd, std::string nick, std::string user, std::string reason)
 {
 	std::map<std::string, Client>::iterator member = channel.getClientList().begin();
 	
 	while (member != channel.getClientList().end())
 	{
 		if (member->second.getClientFd() != client_fd)
-			sendServerRpl(member->second.getClientFd(),	\
-			RPL_QUIT(user_id(nick, user), reason));
+		{
+			addToClientBuffer(server, member->second.getClientFd(), \
+				RPL_QUIT(user_id(nick, user), reason));
+		}
+			
 		member++;
 	}
 }

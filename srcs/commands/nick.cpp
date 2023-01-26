@@ -42,21 +42,21 @@ void	nick(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::string nickname	= retrieveNickname(cmd_infos.message);
 	Client&		client		= retrieveClient(server, client_fd);
 
-	if (nickname.empty()) {	
-		sendServerRpl(client_fd, ERR_NONICKNAMEGIVEN(client.getNickname()));
+	if (nickname.empty()) {
+		addToClientBuffer(server, client_fd, ERR_NONICKNAMEGIVEN(client.getNickname()));
 	} 
 	else if (containsInvalidCharacters(nickname)) {
-		sendServerRpl(client_fd, ERR_ERRONEUSNICKNAME(client.getNickname(), nickname));
+		addToClientBuffer(server, client_fd,  ERR_ERRONEUSNICKNAME(client.getNickname(), nickname));
 	} 
 	else if (isAlreadyUsed(server, client_fd, nickname) == true) {
-		sendServerRpl(client_fd, ERR_NICKNAMEINUSE(client.getNickname(), nickname));
+		addToClientBuffer(server, client_fd, ERR_NICKNAMEINUSE(client.getNickname(), nickname));
 	} else {
 		
 		client.setOldNickname(client.getNickname());
 		std::cout << "[Server] Nickname change registered. Old nickname is now : " << client.getOldNickname() << std::endl;
 		
 		client.setNickname(nickname);
-		sendServerRpl(client_fd, RPL_NICK(client.getOldNickname(), client.getUsername(), client.getNickname()));
+		addToClientBuffer(server, client_fd, RPL_NICK(client.getOldNickname(), client.getUsername(), client.getNickname()));
 	}
 }
 
@@ -65,7 +65,7 @@ std::string	retrieveNickname(std::string msg_to_parse)
 	std::string nickname;
 	
 	char *str = const_cast<char *>(msg_to_parse.data());
-	nickname = strtok(str, " ");
+	nickname = strtok(str, " "); // BUG SEGFAULT QD PAS DESPACE SUR NC
 	
 	if (nickname.empty())
 		nickname.clear();
