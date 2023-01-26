@@ -289,6 +289,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		"USER",
 		};
 
+	Client *client = getClient(this, client_fd);
 	cmd_struct cmd_infos;
 	int index = 0;
 
@@ -320,7 +321,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		case 15: topic(this, client_fd, cmd_infos); break;
 		case 16: user(this, client_fd, cmd_infos); break;
 		default:
-			std::cout  << "[Server]" << PURPLE << " The command (" << cmd_infos.name << ") is not supported by our services." << RESET << std::endl << std::endl;
+			addToClientBuffer(this, client_fd, ERR_UNKNOWNCOMMAND(client->getNickname(), cmd_infos.name));
 	}
 }
 
