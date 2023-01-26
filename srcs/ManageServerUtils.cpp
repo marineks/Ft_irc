@@ -10,7 +10,7 @@ int	Server::handlePolloutEvent(std::vector<pollfd>& poll_fds, std::vector<pollfd
 	else
 	{
 		sendServerRpl(current_fd, client->getSendBuffer());
-		if (client->getReadBuffer().find("\r\n") != std::string::npos)
+		if (client->getReadBuffer().find("\r\n"))
 			client->getReadBuffer().clear();
 		client->getSendBuffer().clear();
 		if (client->getDeconnexionStatus() == true)

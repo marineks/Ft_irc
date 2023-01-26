@@ -203,29 +203,15 @@ std::string	cleanStr(std::string str)
 void Server::fillClients(std::map<const int, Client> &client_list, int client_fd, std::string cmd)
 {
 	std::map<const int, Client>::iterator it = client_list.find(client_fd);
-	
+	cmd_struct cmd_infos;
+	parseCommand(cmd, cmd_infos);
+
 	if (cmd.find("NICK") != std::string::npos)
-	{
-		// nick(this, client_fd, cmd_infos);
-		cmd.erase(cmd.find("NICK"), 4);
-		cmd = cleanStr(cmd);
-		it->second.setNickname(cmd);
-		if (isAlreadyUsed(this, client_fd, it->second.getNickname()) == true)
-		{
-			addToClientBuffer(this, client_fd, ERR_NICKNAMEINUSE(it->second.getNickname(), cmd));
-			it->second.setNickname(cmd.append("_"));
-		}
-	}
+		nick(this, client_fd, cmd_infos);
 	else if (cmd.find("USER") != std::string::npos)
-	{
-		cmd_struct cmd_infos;
-		parseCommand(cmd, cmd_infos);
 		user(this, client_fd, cmd_infos);
-	}
 	else if (cmd.find("PASS") != std::string::npos)
 	{
-		cmd_struct cmd_infos;
-		parseCommand(cmd, cmd_infos);
 		if (pass(this, client_fd, cmd_infos) == SUCCESS)
 			it->second.setConnexionPassword(true);
 		else
