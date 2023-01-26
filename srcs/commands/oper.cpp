@@ -48,6 +48,8 @@ void oper(Server *server, int const client_fd, cmd_struct cmd_infos)
 	else
 	{
 		addToClientBuffer(server, client_fd, RPL_YOUREOPER(client.getNickname()));
+		client.addMode("o");
+		addToClientBuffer(server, client_fd, MODE_USERMSG(client.getNickname(), "+o"));
 	}
 }
 

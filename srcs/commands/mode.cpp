@@ -186,6 +186,34 @@ ERROR not channel operateur :
 >> :halcyon.il.us.dal.net 482 tiffanymanolis #yo :You're not channel operator
 */
 
+static void	changeChannelMode(Server *server, mode_struct mode_infos, int const client_fd)
+{
+	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
+	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
+
+	(void)it_client;
+	(void)it_channel_target;
+
+	std::vector<std::string> vector_modes;
+	for (int i = 1; mode_infos.mode[i] != '\0'; i++)
+	{
+		std::cout << "value de i : " << i << std::endl;
+		if (mode_infos.mode[i] == '+' || mode_infos.mode[i] == '-')
+		{
+			vector_modes.push_back(mode_infos.mode.substr(0, i));
+			std::cout << "new sub string in vector : " << vector_modes.back() << std::endl;
+			mode_infos.mode.erase(0, i);
+			std::cout << "str mode apres erase : " << mode_infos.mode << std::endl;
+			i = 0;
+		}
+	}
+	vector_modes.push_back(mode_infos.mode.substr(0));
+	std::cout << "new sub string in vector : " << vector_modes.back() << std::endl;
+	// boucle sur le vector
+	// Faire les 4 mode avec des find
+
+}
+
 static void	modeForChannel(Server *server, mode_struct mode_infos, int const client_fd)
 {
 	// syntax command : /mode <channel> <+ ou -> <mode> [parametres]
@@ -197,7 +225,10 @@ static void	modeForChannel(Server *server, mode_struct mode_infos, int const cli
 	// Check si le chan existe
 	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
 	if (it_channel_target == server->getChannels().end())
+	{
 		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(it_client->second.getNickname(), mode_infos.target));
+		return ;
+	}
 
 	// If <mode> is not given
 	if (mode_infos.mode.empty() == true)
@@ -211,7 +242,7 @@ static void	modeForChannel(Server *server, mode_struct mode_infos, int const cli
 		return ;
 	}
 
-	// Check si le client est operator du channel - ERR_CHANOPRIVSNEEDED (482)
+	// Check si le client est operator du channel
 	std::vector<std::string>::iterator it;
 	for (it = it_channel_target->second.getOperators().begin(); it != it_channel_target->second.getOperators().end(); it++)
 	{
@@ -219,8 +250,12 @@ static void	modeForChannel(Server *server, mode_struct mode_infos, int const cli
 			break;
 	}
 	if (it == it_channel_target->second.getOperators().end())
+	{
 		addToClientBuffer(server, client_fd, ERR_CHANOPRIVSNEEDED(it_client->second.getNickname(), mode_infos.target));
-
+		return ;
+	}
+	if (mode_infos.mode[0] == '+' || mode_infos.mode[0] == '-')
+		changeChannelMode(server, mode_infos, client_fd);
 }
 
 static void	modeForUser(Server *server, mode_struct mode_infos, int const client_fd)
@@ -269,14 +304,6 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
 							it_user_target->second.addMode("i");
 							sendServerRpl(client_fd, MODE_USERMSG(it_client->second.getNickname(), "+i"));
 						}
-					}
-					if (*pos == 'o')
-					{
-						if (it_user_target->second.getMode().find("o") == std::string::npos)
-						{
-							it_user_target->second.addMode("o");
-							sendServerRpl(client_fd, MODE_USERMSG(it_client->second.getNickname(), "+o"));
-						}	
 					}
 					pos++;
 				}
