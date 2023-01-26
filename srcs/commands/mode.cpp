@@ -195,10 +195,6 @@ static void	operatorChannelMode(Server *server, mode_struct mode_infos, int cons
 {
 	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
 	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
-
-	// - +o : /mode #cool +o MEAT (MEAT devient opérateur sur #cool)
-		//  Message à send aux users du channel : ':irc.example.com MODE #cool +o MEAT'; 
-		//  The irc.example.com server gave channel operator privileges to MEAT on #cool.
 	
 	if (mode_infos.params.empty() == true)
 		return ;
@@ -254,7 +250,60 @@ static void	operatorChannelMode(Server *server, mode_struct mode_infos, int cons
 	// 	std::cout << *it << std::endl;
 }
 
+static void	topicChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string str)
+{
+	std::cout << "je suis dans le mode t" << std::endl;
+	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
+	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
 
+	size_t pos = it_channel_target->second.getMode().find("t");
+	if (str[0] == '+')
+	{
+		if (pos != std::string::npos) // le mode est deja présent
+			return;
+		it_channel_target->second.addMode("t");
+		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSG(it_client->second.getNickname(), mode_infos.target, "+t"));
+	}
+	else // si c'est '-'
+	{
+		if (pos == std::string::npos) // le mode n'est pas présent
+			return;
+		it_channel_target->second.removeMode("t");
+		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSG(it_client->second.getNickname(), mode_infos.target, "-t"));
+	}
+}
+
+static void	secretChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string str)
+{
+	std::cout << "je suis dans le mode s" << std::endl;
+	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
+	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
+
+	size_t pos = it_channel_target->second.getMode().find("s");
+	if (str[0] == '+')
+	{
+		if (pos != std::string::npos) // le mode est deja présent
+			return;
+		it_channel_target->second.addMode("s");
+		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSG(it_client->second.getNickname(), mode_infos.target, "+s"));
+	}
+	else // si c'est '-'
+	{
+		if (pos == std::string::npos) // le mode n'est pas présent
+			return;
+		it_channel_target->second.removeMode("s");
+		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSG(it_client->second.getNickname(), mode_infos.target, "-s"));
+	}
+}
+
+static void	keyChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string str)
+{
+	std::cout << "je suis dans le mode k" << std::endl;
+	// std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
+	// std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
+
+	
+}
 
 static void	changeChannelMode(Server *server, mode_struct mode_infos, int const client_fd)
 {
@@ -268,18 +317,14 @@ static void	changeChannelMode(Server *server, mode_struct mode_infos, int const 
 	std::vector<std::string> vector_modes;
 	for (int i = 1; mode_infos.mode[i] != '\0'; i++)
 	{
-		std::cout << "value de i : " << i << std::endl;
 		if (mode_infos.mode[i] == '+' || mode_infos.mode[i] == '-')
 		{
 			vector_modes.push_back(mode_infos.mode.substr(0, i));
-			std::cout << "new sub string in vector : " << vector_modes.back() << std::endl;
 			mode_infos.mode.erase(0, i);
-			std::cout << "str mode apres erase : " << mode_infos.mode << std::endl;
 			i = 0;
 		}
 	}
 	vector_modes.push_back(mode_infos.mode.substr(0));
-	std::cout << "new sub string in vector : " << vector_modes.back() << std::endl;
 	
 	// apply modes
 	for (std::vector<std::string>::iterator it = vector_modes.begin(); it != vector_modes.end(); it++)
@@ -287,10 +332,13 @@ static void	changeChannelMode(Server *server, mode_struct mode_infos, int const 
 		std::string str = *it;
 		if (str.find("o") != std::string::npos)
 			operatorChannelMode(server, mode_infos, client_fd, str);
-	
+		if (str.find("t") != std::string::npos)
+			topicChannelMode(server, mode_infos, client_fd, str);
+		if (str.find("s") != std::string::npos)
+			secretChannelMode(server, mode_infos, client_fd, str);
+		if (str.find("k") != std::string::npos)
+			keyChannelMode(server, mode_infos, client_fd, str);
 	}
-	// Faire les 4 mode avec des find
-
 }
 
 static void	modeForChannel(Server *server, mode_struct mode_infos, int const client_fd)
