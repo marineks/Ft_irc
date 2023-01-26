@@ -81,7 +81,7 @@ void	Client::addMode(std::string const mode)
 void	Client::removeMode(std::string const mode)
 {
 	size_t pos = _mode.find(mode);
-	_mode.erase(pos);
+	_mode.erase(pos, mode.lenght());
 }
 
 void	Client::setConnexionPassword(bool boolean)

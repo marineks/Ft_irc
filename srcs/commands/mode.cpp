@@ -116,8 +116,6 @@ struct mode_struct
 	std::string	params;
 };
 
-
-
 static void	fillModeInfos(mode_struct &mode_infos, std::string command)
 {
 	// example : |tiffanymanolis +i|
@@ -155,8 +153,6 @@ static void	fillModeInfos(mode_struct &mode_infos, std::string command)
 
 	// PARAM
 	mode_infos.params = command.substr(0);
-
-
 }
 
 static void	modeForChannel(Server *server, mode_struct mode_infos, int const client_fd)
@@ -170,6 +166,8 @@ static void	modeForChannel(Server *server, mode_struct mode_infos, int const cli
 	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
 	if (it_channel_target == server->getChannels().end())
 		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(it_client->second.getNickname(), mode_infos.target));
+
+	
 
 
 }
@@ -232,23 +230,28 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
 					pos++;
 				}
 			}
-			else // si c'est '-'
+			if (*pos == '-')
 			{
 				pos++;
 				while (*pos != '+' && *pos != '-' && pos != mode_infos.mode.end())
 				{
+					std::cout << "pos dans moins : " << *pos << std::endl;
 					if (*pos == 'i')
 					{
+						std::cout << "valeur du mode : " << it_user_target->second.getMode() << std::endl;
 						if (it_user_target->second.getMode().find("i") != std::string::npos)
 						{
+							std::cout << "MOINS i" << std::endl;
 							it_user_target->second.removeMode("i");
 							sendServerRpl(client_fd, MODE_USERMSG(it_client->second.getNickname(), "-i"));
 						}
 					}
 					if (*pos == 'o')
 					{
+						std::cout << "valeur du mode : " << it_user_target->second.getMode() << std::endl;
 						if (it_user_target->second.getMode().find("o") != std::string::npos)
 						{
+							std::cout << "MOINS o" << std::endl;
 							it_user_target->second.removeMode("o");
 							sendServerRpl(client_fd, MODE_USERMSG(it_client->second.getNickname(), "-o"));
 						}
