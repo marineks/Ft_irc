@@ -157,10 +157,6 @@ static void	fillModeInfos(mode_struct &mode_infos, std::string command)
 << MODE #yo +t
 >> :tiffanymanolis!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #yo +t
 
-Consulté le mode du channel
-<< MODE #yo
->> :halcyon.il.us.dal.net 324 tiffanymanolis #yo +t
-
 Enlever un mode du channel
 << MODE #yo -t
 >> :tiffanymanolis!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #yo -t
@@ -181,10 +177,60 @@ Créer un opérateur et plusieur mode avec arguments :
 >> :tiffanymanolis!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #yo +o tiffanymanolis
 (ça doit mettre le @ devant le nom de l'user)
 
-ERROR not channel operateur :
-<< MODE #yo +ko tiffanymanolis
->> :halcyon.il.us.dal.net 482 tiffanymanolis #yo :You're not channel operator
+Donne droit operateur à un user
+<< MODE #yo +o tiffanymanolis
+>> :tiff!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #yo +o tiffanymanolis (nickname / CMD / mode / target) si '-' même message
+
 */
+
+static void	operatorChannelMode(Server *server, mode_struct mode_infos, int const client_fd)
+{
+	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
+	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
+
+	// - +o : /mode #cool +o MEAT (MEAT devient opérateur sur #cool)
+		//  Message à send aux users du channel : ':irc.example.com MODE #cool +o MEAT'; 
+		//  The irc.example.com server gave channel operator privileges to MEAT on #cool.
+	
+	if (mode_infos.params.empty() == true)
+		return ;
+
+	// checker que le param est un user IRC,puis user du channel
+	std::map<const int, Client>::iterator it_user_target = server->getClients().begin();
+    while (it_user_target != server->getClients().end())
+    {
+    	if (it_user_target->second.getNickname() == mode_infos.params)
+        	break;
+    	it_user_target++;
+    }
+	if (it_user_target == server->getClients().end())
+	{
+		addToClientBuffer(server, client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), mode_infos.params));
+		addToClientBuffer(server, client_fd, ERR_USERNOTINCHANNEL(it_client->second.getNickname(), mode_infos.params, mode_infos.target));
+		return ;
+	}
+	// User IRC mais checker qu'il est membre du channel
+	if (it_channel_target->second.getClientList().find(mode_infos.params) == it_channel_target->second.getClientList().end())
+	{
+		addToClientBuffer(server, client_fd, ERR_USERNOTINCHANNEL(it_client->second.getNickname(), mode_infos.params, mode_infos.target));
+		return ;
+	}
+
+		
+
+
+
+	
+			// if ()
+			// if (str.front() == '+')
+			// {
+				
+			// }
+			// else // si c'est -
+			// {
+
+			// }
+}
 
 static void	changeChannelMode(Server *server, mode_struct mode_infos, int const client_fd)
 {
@@ -194,6 +240,7 @@ static void	changeChannelMode(Server *server, mode_struct mode_infos, int const 
 	(void)it_client;
 	(void)it_channel_target;
 
+	// parse les modes
 	std::vector<std::string> vector_modes;
 	for (int i = 1; mode_infos.mode[i] != '\0'; i++)
 	{
@@ -209,6 +256,14 @@ static void	changeChannelMode(Server *server, mode_struct mode_infos, int const 
 	}
 	vector_modes.push_back(mode_infos.mode.substr(0));
 	std::cout << "new sub string in vector : " << vector_modes.back() << std::endl;
+	
+	// apply modes
+	for (std::vector<std::string>::iterator it = vector_modes.begin(); it != vector_modes.end(); it++)
+	{
+		std::string str = *it;
+		if (str.find("o") != std::string::npos)
+			operatorChannelMode(server, mode_infos, client_fd);
+	}
 	// boucle sur le vector
 	// Faire les 4 mode avec des find
 
@@ -313,23 +368,18 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
 				pos++;
 				while (*pos != '+' && *pos != '-' && pos != mode_infos.mode.end())
 				{
-					std::cout << "pos dans moins : " << *pos << std::endl;
 					if (*pos == 'i')
 					{
-						std::cout << "valeur du mode : " << it_user_target->second.getMode() << std::endl;
 						if (it_user_target->second.getMode().find("i") != std::string::npos)
 						{
-							std::cout << "MOINS i" << std::endl;
 							it_user_target->second.removeMode("i");
 							sendServerRpl(client_fd, MODE_USERMSG(it_client->second.getNickname(), "-i"));
 						}
 					}
 					if (*pos == 'o')
 					{
-						std::cout << "valeur du mode : " << it_user_target->second.getMode() << std::endl;
 						if (it_user_target->second.getMode().find("o") != std::string::npos)
 						{
-							std::cout << "MOINS o" << std::endl;
 							it_user_target->second.removeMode("o");
 							sendServerRpl(client_fd, MODE_USERMSG(it_client->second.getNickname(), "-o"));
 						}
