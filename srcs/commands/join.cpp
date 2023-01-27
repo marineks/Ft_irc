@@ -64,23 +64,21 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 		{
 			addChannel(server, channel_name);	
 		}
-		// else if (channel.keyModeOn() == true) // vérifier que le client a la bonne key, si mode +k
-		// {
-		// 	std::string key = retrieveKey(cmd_infos.message);
-		// 	if (key != channel.getKey())
-		// 	{
-		// 		sendServerRpl(client_fd, ERR_BADCHANNELKEY(client_nickname, channel_name));
-		// 		continue; // on passe la suite, au prochain channel à ajouter síl y en a un
-		// 	}
-		// 	else // on erase la key de la string
-		// 		cmd_infos.message.erase(cmd_infos.message.find(key), key.length());
-		// }
+		else if (it->second.getMode().find('k') != std::string::npos) // Si channel en mode +k
+		{
+			std::string key = retrieveKey(cmd_infos.message);
+			cmd_infos.message.erase(cmd_infos.message.find(key), key.length()); // on erase la key de la string
+			if (key != it->second.getChannelPassword())
+			{
+				sendServerRpl(client_fd, ERR_BADCHANNELKEY(client_nickname, channel_name));
+				continue; // on passe la suite, au prochain channel à ajouter síl y en a un
+			}
+		}
 
 		// vérifier si le client est banned avant de le join au channel
 		std::map<std::string, Channel>::iterator it_chan = server->getChannels().find(channel_name);
 		if (it_chan->second.isBanned(client_nickname) == true) {
 			addToClientBuffer(server, client_fd, ERR_BANNEDFROMCHAN(client_nickname, channel_name));
-			// sendServerRpl(client_fd, ERR_BANNEDFROMCHAN(client_nickname, channel_name));
 		} 
 		else {
 			addClientToChannel(server, channel_name, client);
@@ -103,10 +101,8 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
  */
 void		sendChanInfos(Server *server, Channel &channel, std::string channel_name, Client &client)
 {
-	// int			client_fd	= client.getClientFd();
 	std::string	nick		= client.getNickname();
 	std::string username	= client.getUsername();
-	std::string	client_id	= ":" + nick + "!" + username + "@localhost";
  	
 	std::map<std::string, Client>::iterator member = channel.getClientList().begin();
 
@@ -114,13 +110,10 @@ void		sendChanInfos(Server *server, Channel &channel, std::string channel_name, 
 	{
 		addToClientBuffer(server, member->second.getClientFd(), RPL_JOIN(user_id(nick, username), channel_name));
 		if (channel.getTopic().empty() == false)
-		{
-			client_id	= ":" + member->second.getNickname() + "!" + member->second.getUsername() + "@localhost";
 			addToClientBuffer(server, member->second.getClientFd(), RPL_TOPIC(nick, channel_name, channel.getTopic()));
-		}
 		
-		std::string	list_of_members = getListOfMembers(channel);
-		std::string symbol			= "=";
+		std::string	list_of_members = getListOfMembers(nick, channel);
+		std::string symbol			= getSymbol(channel);
 
 		addToClientBuffer(server, member->second.getClientFd(), RPL_NAMREPLY(username, symbol, channel_name, list_of_members));
 		addToClientBuffer(server, member->second.getClientFd(), RPL_ENDOFNAMES(username, channel_name));
@@ -132,12 +125,11 @@ bool		containsAtLeastOneAlphaChar(std::string str)
 {
 	// If +k mode activated, the input is " #foo,#bar fubar,foobar".
 	// But we only want this part : "#foo,#bar"
-	// if (channel.keyModeOn() == true)
-	// {
-	// 	char *channels = const_cast<char *>(str.data());
-	// 	str = strtok(channels, " ");
-	// }
-
+	
+	if (str[0] == ' ')
+		str.erase(0, 1);
+	if (str.find(" ") != str.npos)
+		str = str.substr(0, str.find(" "));
 	for (size_t i = 0; i < str.size(); i++)
 	{
 		if (isalpha(str[i]))
@@ -148,22 +140,21 @@ bool		containsAtLeastOneAlphaChar(std::string str)
 
 std::string	retrieveKey(std::string msg_to_parse)
 {
-	std::cout << "[RKey] The msg_to_parse looks like this : |" << msg_to_parse << "|" << std::endl;
-	// Expected output 2 : | #,#bar fubar_75,foobar| 
-	// Nous on veut la key "fubar_75" relié à "foo" (erased de la str à ce stade là)
-
 	std::string	key;
-
-	if (msg_to_parse[0] == ' ')
-		msg_to_parse.erase(0, 1); // Expected output : |#f,#bar fubar_75,foobar|
+	key.clear();
 	
-	int	begin_pos = msg_to_parse.find(" ") + 1; // Expected: begin à |fubar_75,foobar|
-	while (msg_to_parse[begin_pos] || msg_to_parse[begin_pos] != ',')
+	msg_to_parse = msg_to_parse.substr(msg_to_parse.find_last_of(" "), msg_to_parse.npos);
+	if (msg_to_parse[0] == ' ')
+		msg_to_parse.erase(0, 1); // Expected output : |fubar_75,foobar|
+		
+	int	begin_pos = (msg_to_parse.find(",") == 0) ? msg_to_parse.find(",") + 1 : 0; // Expected: begin à |fubar_75,foobar| ou |foobar| si 2eme key
+	
+	while ( msg_to_parse[begin_pos] != ',' && msg_to_parse[begin_pos])
 	{
-		key += msg_to_parse[begin_pos];
+		if (msg_to_parse[begin_pos] == '_' || msg_to_parse[begin_pos] == '-'|| isalpha(msg_to_parse[begin_pos]) || isdigit(msg_to_parse[begin_pos]))
+			key += msg_to_parse[begin_pos];
 		begin_pos++;
 	}
-	std::cout << "The key is : |" << key << "|" << std::endl; // Expected : fubar75
 	return (key);
 }
 

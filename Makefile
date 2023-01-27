@@ -9,6 +9,7 @@ SRCS		= main.cpp ManageServer.cpp ManageServerUtils.cpp parsing.cpp utils.cpp \
 				commands/privmsg.cpp	\
 				commands/topic.cpp	\
 				commands/list.cpp 	\
+				commands/mode.cpp	\
 				commands/invite.cpp	\
 				commands/nick.cpp	\
 				commands/notice.cpp	\

@@ -14,6 +14,7 @@ class Client
 		std::string		_old_nickname;
 		std::string		_username;
 		std::string		_realname;
+		std::string		_mode;
 		bool			_connexion_password;
 		bool			_registrationDone;
 		bool			_welcomeSent;
@@ -40,6 +41,9 @@ class Client
 		std::string		getUsername()const;
 		void			setRealname(std::string const &realname);
 		std::string		getRealname()const;
+		std::string&	getMode();
+		void			addMode(std::string const mode);
+		void			removeMode(std::string const mode);
 		bool&			getConnexionPassword();
 		void			setConnexionPassword(bool boolean);
 		bool&			isRegistrationDone();

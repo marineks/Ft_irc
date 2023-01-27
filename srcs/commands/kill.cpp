@@ -5,10 +5,9 @@
 
 static std::string	retrieveNickname(std::string msg);
 static std::string	retrieveComment(std::string msg);
-static bool			isIrcOperator(Server *server, std::string nickname);
 static void			broadcastQuit(Server *server, std::string reply);
 static Client*		clientExists(Server *server, std::string nickname);
-
+static bool			isIrcOperator(Server *server, std::string nickname);
 /**
  * @brief The KILL command is used to close the connection between a given client
  * 		and the server they are connected to. KILL is a privileged command and 
@@ -37,7 +36,7 @@ void		kill(Server *server, int const client_fd, cmd_struct cmd_infos)
 		addToClientBuffer(server, client_fd, ERR_NOSUCHNICK(killer, killed));
 	else if (comment.empty())
 		comment = "default";
-	else if (isIrcOperator(server, killer) == false)
+	else if (client.getMode().find('o') == std::string::npos && isIrcOperator(server, killer) == false)
 		addToClientBuffer(server, client_fd, ERR_NOPRIVILEGES(killer));
 	else
 	{
