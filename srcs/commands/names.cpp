@@ -40,15 +40,17 @@ void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 		// Error handling (Inexistent channel, Secret Mode on...)
 		std::map<std::string, Channel>				channels = server->getChannels();
 		std::map<std::string, Channel>::iterator	channel = channels.find(channel_to_name);
-		if (channel == channels.end()) // + "|| isSecretModeOn(channel_name) == true  && doesClientExist() == false"
+		if (channel == channels.end()\
+			|| channel->second.doesClientExist(client.getNickname()) == false \
+			&& channel->second.getMode().find('s') != std::string::npos)
 		{
 			addToClientBuffer(server, client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
 			continue ;
 		}
 			
-		// find the symbol of said channel (public, secret, or private) //TODO : Dès que MODE est fait
-		// symbol.clear();
-		// symbol = getSymbol(&channel->second);
+		// find the symbol of said channel (public, secret, or private)
+		symbol.clear();
+		symbol = getSymbol(channel->second);
 
 		// get as a string the list of all members (by nickname)
 		list_of_members.clear();
@@ -85,7 +87,16 @@ static std::string getaChannelName(std::string msg_to_parse)
 	return (channel_name);
 }
 
-// static std::string	getSymbol(Channel &channel)
-// {
-// 	return 
-// }
+static std::string	getSymbol(Channel &channel)
+{
+	std::string symbol;
+
+	if (channel.getMode().find('s') != std::string::npos) {
+		symbol += "@";
+	} else if (channel.getMode().find('p') != std::string::npos) {
+		symbol += "*";
+	} else {
+		symbol += "=";
+	}
+	return (symbol); 
+}
