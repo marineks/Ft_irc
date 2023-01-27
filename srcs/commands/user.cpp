@@ -37,10 +37,6 @@ void	user(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::string	username	= findUsername(cmd_infos.message);
 	std::string realname	= findRealname(cmd_infos.message);
 
-	// DEBUG
-	// std::cout << "Username is |" << username << "|" << std::endl;
-	// std::cout << "Realname is |" << realname << "|" << std::endl;
-
 	if (username.empty() || realname.empty())
 		addToClientBuffer(server, client_fd, ERR_NEEDMOREPARAMS(client.getNickname(), cmd_infos.name));
 	else if (client.isRegistrationDone() == true)
@@ -49,6 +45,7 @@ void	user(Server *server, int const client_fd, cmd_struct cmd_infos)
 	{
 		client.setUsername(username);
 		client.setRealname(realname);
+		client.setNbInfo(+1);
 	}
 }
 

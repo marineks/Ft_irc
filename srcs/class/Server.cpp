@@ -254,6 +254,7 @@ void Server::parseMessage(int const client_fd, std::string message)
 
 	splitMessage(cmds, message);
 
+	std::cout << "je rerentre dedans" << std::endl;
 	for (size_t i = 0; i != cmds.size(); i++)
 	{
 		if (it->second.isRegistrationDone() == false)
@@ -261,7 +262,7 @@ void Server::parseMessage(int const client_fd, std::string message)
 			if (it->second.hasAllInfo() == false)
 			{
 				fillClients(_clients, client_fd, cmds[i]);
-				if (cmds[i].find("USER") != std::string::npos)
+				if (it->second.getNbInfo() == 3)
 					it->second.hasAllInfo() = true;
 			}
 			if (it->second.hasAllInfo() == true && it->second.isWelcomeSent() == false)
