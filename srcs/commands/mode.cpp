@@ -126,9 +126,7 @@ static void	broadcastToAllChannelMembers(Server *server, Channel &channel, std::
 }
 
 static void	fillModeInfos(mode_struct &mode_infos, std::string command)
-{
-	std::cout << "Command to parse : |" << command << "|" << std::endl;
-	
+{	
 	size_t						pos;
 
 	// TARGET
@@ -159,35 +157,7 @@ static void	fillModeInfos(mode_struct &mode_infos, std::string command)
 
 	// PARAM
 	mode_infos.params = command.substr(0);
-	std::cout << "param : " << mode_infos.params << std::endl;
 }
-
-/* Set new mode in channel
-<< MODE #yo +t
->> :tiffanymanolis!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #yo +t
-
-Enlever un mode du channel
-<< MODE #yo -t
->> :tiffanymanolis!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #yo -t
-
-Avec key :
-<< MODE #yo +k lolilol
->> :tiffanymanolis!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #yo +k lolilol
-
-Sans param avec k :
-<< MODE #yo +k
-
-Afficher le mode avec +k :
-<< MODE #yo
->> :bifrost.ca.us.dal.net 324 tiffanymanolis #yo +k lol
-
-Créer un opérateur et plusieur mode avec arguments :
-<< MODE #yo +ok tiffanymanolis
->> :tiffanymanolis!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #yo +o tiffanymanolis
-(ça doit mettre le @ devant le nom de l'user)
-
-*/
-
 
 static void	operatorChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string str)
 {
