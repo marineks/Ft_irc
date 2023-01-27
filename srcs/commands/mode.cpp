@@ -367,7 +367,7 @@ static void	modeForChannel(Server *server, mode_struct mode_infos, int const cli
 	{
 		// Check si le client est membre du channel et si le channel a un mdp
 		if (it_channel_target->second.getClientList().find(it_client->second.getNickname()) != it_channel_target->second.getClientList().end() \
-		&& it_channel_target->second.getChannelPassword().empty() == true) 
+		&& it_channel_target->second.getChannelPassword().empty() == false)
 			addToClientBuffer(server, client_fd, RPL_CHANNELMODEISWITHKEY(it_client->second.getNickname(), mode_infos.target, it_channel_target->second.getMode(), it_channel_target->second.getChannelPassword()));
 		else
 			addToClientBuffer(server, client_fd, RPL_CHANNELMODEIS(it_client->second.getNickname(), mode_infos.target, it_channel_target->second.getMode()));
