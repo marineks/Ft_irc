@@ -112,8 +112,6 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
 
    std::string target;
    std::string msg_to_send;
-
-   std::cout << "message to parse : |" << cmd_infos.message << "|" << std::endl;
   
    // Parsing message 
    size_t      delimiter = cmd_infos.message.rfind(":");
@@ -122,22 +120,14 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
       addToClientBuffer(server, client_fd, ERR_NOTEXTTOSEND(it_client->second.getNickname()));
       return ;
    }
-
    target = cmd_infos.message.substr(1, delimiter - 1); // s'arrete avant le delimiter
    if (target.empty())
       addToClientBuffer(server, client_fd, ERR_NORECIPIENT(it_client->second.getNickname()));
    msg_to_send = cmd_infos.message.substr(delimiter);
-   
-   std::cout << "target : |" << target << "|" << std::endl;
-   std::cout << "msg_to_send : |" << msg_to_send << "|" << std::endl;
 
    delimiter = target.find(" ");
    if (delimiter != std::string::npos) // permet de gérer le double :: et les espaces de la fin
       target.erase(delimiter);  
-
-   std::cout << "target apres le erase : |" << target << "|" << std::endl;
-   std::cout << "msg_to_send : |" << msg_to_send << "|" << std::endl;
-
   
    // Channel case
    if (target[0] == '#')
