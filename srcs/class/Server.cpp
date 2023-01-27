@@ -2,11 +2,13 @@
 #include "Commands.hpp"
 
 // Server::Server()
-Server::Server(std::string port, std::string password)
+Server::Server(std::string port, std::string password, struct tm *timeinfo)
 : _servinfo(NULL), _server_socket_fd(0) , _port(port), _password(password)
 {
-	std::cout << YELLOW << "Server Constructor" << RESET << std::endl;
+	std::cout << YELLOW << "Server running..." << RESET << std::endl;
+	std::cout << YELLOW << "Server listening" << RESET << std::endl;
 	memset(&_hints, 0, sizeof(_hints));
+	this->setDatetime(timeinfo);
 }
 
 Server::~Server()
@@ -34,6 +36,8 @@ std::string 					Server::getPort()	  const { return (_port); }
 
 std::string 					Server::getPassword() const { return (_password); }
 
+std::string 					Server::getDatetime() const { return (_datetime); }
+
 std::map<std::string, Channel>&	Server::getChannels()		{ return (_channels); }
 
 std::map<const int, Client>&	Server::getClients()		{ return (_clients); }
@@ -43,6 +47,16 @@ std::vector<server_op>&			Server::getIrcOperators()	{ return (_irc_operators); }
 void							Server::setPassword(std::string new_pwd)
 {
 	_password = new_pwd;
+}
+
+void							Server::setDatetime(struct tm *timeinfo)
+{
+	char buffer[80];
+
+	strftime(buffer,sizeof(buffer),"%d-%m-%Y %H:%M:%S",timeinfo);
+  	std::string str(buffer);
+
+	_datetime = str;
 }
 
 /**
@@ -255,6 +269,10 @@ void Server::parseMessage(int const client_fd, std::string message)
 				if (it->second.is_valid() == SUCCESS)
 				{
 					addToClientBuffer(this, client_fd, getWelcomeReply(it));
+					addToClientBuffer(this, client_fd, RPL_YOURHOST(it->second.getNickname(), "42_Ftirc", "1.1"));
+					addToClientBuffer(this, client_fd, RPL_CREATED(it->second.getNickname(), getDatetime()));
+					addToClientBuffer(this, client_fd, RPL_MYINFO(it->second.getNickname(), "localhost", "1.1", "io", "okst", "k"));
+					addToClientBuffer(this, client_fd, RPL_ISUPPORT(it->second.getNickname(), "CHANNELLEN=32 NICKLEN=9 TOPICLEN=307"));
 					it->second.isWelcomeSent() = true;
 					it->second.isRegistrationDone() = true;
 				}		

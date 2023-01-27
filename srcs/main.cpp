@@ -12,8 +12,14 @@ int main (int argc, char **argv)
 {
 	if (argc == 3)
 	{
+		time_t rawtime;
+		struct tm * timeinfo;
+
+		time (&rawtime);
+		timeinfo = localtime(&rawtime);
+
 		signal(SIGINT, signal_handler);
-		Server server(argv[1], argv[2]);
+		Server server(argv[1], argv[2], timeinfo);
 
 		char filename[39] = "srcs/config/ManageServOperators.config";
 		server.readFromConfigFile(filename);
