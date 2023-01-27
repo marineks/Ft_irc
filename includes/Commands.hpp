@@ -17,12 +17,13 @@ struct cmd_struct
 int			parseCommand(std::string cmd_line, cmd_struct &cmd_infos);
 void		addToClientBuffer(Server *server, int const client_fd, std::string reply);
 Client&		retrieveClient(Server *server, int const client_fd);
-std::string	getListOfMembers(Channel &channel);
+std::string	getListOfMembers(std::string client, Channel &channel);
 std::string	getChannelName(std::string msg_to_parse);
 std::string	findNickname(std::string msg_to_parse);
 bool		isAlreadyUsed(Server *server, int client_fd, std::string new_nickname);
 std::string	getReason(std::string msg_to_parse);
 Client*		getClient(Server *server, int const client_fd);
+std::string	getSymbol(Channel &channel);
 
 // #######################
 // ###### COMMANDS #######
@@ -33,6 +34,7 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	kick(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	kill(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	list(Server *server, int const client_fd, cmd_struct cmd_infos);
+void	modeFunction(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	names(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	nick(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	notice(Server *server, int const client_fd, cmd_struct cmd_infos);
