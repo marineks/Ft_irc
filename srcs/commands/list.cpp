@@ -40,27 +40,34 @@ void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 		} 
 		else 
 		{
+			addToClientBuffer(server, client_fd, RPL_LISTSTART);
 			std::map<std::string, Channel>::iterator it = server->getChannels().begin();
 			while (it != server->getChannels().end())
 			{
 				RPL_LIST.clear();
-				RPL_LIST = getRplList(client_nick, it);
-				addToClientBuffer(server, client_fd, RPL_LIST);
+				if (it->second.getMode().find('s') == std::string::npos \
+					|| (it->second.getMode().find('s') != std::string::npos && it->second.doesClientExist(client.getNickname()) == true))
+				{
+					RPL_LIST = getRplList(client_nick, it);
+					addToClientBuffer(server, client_fd, RPL_LIST);
+				}
 				it++;
 			}
+			addToClientBuffer(server, client_fd, RPL_LISTEND);
 		}
 	}
 	else
 	{
 		std::map<std::string, Channel>			 channels = server->getChannels();
 		std::map<std::string, Channel>::iterator channel = channels.find(channel_to_display);
-		if (channel != channels.end())
+		if (channel == channels.end() \
+			|| (channel->second.getMode().find('s') != std::string::npos \
+				&& channel->second.doesClientExist(client.getNickname()) == false))
 		{	
+			addToClientBuffer(server, client_fd, RPL_LISTEND);
+		} else {
 			RPL_LIST = getRplList(client_nick, channel);
 			addToClientBuffer(server, client_fd, RPL_LIST);
-
-		} else {
-			addToClientBuffer(server, client_fd, RPL_LISTEND);
 		}
 	}
 	return ;
