@@ -46,6 +46,7 @@ class Channel
 		/* Modes */
 		void							addMode(std::string const mode);
 		void							removeMode(std::string const mode);
+		void							removeChannelPassword();
 		/* Client status */
 		void							addToKicked(std::string &banned_name);
 		void							addToBanned(std::string &banned_name);
