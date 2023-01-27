@@ -169,7 +169,6 @@ void	addChannel(Server *server, std::string const &channelName)
 	}
 	Channel	channel(channelName);
 	server->getChannels().insert(std::pair<std::string, Channel>(channelName, channel));
-	std::cout << RED << "Channel added: " << channelName << RESET << std::endl;
 }
 
 void	addClientToChannel(Server *server, std::string &channelName, Client &client)
@@ -180,7 +179,6 @@ void	addClientToChannel(Server *server, std::string &channelName, Client &client
 	if (it->second.doesClientExist(client_nickname) == false)
 	{
 		it->second.getClientList().insert(std::pair<std::string, Client>(client.getNickname(), client));
-		std::cout << "Client successfully joined the channel" << channelName << "!" << std::endl;
 	}
 	else 
 		std::cout << YELLOW << client.getNickname() << "already here\n" << RESET;

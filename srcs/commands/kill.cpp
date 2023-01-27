@@ -8,6 +8,7 @@ static std::string	retrieveComment(std::string msg);
 static void			broadcastQuit(Server *server, std::string reply);
 static Client*		clientExists(Server *server, std::string nickname);
 static bool			isIrcOperator(Server *server, std::string nickname);
+static void			removeFromServer(Server *server, std::string killed_user);
 /**
  * @brief The KILL command is used to close the connection between a given client
  * 		and the server they are connected to. KILL is a privileged command and 
@@ -55,7 +56,24 @@ void		kill(Server *server, int const client_fd, cmd_struct cmd_infos)
 
 		/* After this, their connection is closed. */ 
 		killed_user->setDeconnexionStatus(true);
+		removeFromServer(server, killed);
+		
 	}
+}
+
+static void	removeFromServer(Server *server, std::string killed_user)
+{
+	std::map<std::string, Channel>&				channels = server->getChannels();
+	std::map<std::string, Channel>::iterator	chan;
+
+	for (chan = channels.begin(); chan != channels.end(); chan++)
+	{
+		if (chan->second.doesClientExist(killed_user))
+		{
+			chan->second.getClientList().erase(killed_user);
+		}
+	}
+	
 }
 
 static void	broadcastQuit(Server *server, std::string reply)
