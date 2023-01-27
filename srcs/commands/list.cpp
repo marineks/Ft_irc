@@ -94,10 +94,21 @@ static std::string	findAnyChannel(std::string msg_to_parse)
 static std::string	getRplList(std::string client_nick, std::map<std::string, Channel>::iterator &channel)
 {
 	std::stringstream concat;
-		
-	concat << "322 " << client_nick << " #" << channel->second.getName() << " "  \
-			<< channel->second.getClientList().size() << " "\
-			<< (channel->second.getTopic().empty() ? ":No topic set for this channel yet."  : channel->second.getTopic()) \
-			<< "\r\n";
+	
+	if (channel->second.getMode().find('p') != std::string::npos \
+		&& channel->second.doesClientExist(client_nick) == false) // do not display topic if private chan and user not in it
+	{
+		concat << "322 " << client_nick << " #" << channel->second.getName() << " " \
+		<< channel->second.getClientList().size() << " " \
+		<< ":The topic of this channel is private." \
+		<< "\r\n";
+	} 
+	else
+	{
+		concat << "322 " << client_nick << " #" << channel->second.getName() << " "  \
+		<< channel->second.getClientList().size() << " "\
+		<< (channel->second.getTopic().empty() ? ":No topic set for this channel yet."  : channel->second.getTopic()) \
+		<< "\r\n";
+	}
 	return (concat.str());			
 }
