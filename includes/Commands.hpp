@@ -17,7 +17,7 @@ struct cmd_struct
 int			parseCommand(std::string cmd_line, cmd_struct &cmd_infos);
 void		addToClientBuffer(Server *server, int const client_fd, std::string reply);
 Client&		retrieveClient(Server *server, int const client_fd);
-std::string	getListOfMembers(Channel &channel);
+std::string	getListOfMembers(std::string client, Channel &channel);
 std::string	getChannelName(std::string msg_to_parse);
 std::string	findNickname(std::string msg_to_parse);
 bool		isAlreadyUsed(Server *server, int client_fd, std::string new_nickname);

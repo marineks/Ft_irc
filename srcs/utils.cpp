@@ -41,38 +41,38 @@ Client*	getClient(Server *server, int const client_fd)
 	return (&it_client->second);
 }
 
-std::string	getListOfMembers(Channel &channel)
+std::string	getListOfMembers(std::string client, Channel &channel)
 {
 	std::map<std::string, Client>&			client_list	= channel.getClientList();
-	std::map<std::string, Client>::iterator	it			= client_list.begin();
+	std::map<std::string, Client>::iterator	it;
 	std::string								nick;
 	std::string								members_list;
 
-	while (it != client_list.end())
+	for (it = client_list.begin(); it != client_list.end(); it++)
 	{
 		nick.clear();
 		nick = it->second.getNickname();
+		if (it->second.getMode().find('i') != std::string::npos\
+			&& channel.doesClientExist(client) == false)
+				continue;
+			
 		if (channel.isOperator(nick) == true)
 			members_list += "@";
 		members_list += nick;
 		members_list += " ";
-		it++;
 	}
-	if (members_list[members_list.size() - 1] == ' ')
+	if (members_list.size() >= 1 && members_list[members_list.size() - 1] == ' ')
 		members_list.erase(members_list.end()-1);
 	return (members_list);
 }
 
 std::string	getChannelName(std::string msg_to_parse)
 {
-	std::cout << "The msg_to_parse looks like this : |" << msg_to_parse << "|" << std::endl;
-
 	std::string channel_name;
 	size_t i = 0;
 	while (msg_to_parse[i] && (!isalpha(msg_to_parse[i]) && !isdigit(msg_to_parse[i]) && msg_to_parse[i] != '-' && msg_to_parse[i] != '_'))
 		i++;
 	while (msg_to_parse[i] && (isalpha(msg_to_parse[i]) || msg_to_parse[i] == '-' || msg_to_parse[i] == '_' || isdigit(msg_to_parse[i])))
 		channel_name += msg_to_parse[i++];
-	std::cout << "The channel name is : |" << channel_name << "|" << std::endl;
 	return (channel_name);
 }

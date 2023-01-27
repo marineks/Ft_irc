@@ -55,9 +55,10 @@ void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 
 		// get as a string the list of all members (by nickname)
 		list_of_members.clear();
-		list_of_members = getListOfMembers(channel->second);
+		list_of_members = getListOfMembers(client.getNickname(), channel->second);
 
-		addToClientBuffer(server, client_fd, RPL_NAMREPLY(client.getNickname(), symbol, channel_to_name, list_of_members));
+		if (list_of_members.empty() == false)
+			addToClientBuffer(server, client_fd, RPL_NAMREPLY(client.getNickname(), symbol, channel_to_name, list_of_members));
 		addToClientBuffer(server, client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
 	}
 	

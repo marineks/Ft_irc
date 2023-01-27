@@ -119,7 +119,7 @@ void		sendChanInfos(Server *server, Channel &channel, std::string channel_name, 
 			addToClientBuffer(server, member->second.getClientFd(), RPL_TOPIC(nick, channel_name, channel.getTopic()));
 		}
 		
-		std::string	list_of_members = getListOfMembers(channel);
+		std::string	list_of_members = getListOfMembers(nick, channel);
 		std::string symbol			= "=";
 
 		addToClientBuffer(server, member->second.getClientFd(), RPL_NAMREPLY(username, symbol, channel_name, list_of_members));
