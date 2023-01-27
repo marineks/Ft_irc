@@ -40,27 +40,34 @@ void		list(Server *server, int const client_fd, cmd_struct cmd_infos)
 		} 
 		else 
 		{
+			addToClientBuffer(server, client_fd, RPL_LISTSTART);
 			std::map<std::string, Channel>::iterator it = server->getChannels().begin();
 			while (it != server->getChannels().end())
 			{
 				RPL_LIST.clear();
-				RPL_LIST = getRplList(client_nick, it);
-				addToClientBuffer(server, client_fd, RPL_LIST);
+				if (it->second.getMode().find('s') == std::string::npos \
+					|| (it->second.getMode().find('s') != std::string::npos && it->second.doesClientExist(client.getNickname()) == true))
+				{
+					RPL_LIST = getRplList(client_nick, it);
+					addToClientBuffer(server, client_fd, RPL_LIST);
+				}
 				it++;
 			}
+			addToClientBuffer(server, client_fd, RPL_LISTEND);
 		}
 	}
 	else
 	{
 		std::map<std::string, Channel>			 channels = server->getChannels();
 		std::map<std::string, Channel>::iterator channel = channels.find(channel_to_display);
-		if (channel != channels.end())
+		if (channel == channels.end() \
+			|| (channel->second.getMode().find('s') != std::string::npos \
+				&& channel->second.doesClientExist(client.getNickname()) == false))
 		{	
+			addToClientBuffer(server, client_fd, RPL_LISTEND);
+		} else {
 			RPL_LIST = getRplList(client_nick, channel);
 			addToClientBuffer(server, client_fd, RPL_LIST);
-
-		} else {
-			addToClientBuffer(server, client_fd, RPL_LISTEND);
 		}
 	}
 	return ;
@@ -87,10 +94,21 @@ static std::string	findAnyChannel(std::string msg_to_parse)
 static std::string	getRplList(std::string client_nick, std::map<std::string, Channel>::iterator &channel)
 {
 	std::stringstream concat;
-		
-	concat << "322 " << client_nick << " #" << channel->second.getName() << " "  \
-			<< channel->second.getClientList().size() << " "\
-			<< (channel->second.getTopic().empty() ? ":No topic set for this channel yet."  : channel->second.getTopic()) \
-			<< "\r\n";
+	
+	if (channel->second.getMode().find('p') != std::string::npos \
+		&& channel->second.doesClientExist(client_nick) == false) // do not display topic if private chan and user not in it
+	{
+		concat << "322 " << client_nick << " #" << channel->second.getName() << " " \
+		<< channel->second.getClientList().size() << " " \
+		<< ":The topic of this channel is private." \
+		<< "\r\n";
+	} 
+	else
+	{
+		concat << "322 " << client_nick << " #" << channel->second.getName() << " "  \
+		<< channel->second.getClientList().size() << " "\
+		<< (channel->second.getTopic().empty() ? ":No topic set for this channel yet."  : channel->second.getTopic()) \
+		<< "\r\n";
+	}
 	return (concat.str());			
 }
