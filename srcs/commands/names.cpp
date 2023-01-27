@@ -5,6 +5,7 @@
 
 static bool			containsAtLeastOneAlphaChar(std::string str);
 static std::string	getaChannelName(std::string msg_to_parse);
+static std::string	getSymbol(Channel &channel);
 // static std::string	getSymbol(Channel &channel);
 /**
  * @brief The NAMES command is used to view the nicknames joined to a channel.
@@ -41,8 +42,8 @@ void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 		std::map<std::string, Channel>				channels = server->getChannels();
 		std::map<std::string, Channel>::iterator	channel = channels.find(channel_to_name);
 		if (channel == channels.end()\
-			|| channel->second.doesClientExist(client.getNickname()) == false \
-			&& channel->second.getMode().find('s') != std::string::npos)
+			|| (channel->second.doesClientExist(client.getNickname()) == false \
+			&& channel->second.getMode().find('s') != std::string::npos))
 		{
 			addToClientBuffer(server, client_fd, RPL_ENDOFNAMES(client.getNickname(), channel_to_name));
 			continue ;
