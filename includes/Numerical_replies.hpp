@@ -53,6 +53,9 @@ void	sendServerRpl(int const client_fd, std::string client_buffer);
 # define ERR_NICKNAMEINUSE(client, nickname) (":localhost 433 " + client + " " + nickname + " :Nickname is already in use.\r\n")
 # define RPL_NICK(oclient, uclient, client) (":" + oclient + "!" + uclient + "@localhost NICK " +  client + "\r\n")
 
+// NOTICE
+# define RPL_NOTICE(nick, username, target, message) (":" + nick + "!" + username + "@localhost NOTICE " + target + " " + message + "\r\n")
+
 // OPER
 # define ERR_NOOPERHOST(client) ("491 " + client + " :No O-lines for your host\r\n")
 # define RPL_YOUREOPER(client) ("381 " + client + " :You are now an IRC operator\r\n")
@@ -74,8 +77,6 @@ void	sendServerRpl(int const client_fd, std::string client_buffer);
 # define ERR_NOSUCHNICK(client, target) ("401 " + client + " " + target + " :No such nick/channel\r\n")
 # define ERR_NORECIPIENT(client) ("411 " + client + " :No recipient given PRIVMSG\r\n")
 # define ERR_NOTEXTTOSEND(client) ("412 " + client + " :No text to send\r\n")
-// :Angel!wings@irc.org PRIVMSG Wiz :Are you receiving this message ?
-// # define RPL_PRIVMSG(nick, username, message) (":" + nick + "!" + username + "@localhost PRIVMSG" + message + "\r\n")
 # define RPL_PRIVMSG(nick, username, target, message) (":" + nick + "!" + username + "@localhost PRIVMSG " + target + " " + message + "\r\n")
 
 // TOPIC

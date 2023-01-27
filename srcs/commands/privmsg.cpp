@@ -97,7 +97,7 @@ static void  broadcastToChannel(Server *server, int const client_fd, std::map<co
    }
 }
 
-bool isUserinChannel(std::map<const int, Client>::iterator it_client, std::map<std::string, Channel>::iterator it_channel)
+static bool isUserinChannel(std::map<const int, Client>::iterator it_client, std::map<std::string, Channel>::iterator it_channel)
 {
    if (it_channel->second.getClientList().find(it_client->second.getNickname()) != it_channel->second.getClientList().end())
       return (true);
@@ -122,7 +122,11 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
    }
    target = cmd_infos.message.substr(1, delimiter - 1); // s'arrete avant le delimiter
    if (target.empty())
+   {
       addToClientBuffer(server, client_fd, ERR_NORECIPIENT(it_client->second.getNickname()));
+      return ;
+   }
+      
    msg_to_send = cmd_infos.message.substr(delimiter);
 
    delimiter = target.find(" ");
