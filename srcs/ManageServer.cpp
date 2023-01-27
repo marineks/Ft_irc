@@ -100,7 +100,8 @@ int Server::manageServerLoop()
 							{ 
 								std::cout << "[SERVER] Caught exception : ";
 								std::cerr << e.what() << std::endl;
-								client->setDeconnexionStatus(true);
+								if (client->isRegistrationDone() == true)
+									client->setDeconnexionStatus(true);
 								break ;
 							}
 						}

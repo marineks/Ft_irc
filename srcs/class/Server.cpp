@@ -271,7 +271,7 @@ void Server::parseMessage(int const client_fd, std::string message)
 					addToClientBuffer(this, client_fd, getWelcomeReply(it));
 					addToClientBuffer(this, client_fd, RPL_YOURHOST(it->second.getNickname(), "42_Ftirc", "1.1"));
 					addToClientBuffer(this, client_fd, RPL_CREATED(it->second.getNickname(), getDatetime()));
-					addToClientBuffer(this, client_fd, RPL_MYINFO(it->second.getNickname(), "localhost", "1.1", "io", "okst", "k"));
+					addToClientBuffer(this, client_fd, RPL_MYINFO(it->second.getNickname(), "localhost", "1.1", "io", "kost", "k"));
 					addToClientBuffer(this, client_fd, RPL_ISUPPORT(it->second.getNickname(), "CHANNELLEN=32 NICKLEN=9 TOPICLEN=307"));
 					it->second.isWelcomeSent() = true;
 					it->second.isRegistrationDone() = true;

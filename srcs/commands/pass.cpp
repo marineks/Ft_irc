@@ -32,9 +32,10 @@ int		pass(Server *server, int const client_fd, cmd_struct cmd_infos)
 	else
 	{
 		addToClientBuffer(server, client_fd, ERR_PASSWDMISMATCH(client.getNickname()));
+		if (client.isRegistrationDone() == false)
+			throw Server::InvalidClientException();
 		return (FAILURE);
 	}
-		
 }
 
 std::string	retrievePassword(std::string msg_to_parse)
