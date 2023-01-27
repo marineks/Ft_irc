@@ -358,7 +358,7 @@ static void	modeForChannel(Server *server, mode_struct mode_infos, int const cli
 	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
 	if (it_channel_target == server->getChannels().end())
 	{
-		sendServerRpl(client_fd, ERR_NOSUCHCHANNEL(it_client->second.getNickname(), mode_infos.target));
+		addToClientBuffer(server, client_fd, ERR_NOSUCHCHANNEL(it_client->second.getNickname(), mode_infos.target));
 		return ;
 	}
 
@@ -404,19 +404,19 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
     }
 	if (it_user_target == server->getClients().end())
 	{
-		sendServerRpl(client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), mode_infos.target));
+		addToClientBuffer(server, client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), mode_infos.target));
 		return ;
 	}
 	//  If <target> is a different nick than the user who sent the command
 	if (it_user_target->second.getNickname() != it_client->second.getNickname())
 	{
-		sendServerRpl(client_fd, ERR_USERSDONTMATCH(it_client->second.getNickname())); 
+		addToClientBuffer(server, client_fd, ERR_USERSDONTMATCH(it_client->second.getNickname()));
 		return ;
 	}
 
 	// If <mode> is not given
 	if (mode_infos.mode.empty() == true)
-		sendServerRpl(client_fd, RPL_UMODEIS(it_client->second.getNickname(), it_client->second.getMode()));
+		addToClientBuffer(server, client_fd, RPL_UMODEIS(it_client->second.getNickname(), it_client->second.getMode()));
 	
 	// Attribue un mode à l'user (modes autorisés 'i' & 'o' ?)
 	if (mode_infos.mode[0] == '+' || mode_infos.mode[0] == '-')
@@ -434,7 +434,7 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
 						if (it_user_target->second.getMode().find("i") == std::string::npos)
 						{
 							it_user_target->second.addMode("i");
-							sendServerRpl(client_fd, MODE_USERMSG(it_client->second.getNickname(), "+i"));
+							addToClientBuffer(server, client_fd, MODE_USERMSG(it_client->second.getNickname(), "+i"));
 						}
 					}
 					pos++;
@@ -450,7 +450,7 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
 						if (it_user_target->second.getMode().find("i") != std::string::npos)
 						{
 							it_user_target->second.removeMode("i");
-							sendServerRpl(client_fd, MODE_USERMSG(it_client->second.getNickname(), "-i"));
+							addToClientBuffer(server, client_fd, MODE_USERMSG(it_client->second.getNickname(), "-i"));
 						}
 					}
 					if (*pos == 'o')
@@ -458,7 +458,7 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
 						if (it_user_target->second.getMode().find("o") != std::string::npos)
 						{
 							it_user_target->second.removeMode("o");
-							sendServerRpl(client_fd, MODE_USERMSG(it_client->second.getNickname(), "-o"));
+							addToClientBuffer(server, client_fd, MODE_USERMSG(it_client->second.getNickname(), "-o"));
 						}
 					}
 					pos++;
@@ -466,7 +466,7 @@ static void	modeForUser(Server *server, mode_struct mode_infos, int const client
 			}
 		}
 		if (mode_infos.mode.find("O") != std::string::npos || mode_infos.mode.find("r") != std::string::npos || mode_infos.mode.find("w") != std::string::npos)
-			sendServerRpl(client_fd, ERR_UMODEUNKNOWNFLAG(it_client->second.getNickname()));
+			addToClientBuffer(server, client_fd, ERR_UMODEUNKNOWNFLAG(it_client->second.getNickname()));
 	}
 }
 
