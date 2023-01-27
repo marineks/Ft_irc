@@ -138,10 +138,7 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
    std::cout << "target apres le erase : |" << target << "|" << std::endl;
    std::cout << "msg_to_send : |" << msg_to_send << "|" << std::endl;
 
-   // Error syntaxe message
-   
-   // TODO: changer la RPL pour prendre en compte msg_to_send
-
+  
    // Channel case
    if (target[0] == '#')
    {
@@ -168,10 +165,15 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
          addToClientBuffer(server, client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), target));   
       else
       {
-         if (it_target == client_list.end() && isUserinChannel(it_client, it_channel) == true) // si le user n'existe pas mais le channel oui (gestion channel actif)
+         if (it_target == client_list.end()) // si le user n'existe pas mais le channel oui (gestion channel actif)
          {
-            target.insert(1, "#");  // ajouter le # before target
-            broadcastToChannel(server, client_fd, it_client, it_channel, target, msg_to_send);
+            if (isUserinChannel(it_client, it_channel) == true)
+            {
+               target.insert(1, "#");  // ajouter le # before target
+               broadcastToChannel(server, client_fd, it_client, it_channel, target, msg_to_send);
+            }
+            else
+               addToClientBuffer(server, client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), target));
          }
          else
             addToClientBuffer(server, it_target->first, RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), target, msg_to_send));    
