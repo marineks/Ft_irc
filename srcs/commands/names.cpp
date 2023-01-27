@@ -5,8 +5,7 @@
 
 static bool			containsAtLeastOneAlphaChar(std::string str);
 static std::string	getaChannelName(std::string msg_to_parse);
-static std::string	getSymbol(Channel &channel);
-// static std::string	getSymbol(Channel &channel);
+
 /**
  * @brief The NAMES command is used to view the nicknames joined to a channel.
  *  If the channel name is invalid or the channel does not exist, one RPL_ENDOFNAMES 
@@ -87,18 +86,4 @@ static std::string getaChannelName(std::string msg_to_parse)
 		i++;
 	}
 	return (channel_name);
-}
-
-static std::string	getSymbol(Channel &channel)
-{
-	std::string symbol;
-
-	if (channel.getMode().find('s') != std::string::npos) {
-		symbol += "@";
-	} else if (channel.getMode().find('p') != std::string::npos) {
-		symbol += "*";
-	} else {
-		symbol += "=";
-	}
-	return (symbol); 
 }

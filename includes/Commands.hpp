@@ -23,6 +23,7 @@ std::string	findNickname(std::string msg_to_parse);
 bool		isAlreadyUsed(Server *server, int client_fd, std::string new_nickname);
 std::string	getReason(std::string msg_to_parse);
 Client*		getClient(Server *server, int const client_fd);
+std::string	getSymbol(Channel &channel);
 
 // #######################
 // ###### COMMANDS #######
