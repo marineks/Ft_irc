@@ -17,7 +17,7 @@ void	sendServerRpl(int const client_fd, std::string client_buffer)
 	send(client_fd, client_buffer.c_str(), client_buffer.size(), 0);
 	while (getline(buf, reply))
 	{
-		std::cout << std::endl << "[Server] Message sent to client " \
+		std::cout << "[Server] Message sent to client " \
 				  << client_fd << "       >> " << CYAN << reply << RESET << std::endl;
 	}
 }
