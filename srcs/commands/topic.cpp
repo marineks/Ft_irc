@@ -75,10 +75,18 @@ void	topic(Server *server, int const client_fd, cmd_struct cmd_infos)
 	}
 	else  // reattribuer le topic
 	{
-		if (topic == ":") // erase le topic
-			topic.clear();
-		channel->second.setTopic(topic);
-		broadcastToChannel(server, channel->second, client, channel_name, topic);
+		std::cout << "Mood " << channel->second.getMode().find('t') << std::endl;
+		if (channel->second.getMode().find('t') != std::string::npos \
+			&& channel->second.isOperator(client_nickname) == false)
+			addToClientBuffer(server, client_fd, ERR_CHANOPRIVSNEEDED(client_nickname, channel_name));
+		else
+		{
+			if (topic == ":") // erase le topic
+				topic.clear();
+			channel->second.setTopic(topic);
+			broadcastToChannel(server, channel->second, client, channel_name, topic);
+		}
+		
 	}
 
 }
