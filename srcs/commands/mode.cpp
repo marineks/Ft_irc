@@ -127,9 +127,6 @@ static void	broadcastToAllChannelMembers(Server *server, Channel &channel, std::
 
 static void	fillModeInfos(mode_struct &mode_infos, std::string command)
 {
-	// example : |tiffanymanolis +i|
-	// example : |#cool +k COOLKEY|
-	// peut-etre mettre une condition pour gérer si on met un truc après le 4eme argument
 	std::cout << "Command to parse : |" << command << "|" << std::endl;
 	
 	size_t						pos;
@@ -236,7 +233,7 @@ static void	operatorChannelMode(Server *server, mode_struct mode_infos, int cons
 		
 		// add au operator et send la reply en broadcast
 		it_channel_target->second.getOperators().push_back(mode_infos.params);
-		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSGWITHPARAM(it_client->second.getNickname(), mode_infos.target, "+o", mode_infos.params));
+		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSGWITHPARAM(mode_infos.target, "+o", mode_infos.params));
 	}
 	else // si c'est '-'
 	{
@@ -244,7 +241,7 @@ static void	operatorChannelMode(Server *server, mode_struct mode_infos, int cons
 			return ;
 		// retirer du vector et send la reply en broadcast
 		it_channel_target->second.getOperators().erase(it);
-		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSGWITHPARAM(it_client->second.getNickname(), mode_infos.target, "-o", mode_infos.params));
+		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSGWITHPARAM(mode_infos.target, "-o", mode_infos.params));
 	}
 	// std::cout << "check operators du channel :" << std::endl;
 	// for (std::vector<std::string>::iterator it = it_channel_target->second.getOperators().begin(); it != it_channel_target->second.getOperators().end(); it++)
@@ -264,14 +261,14 @@ static void	topicChannelMode(Server *server, mode_struct mode_infos, int const c
 		if (pos != std::string::npos) // le mode est deja présent
 			return;
 		it_channel_target->second.addMode("t");
-		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSG(it_client->second.getNickname(), mode_infos.target, "+t"));
+		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSG(mode_infos.target, "+t"));
 	}
 	else // si c'est '-'
 	{
 		if (pos == std::string::npos) // le mode n'est pas présent
 			return;
 		it_channel_target->second.removeMode("t");
-		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSG(it_client->second.getNickname(), mode_infos.target, "-t"));
+		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSG(mode_infos.target, "-t"));
 	}
 }
 
@@ -288,14 +285,14 @@ static void	secretChannelMode(Server *server, mode_struct mode_infos, int const 
 		if (pos != std::string::npos) // le mode est deja présent
 			return;
 		it_channel_target->second.addMode("s");
-		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSG(it_client->second.getNickname(), mode_infos.target, "+s"));
+		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSG(mode_infos.target, "+s"));
 	}
 	else // si c'est '-'
 	{
 		if (pos == std::string::npos) // le mode n'est pas présent
 			return;
 		it_channel_target->second.removeMode("s");
-		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSG(it_client->second.getNickname(), mode_infos.target, "-s"));
+		broadcastToAllChannelMembers(server, it_channel_target->second, MODE_CHANNELMSG(mode_infos.target, "-s"));
 	}
 }
 
