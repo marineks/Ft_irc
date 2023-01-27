@@ -7,7 +7,7 @@ static std::string	retrieveNickname(std::string msg);
 static std::string	retrieveComment(std::string msg);
 static void			broadcastQuit(Server *server, std::string reply);
 static Client*		clientExists(Server *server, std::string nickname);
-
+static bool			isIrcOperator(Server *server, std::string nickname);
 /**
  * @brief The KILL command is used to close the connection between a given client
  * 		and the server they are connected to. KILL is a privileged command and 
@@ -36,7 +36,7 @@ void		kill(Server *server, int const client_fd, cmd_struct cmd_infos)
 		addToClientBuffer(server, client_fd, ERR_NOSUCHNICK(killer, killed));
 	else if (comment.empty())
 		comment = "default";
-	else if (client.getMode().find('o') == std::string::npos)
+	else if (client.getMode().find('o') == std::string::npos && isIrcOperator(server, killer) == false)
 		addToClientBuffer(server, client_fd, ERR_NOPRIVILEGES(killer));
 	else
 	{
@@ -69,18 +69,18 @@ static void	broadcastQuit(Server *server, std::string reply)
 	}
 }
 
-// static bool	isIrcOperator(Server *server, std::string nickname)
-// {
-// 	std::vector<server_op> irc_ops = server->getIrcOperators();
-// 	std::vector<server_op>::iterator it_op;
+static bool	isIrcOperator(Server *server, std::string nickname)
+{
+	std::vector<server_op> irc_ops = server->getIrcOperators();
+	std::vector<server_op>::iterator it_op;
 	
-// 	for (it_op = irc_ops.begin(); it_op != irc_ops.end(); it_op++)
-// 	{
-// 		if (it_op->name == nickname)
-// 			return (true);
-// 	}
-// 	return (false);
-// }
+	for (it_op = irc_ops.begin(); it_op != irc_ops.end(); it_op++)
+	{
+		if (it_op->name == nickname)
+			return (true);
+	}
+	return (false);
+}
 
 static Client*	clientExists(Server *server, std::string nickname)
 {
