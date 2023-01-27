@@ -31,6 +31,7 @@ Client*		getClient(Server *server, int const client_fd);
 void	invite(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	join(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	kick(Server *server, int const client_fd, cmd_struct cmd_infos);
+void	kill(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	list(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	modeFunction(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	names(Server *server, int const client_fd, cmd_struct cmd_infos);
@@ -43,5 +44,6 @@ int		ping(Server *server, int const client_fd, cmd_struct &cmd);
 void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	quit(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	topic(Server *server, int const client_fd, cmd_struct cmd_infos);
+void	user(Server *server, int const client_fd, cmd_struct cmd_infos);
 
 #endif

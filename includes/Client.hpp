@@ -12,7 +12,7 @@ class Client
 		bool			_to_deconnect;
 		std::string		_nickname;
 		std::string		_old_nickname;
-		std::string		_fullname;
+		std::string		_username;
 		std::string		_realname;
 		std::string		_mode;
 		bool			_connexion_password;

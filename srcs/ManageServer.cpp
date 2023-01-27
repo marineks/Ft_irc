@@ -90,17 +90,19 @@ int Server::manageServerLoop()
 					{
 						print("[Client] Message received from client ", it->fd, message); // si affichage incoherent regarder ici
 						client->setReadBuffer(message);
-						try 
+						if (client->getReadBuffer().find("\r\n") != std::string::npos)
 						{
-							if (client->getReadBuffer().find("\r\n") != std::string::npos)
+							try 
+							{
 								parseMessage(it->fd, client->getReadBuffer());
-						}
-						catch(const std::exception& e) 
-						{ 
-							std::cout << "[SERVER] Caught exception : ";
-							std::cerr << e.what() << std::endl;
-							client->setDeconnexionStatus(true);
-							break ;
+							}
+							catch(const std::exception& e) 
+							{ 
+								std::cout << "[SERVER] Caught exception : ";
+								std::cerr << e.what() << std::endl;
+								client->setDeconnexionStatus(true);
+								break ;
+							}
 						}
 						it++;
 					}
