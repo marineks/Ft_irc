@@ -220,7 +220,6 @@ static void	operatorChannelMode(Server *server, mode_struct mode_infos, int cons
 
 static void	topicChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string mode_str)
 {
-	std::cout << "je suis dans le mode t" << std::endl;
 	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
 	(void)it_client;
 	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
@@ -244,7 +243,6 @@ static void	topicChannelMode(Server *server, mode_struct mode_infos, int const c
 
 static void	secretChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string mode_str)
 {
-	std::cout << "je suis dans le mode s" << std::endl;
 	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
 	(void)it_client;
 	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
@@ -278,7 +276,6 @@ static bool isAlpha(std::string str)
 
 static void	keyChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string mode_str)
 {
-	std::cout << "je suis dans le mode k" << std::endl;
 	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
 	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
 
@@ -352,7 +349,6 @@ static void	modeForChannel(Server *server, mode_struct mode_infos, int const cli
 	std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
 
 	mode_infos.target.erase(0,1); // erase '#'
-	std::cout << "CHANNEL - target : |" << mode_infos.target << "|" << std::endl;
 
 	// Check si le chan existe
 	std::map<std::string, Channel>::iterator it_channel_target = server->getChannels().find(mode_infos.target);
@@ -474,15 +470,15 @@ void	modeFunction(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
 	mode_struct	mode_infos;
 	
-	std::cout << "\nMessage : |" << cmd_infos.message << "|" << std::endl;
+	// std::cout << "\nMessage : |" << cmd_infos.message << "|" << std::endl;
 	cmd_infos.message.erase(0,1);
 	
 	// parse la commande
 	fillModeInfos(mode_infos, cmd_infos.message);
 	
-	std::cout << "target : |" << mode_infos.target << "|" << std::endl;
-	std::cout << "mode : |" << mode_infos.mode << "|" << std::endl;
-	std::cout << "params : |" << mode_infos.params << "|" << std::endl;
+	// std::cout << "target : |" << mode_infos.target << "|" << std::endl;
+	// std::cout << "mode : |" << mode_infos.mode << "|" << std::endl;
+	// std::cout << "params : |" << mode_infos.params << "|" << std::endl;
 
 	if (mode_infos.target[0] == '#') // channel case
 		modeForChannel(server, mode_infos, client_fd);
