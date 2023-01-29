@@ -218,8 +218,10 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 {
 	std::map<const int, Client>::iterator it = client_list.find(client_fd);
 	cmd_struct cmd_infos;
-	parseCommand(cmd, cmd_infos);
+	if (parseCommand(cmd, cmd_infos) == FAILURE)
+		return ;
 
+	std::cout << "OH OH JE SUIS LA" << std::endl;
 	if (cmd.find("NICK") != std::string::npos)
 		nick(this, client_fd, cmd_infos);
 	else if (cmd.find("USER") != std::string::npos)
@@ -231,6 +233,7 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 		else
 			it->second.setConnexionPassword(false);
 	}
+	std::cout << "sortie des commandes" << std::endl;
 }
 
 static void splitMessage(std::vector<std::string> &cmds, std::string msg)
@@ -311,7 +314,8 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	cmd_struct cmd_infos;
 	int index = 0;
 
-	parseCommand(cmd_line, cmd_infos);
+	if (parseCommand(cmd_line, cmd_infos) == FAILURE)
+		return ;
 
 	while (index < VALID_LEN)
 	{
@@ -319,7 +323,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 			break;
 		index++;
 	}
-
+	std::cout << "sortie de parse command" << std::endl;
 	switch (index + 1)
 	{
 		case 1: invite(this, client_fd, cmd_infos); break;
