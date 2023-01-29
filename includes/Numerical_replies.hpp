@@ -48,6 +48,14 @@ void	sendServerRpl(int const client_fd, std::string client_buffer);
 #define ERR_CHANOPRIVSNEEDED(client, channel) (":localhost 482 " + client + " #" + channel + " :You're not channel operator\r\n")
 #define ERR_INVALIDMODEPARAM(client, channel, mode, password) ("696 " + client + " #" + channel + " " + mode + " " + password + " : password must only contained alphabetic character\r\n")
 
+// MOTD
+#define ERR_NOSUCHSERVER(client, servername) (":localhost 402 " + client + " " + servaname + " :No such server\r\n")
+#define ERR_NOMOTD(client) (":localhost 422 " + client + " :MOTD File is missing\r\n")
+#define RPL_MOTDSTART(client, server) (":localhost 375 " + client + " :- " + servaname + " Message of the day - \r\n")
+#define RPL_MOTD(client, motd_line) (":localhost 372 " + client + " :" + motd_line + "\r\n")
+#define RPL_ENDOFMOTD(client) (":localhost 376 " + client + " :End of /MOTD command.\r\n")
+
+
 // NAMES
 # define RPL_NAMREPLY(client, symbol, channel, list_of_nicks) (":localhost 353 " + client + " " + symbol + " #" + channel + " :" + list_of_nicks + "\r\n")
 # define RPL_ENDOFNAMES(client, channel) (":localhost 366 " + client + " #" + channel + " :End of /NAMES list.\r\n")

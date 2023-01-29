@@ -3,7 +3,7 @@
 
 # include "Irc.hpp"
 # include "Server.hpp"
-# define VALID_LEN 16
+# define VALID_LEN 17
 
 class Server;
 
@@ -35,6 +35,7 @@ void	kick(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	kill(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	list(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	modeFunction(Server *server, int const client_fd, cmd_struct cmd_infos);
+void	motd(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	names(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	nick(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	notice(Server *server, int const client_fd, cmd_struct cmd_infos);
