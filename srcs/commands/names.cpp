@@ -30,6 +30,11 @@ void	names(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::string		channel_to_name;
 	std::string		list_of_members;
 
+	if (cmd_infos.message.empty() == true)
+	{
+		addToClientBuffer(server, client_fd, ERR_NEEDMOREPARAMS(client.getNickname(), cmd_infos.name));
+		return ;
+	}
 	while (containsAtLeastOneAlphaChar(cmd_infos.message) == true)
 	{
 		// find the channel to display names of

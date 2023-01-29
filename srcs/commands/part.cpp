@@ -32,6 +32,11 @@ void				part(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::string	channel;
 
 	std::string reason = getReason(cmd_infos.message);
+	if (cmd_infos.message.empty() == true)
+	{
+		addToClientBuffer(server, client_fd, ERR_NEEDMOREPARAMS(nick, cmd_infos.name));
+		return ;
+	}
 	cmd_infos.message.erase(cmd_infos.message.find(reason), reason.length()); // #chan reason" becomes "#chan "
 
 	while (containsAtLeastOneAlphaChar(cmd_infos.message) == true)
