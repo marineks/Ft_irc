@@ -10,8 +10,12 @@ int	Server::handlePolloutEvent(std::vector<pollfd>& poll_fds, std::vector<pollfd
 	else
 	{
 		sendServerRpl(current_fd, client->getSendBuffer());
-		if (client->getReadBuffer().find("\r\n"))
-			client->getReadBuffer().clear();
+		// if (client->getReadBuffer().find("\r\n"))
+		// {
+		// 	std::cout << "A LA FIN DE MON SEND et le buffer est |" << client->getReadBuffer() << "|" << std::endl;
+		// 	client->getReadBuffer().clear();
+		// }
+			
 		client->getSendBuffer().clear();
 		if (client->getDeconnexionStatus() == true)
 		{

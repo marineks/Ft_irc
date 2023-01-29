@@ -221,7 +221,7 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 	if (parseCommand(cmd, cmd_infos) == FAILURE)
 		return ;
 
-	std::cout << "OH OH JE SUIS LA" << std::endl;
+	// std::cout << "OH OH JE SUIS LA" << std::endl;
 	if (cmd.find("NICK") != std::string::npos)
 		nick(this, client_fd, cmd_infos);
 	else if (cmd.find("USER") != std::string::npos)
@@ -233,7 +233,7 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 		else
 			it->second.setConnexionPassword(false);
 	}
-	std::cout << "sortie des commandes" << std::endl;
+	// std::cout << "sortie des commandes" << std::endl;
 }
 
 static void splitMessage(std::vector<std::string> &cmds, std::string msg)
@@ -257,7 +257,7 @@ void Server::parseMessage(int const client_fd, std::string message)
 
 	splitMessage(cmds, message);
 
-	std::cout << "je rerentre dedans" << std::endl;
+	// std::cout << "je rerentre dedans" << std::endl;
 	for (size_t i = 0; i != cmds.size(); i++)
 	{
 		if (it->second.isRegistrationDone() == false)
@@ -323,7 +323,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 			break;
 		index++;
 	}
-	std::cout << "sortie de parse command" << std::endl;
+	// std::cout << "sortie de parse command" << std::endl;
 	switch (index + 1)
 	{
 		case 1: invite(this, client_fd, cmd_infos); break;

@@ -30,6 +30,9 @@ void		quit(Server *server, int const client_fd, cmd_struct cmd_infos)
 	std::map<std::string, Channel>&			  channels = server->getChannels();
 	std::map<std::string, Channel>::iterator  chan	   = channels.begin();
 
+	// inform the concerned user
+	addToClientBuffer(server, client_fd, RPL_QUIT(user_id(client.getNickname(), client.getUsername()), reason));
+	// inform all the users that share a channel w/ the user quitting
 	for (; chan != channels.end(); chan++) // check all channels
 	{
 		std::map<std::string, Client>& 			chan_members = chan->second.getClientList();
@@ -53,6 +56,7 @@ static void	broadcastToChan(Server *server, Channel &channel, int const client_f
 {
 	std::map<std::string, Client>::iterator member = channel.getClientList().begin();
 	
+	(void) client_fd;
 	while (member != channel.getClientList().end())
 	{
 		if (member->second.getClientFd() != client_fd)
