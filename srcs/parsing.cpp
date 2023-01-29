@@ -27,7 +27,7 @@ int	parseCommand(std::string cmd_line, cmd_struct &cmd_infos)
 	}
 	else
 		cmd_infos.name.insert(0, copy, 0, copy.find_first_of(' ')); // Cas d'une commande "NICK arg1" : on copie jusqu'à l'espace
-	std::cout << "Command : " << RED << cmd_infos.name << RESET << std::endl;
+	std::cout << "Command : |" << RED << cmd_infos.name << "|" << RESET << std::endl;
 	// PREFIX
 	size_t prefix_length = cmd_line.find(cmd_infos.name, 0);
 	cmd_infos.prefix.assign(cmd_line, 0, prefix_length);
@@ -41,8 +41,8 @@ int	parseCommand(std::string cmd_line, cmd_struct &cmd_infos)
 		cmd_infos.name[i] = std::toupper(cmd_infos.name[i]);
 	
 	// DEBUG
-	std::cout << "Command : " << RED << cmd_infos.name << RESET << std::endl;
-	std::cout << "Prefix : " << BLUE << cmd_infos.prefix << RESET << std::endl;
+	// std::cout << "Command : |" << RED << cmd_infos.name << "|" << RESET << std::endl;
+	// std::cout << "Prefix : " << BLUE << cmd_infos.prefix << RESET << std::endl;
 	std::cout << "Message : " << GREEN << cmd_infos.message << RESET << std::endl;
 	return (SUCCESS);
 }
