@@ -44,6 +44,8 @@ std::map<const int, Client>&	Server::getClients()		{ return (_clients); }
 
 std::vector<server_op>&			Server::getIrcOperators()	{ return (_irc_operators); }
 
+std::string 					Server::getMotd() const 	{ return (_motd); }
+
 void							Server::setPassword(std::string new_pwd)
 {
 	_password = new_pwd;
@@ -57,6 +59,11 @@ void							Server::setDatetime(struct tm *timeinfo)
   	std::string str(buffer);
 
 	_datetime = str;
+}
+
+void							Server::setMotd(std::string buffer)
+{
+	_motd =  buffer;
 }
 
 /**
@@ -277,6 +284,8 @@ void Server::parseMessage(int const client_fd, std::string message)
 					addToClientBuffer(this, client_fd, RPL_CREATED(it->second.getNickname(), getDatetime()));
 					addToClientBuffer(this, client_fd, RPL_MYINFO(it->second.getNickname(), "localhost", "1.1", "io", "kost", "k"));
 					addToClientBuffer(this, client_fd, RPL_ISUPPORT(it->second.getNickname(), "CHANNELLEN=32 NICKLEN=9 TOPICLEN=307"));
+					if (this->getMotd().empty() == false)
+						addToClientBuffer(this, client_fd, this->getMotd());
 					it->second.isWelcomeSent() = true;
 					it->second.isRegistrationDone() = true;
 				}		
@@ -333,7 +342,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		case 4: kill(this, client_fd, cmd_infos); break;
 		case 5: list(this, client_fd, cmd_infos); break;
 		case 6: modeFunction(this, client_fd, cmd_infos); break;
-		case 7: motd(this, client_fd, cmd_infos);
+		case 7: motd(this, client_fd, cmd_infos); break;
 		case 8: names(this, client_fd, cmd_infos); break;
 		case 9: nick(this, client_fd, cmd_infos); break;
     	case 10: notice(this, client_fd, cmd_infos); break;

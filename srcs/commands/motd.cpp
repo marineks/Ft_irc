@@ -3,6 +3,7 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
+static std::string	getServer(std::string msg);
 /**
  * @brief The MOTD command is used to get the “Message of the Day” of the given 
  * server. If <target> is not given, the MOTD of the server the client is 
@@ -26,19 +27,75 @@
  */
 void	motd(Server *server, int const client_fd, cmd_struct cmd_infos)
 {
+	std::string client = retrieveClient(server, client_fd).getNickname();
+	std::string servername = getServer(cmd_infos.message);
 
-	// checker en premier si le serveur c'est bien localhost. si pas de server donné
-	// on va considérer que c'est localhost par défaut
+	// checker en premier si le serveur c'est bien localhost
+	if (servername.empty() == true) // par défaut, on doit afficher le motd de notre serveur
+		servername = "localhost";
+	if (servername != "localhost")
+	{
+		addToClientBuffer(server, client_fd, ERR_NOSUCHSERVER(client, servername));
+		return ;
+	}
 
-	// store dans Server le char* file name (path)
+	// récupérer le fichier et stocker les lignes dans un vecteur de strings
+	std::ifstream		data;
+	char				filepath[24] = "srcs/config/motd.config";
 
-	// ouvrir et récupérer dans un vecteur de strings le motd
+	data.open(filepath);
+	if (!data)
+	{
+		// TODO : mettre dans la classe et attribuer les erreurs à motd
+		// quand on fera un getMOtd, on pourra avoir la ERR_NOMOTD par expl
+		addToClientBuffer(server, client_fd, ERR_NOMOTD(client));
+		return ;
+	}
+	else
+	{
+		std::string		motd_lines;
+		std::string		buf;
+		
+		// // Motd START
+		// addToClientBuffer(server, client_fd, RPL_MOTDSTART(client, servername));
 
-	// renvoyer l'erreur MOTD s'il n'y a pas de file
+		// while (getline(data, motd_lines))
+		// 	addToClientBuffer(server, client_fd, RPL_MOTD(client, motd_lines));
+		// // Motd END
+		// addToClientBuffer(server, client_fd, RPL_ENDOFMOTD(client));
 
-	// sinon, lancer un motd start
+		buf = RPL_MOTDSTART(client, servername);
+		while (getline(data, motd_lines))
+		{
+			buf += RPL_MOTD(client, motd_lines);
+		}
+		buf += RPL_ENDOFMOTD(client);
+		addToClientBuffer(server, client_fd, buf);
+	}
+	data.close();
+}
 
-	// boucler à travers le vecteur de strings pour tout envoyer
+/* Possible tests:
+	- ""
+	- " r"
+	- " bla foo bar" => on considère que les 3 mots sont le serveur
+	- " "
+*/
+static std::string	getServer(std::string msg)
+{
+	std::string servername;
+	servername.clear();
 
-	// et envoyer la end
+	if (msg.empty() == true)
+		return (servername);
+	
+	if (msg.find(' ') == std::string::npos) // on a "r" / "bla foo"
+	{
+		servername.insert(0, msg, 0, std::string::npos);
+	}
+	else // Cas du " r" / " bla foo"
+	{
+		servername.insert(0, msg, 1, std::string::npos);
+	}
+	return (servername);
 }
