@@ -17,8 +17,12 @@ int	parseCommand(std::string cmd_line, cmd_struct &cmd_infos)
 
 	// COMMAND
 	std::string copy = cmd_line;
-	if (cmd_line.empty() == false && cmd_line[0] == ':')	// Cas du préfixe (supprimer cette partie d'une copy) pour retomber sur un cas "CMD arg <arg2>" ou "CMD"
-		copy.erase(0, copy.find_first_of(' '));
+	if (cmd_line[0] == ':')	// Cas du préfixe (supprimer cette partie d'une copy) pour retomber sur un cas "CMD arg <arg2>" ou "CMD"
+	{
+		if (cmd_line.find_first_of(' ') != std::string::npos)
+			copy.erase(0, copy.find_first_of(' ') + 1);
+	}
+	// std::cout << "copy : |" << copy << "|" << std::endl;
 	if (copy.find_first_of(' ') == std::string::npos) // Cas d'une commande "NICK" ou ":prefixe NICK" sans arguments
 	{
 		cmd_infos.name.insert(0, copy, 0, std::string::npos);
