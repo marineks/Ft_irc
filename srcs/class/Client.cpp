@@ -38,6 +38,13 @@ int				Client::getNbInfo() const 		{ return (_nbInfo); }
 void	Client::setReadBuffer(std::string const &buf)
 {
 	_readbuf += buf;
+	// if (_readbuf.empty() == false && _readbuf[0] == ' \r')
+	// {
+	// 	if (_readbuf[1] && _readbuf[1] == '\n')
+	// 		_readbuf.erase(0, 2);
+	// 	else
+	// 		_readbuf.erase(0,1);
+	// }
 }
 
 void	Client::resetReadBuffer(std::string const &str)
