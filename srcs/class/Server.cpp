@@ -191,7 +191,6 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 	if (parseCommand(cmd, cmd_infos) == FAILURE)
 		return ;
 
-	// std::cout << "OH OH JE SUIS LA" << std::endl;
 	if (cmd.find("NICK") != std::string::npos)
 		nick(this, client_fd, cmd_infos);
 	else if (cmd.find("USER") != std::string::npos)
@@ -203,7 +202,6 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 		else
 			it->second.setConnexionPassword(false);
 	}
-	// std::cout << "sortie des commandes" << std::endl;
 }
 
 static void splitMessage(std::vector<std::string> &cmds, std::string msg)

@@ -58,8 +58,6 @@ class Client
 		void			sethasAllInfo(bool boolean);
 		int				getNbInfo() const;
 		void			setNbInfo(int n);
-	
-		void			printClient()const;
 		int				is_valid()const;
 };
 

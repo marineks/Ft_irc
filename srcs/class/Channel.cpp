@@ -57,14 +57,6 @@ bool		Channel::doesClientExist(std::string &clientName)
 *				################################
 */
 
-void	Channel::printClientList()
-{
-	std::cout <<  "Here is the Client list of the Channel " << YELLOW << this->getName() << RESET << std::endl;
-	for (std::map <std::string, Client>::iterator it = _clientList.begin(); \
-		 it != _clientList.end(); it++)
-		std::cout << it->first << std::endl;
-}
-
 /**
  * @brief Removes a Client from the ClientList of the Channel.
  * 		  Also strips this Client of the Operator privileges.
@@ -184,16 +176,6 @@ bool 	Channel::isOperator(std::string &operatorName)
 			return (true);
 	}
 	return (false);
-}
-
-void	Channel::printOperators(void)
-{
-	std::cout << "Print operators : \n";
-	std::vector<std::string>::iterator it;
-	for (it = _operators.begin(); it != _operators.end(); it++)
-	{
-		std::cout << *it << std::endl;
-	}
 }
 
 /*

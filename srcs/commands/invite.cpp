@@ -26,7 +26,7 @@ void	invite(Server *server, int const client_fd, cmd_struct cmd_infos)
 	}
 
 	// Check if the channel exists
-	std::map<std::string, Channel>			 channels = server->getChannels();
+	std::map<std::string, Channel>&			 channels = server->getChannels();
 	std::map<std::string, Channel>::iterator channel = channels.find(channel_name);
 	if (channel == channels.end())
 	{
@@ -49,14 +49,19 @@ void	invite(Server *server, int const client_fd, cmd_struct cmd_infos)
 	}
 	
 	// If all checks are successful => send a RPL_INVITING + invite to the inviting user 
-	addToClientBuffer(server, client_fd, RPL_INVITING(client_nickname, invited_client, channel_name));
-	
-	std::map<std::string, Client> clients = channel->second.getClientList();
-	std::map<std::string, Client>::iterator invited = clients.find(invited_client);
-	std::string user_id = ":" +	invited->second.getNickname() + "!" + invited->second.getUsername() + "@localhost";
-	std::string invite = user_id + ":Knock knock! You are invited to join the channel #" + channel_name + " by " + client_nickname + " .\r\n";
-	
-	addToClientBuffer(server, invited->second.getClientFd(), invite);
+	addToClientBuffer(server, client_fd, RPL_INVITING(user_id(client_nickname, client.getUsername()), client_nickname, invited_client, channel_name));
+	std::map<const int, Client>&			clients 	= server->getClients();
+
+	std::map<const int, Client>::iterator	it;
+	for (it = clients.begin(); it != clients.end(); it++)
+	{
+		if (it->second.getNickname() == invited_client)
+		{
+			addToClientBuffer(server, it->second.getClientFd(),\
+				RPL_INVITE(user_id(client_nickname, client.getUsername()), it->second.getNickname(), channel_name));
+			break;
+		}
+	}
 }
 
 // Exemple of user input : "INVITE Wiz #foo_bar"

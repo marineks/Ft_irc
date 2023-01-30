@@ -35,14 +35,12 @@ class Channel
 		bool							doesClientExist(std::string &clientName);
 		/* Manage client in Channel */
 		void							addClientToChannel(Client &client);
-		void							printClientList();
 		void							removeClientFromChannel(std::string &clientName);
 		/* Operators */
 		void							addFirstOperator(std::string operatorName);
 		void							removeOperator(std::string operatoName);
 		// void							addOperator(std::string operatorName);
 		bool							isOperator(std::string &operatorName);
-		void							printOperators(void);
 		/* Modes */
 		void							addMode(std::string const mode);
 		void							removeMode(std::string const mode);

@@ -9,7 +9,7 @@ Client::Client(int client_fd)
 : _client_fd(client_fd), _to_deconnect(false), _connexion_password(false),\
  _registrationDone(false), _welcomeSent(false), _hasAllInfo(false), _nbInfo(0)
 {
-	std::cout << YELLOW << "Client constructor for Client #" << client_fd << RESET << std::endl;
+	// std::cout << YELLOW << "Client constructor for Client #" << client_fd << RESET << std::endl;
 }
 
 Client::~Client() {}
@@ -38,13 +38,6 @@ int				Client::getNbInfo() const 		{ return (_nbInfo); }
 void	Client::setReadBuffer(std::string const &buf)
 {
 	_readbuf += buf;
-	// if (_readbuf.empty() == false && _readbuf[0] == ' \r')
-	// {
-	// 	if (_readbuf[1] && _readbuf[1] == '\n')
-	// 		_readbuf.erase(0, 2);
-	// 	else
-	// 		_readbuf.erase(0,1);
-	// }
 }
 
 void	Client::resetReadBuffer(std::string const &str)
@@ -130,15 +123,6 @@ void	Client::setNbInfo(int n)
 *					### OTHER MEMBER FUNCTIONS ###
 *					##############################
 */
-
-void	Client::printClient()const
-{
-	std::cout << "Print client" << std::endl;
-	std::cout << YELLOW << "fd: " << _client_fd << "\n" \
-			<< "nickname: " << _nickname << "\n" \
-			<< "Username: " << _username << "\n"
-			<< "Real name: " << _realname << RESET << "\n";
-}
 
 int	Client::is_valid() const
 {

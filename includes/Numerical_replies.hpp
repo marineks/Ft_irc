@@ -1,7 +1,6 @@
 #ifndef NUMERICAL_REPLIES_HPP
 #define NUMERICAL_REPLIES_HPP
 
-// void	sendServerRpl(int const client_fd, std::string reply);
 void	sendServerRpl(int const client_fd, std::string client_buffer);
 
 # define user_id(nickname, username) (":" + nickname + "!" + username + "@localhost")
@@ -19,7 +18,8 @@ void	sendServerRpl(int const client_fd, std::string client_buffer);
 # define ERR_NOSUCHCHANNEL(client, channel) (":localhost 403 " + client + " #" + channel + " :No such channel\r\n")
 # define ERR_NOTONCHANNEL(client, channel) (":localhost 442 " + client + " #" + channel + " :The user is not on this channel.\r\n")
 # define ERR_USERONCHANNEL(client, nick, channel) (":localhost 443 " + client + " " + nick + " #" + channel + " :Is already on channel\r\n")
-# define RPL_INVITING(client, nick, channel) ("341 " + client + " " + nick + " #" + channel + " :Is invited to a channel!\r\n")
+# define RPL_INVITING(user_id, client, nick, channel) (user_id + " 341 " + client + " " + nick + " #" + channel + "\r\n")
+# define RPL_INVITE(user_id, invited, channel) (user_id + " INVITE " + invited + " #" + channel + "\r\n")
 
 // JOIN
 # define RPL_JOIN(user_id, channel) (user_id + " JOIN :#" +  channel + "\r\n")
