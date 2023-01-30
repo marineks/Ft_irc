@@ -89,7 +89,7 @@ int Server::manageServerLoop()
 					else
 					{
 						print("[Client] Message received from client ", it->fd, message); // si affichage incoherent regarder ici
-						if (message)
+						// if (message)
 							client->setReadBuffer(message);
 						// std::cout << "BUFFER |" << client->getReadBuffer() << "|" << std::endl;
 						if (client->getReadBuffer().find("\r\n") != std::string::npos)
