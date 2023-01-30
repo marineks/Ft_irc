@@ -184,43 +184,6 @@ void Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::itera
 	std::cout << "[Server] " << PURPLE << "Client deleted. Total Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
 }
 
-/**
- * @brief Returns a dynamic Welcome version compliant with the templates below
- * 		 ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n"
- * 		FYI, the doc :
- * 		001    RPL_WELCOME
- *      "Welcome to the Internet Relay Network
- *       <nick>!<user>@<host>"
- */
-std::string getWelcomeReply(std::map<const int, Client>::iterator &it)
-{
-	std::stringstream	rpl_welcome;
-	std::string			host = "localhost";
-	std::string			space = " ";
-	std::string			welcome = " :Welcome to the Internet Relay Network ";
-	std::string			rpl_code = "001";
-	std::string			user_id = it->second.getNickname() + "!" + it->second.getUsername() + "@" + host;
-	std::string			end = "\r\n";
-	
-	// reset the stringstream
-	rpl_welcome.str(std::string());
-	// write in the stream to append everything in one line and properly terminate it with a NULL operator
-	rpl_welcome << ":" << host << space << rpl_code << space << it->second.getNickname() << welcome << user_id << end;
-	// convert the stream in the required std::string
-	return (rpl_welcome.str());
-}
-
-std::string	cleanStr(std::string str)
-{
-	// Erase the space at the beginning of the str (i.e " marine sanjuan" must be "marine sanjuan")
-	if (str.find(' ') != std::string::npos && str.find(' ') == 0)
-		str.erase(str.find(' '), 1);
-	// Erase any Carriage Returns in the str. Note : the '\n' has already be dealt with in the function SplitMessage
-	if (str.find('\r') != std::string::npos)
-		str.erase(str.find('\r'), 1);
-	return (str);
-}
-
 void Server::fillClients(std::map<const int, Client> &client_list, int client_fd, std::string cmd)
 {
 	std::map<const int, Client>::iterator it = client_list.find(client_fd);
@@ -264,7 +227,6 @@ void Server::parseMessage(int const client_fd, std::string message)
 
 	splitMessage(cmds, message);
 
-	// std::cout << "je rerentre dedans" << std::endl;
 	for (size_t i = 0; i != cmds.size(); i++)
 	{
 		if (it->second.isRegistrationDone() == false)
@@ -279,13 +241,7 @@ void Server::parseMessage(int const client_fd, std::string message)
 			{
 				if (it->second.is_valid() == SUCCESS)
 				{
-					addToClientBuffer(this, client_fd, getWelcomeReply(it));
-					addToClientBuffer(this, client_fd, RPL_YOURHOST(it->second.getNickname(), "42_Ftirc", "1.1"));
-					addToClientBuffer(this, client_fd, RPL_CREATED(it->second.getNickname(), getDatetime()));
-					addToClientBuffer(this, client_fd, RPL_MYINFO(it->second.getNickname(), "localhost", "1.1", "io", "kost", "k"));
-					addToClientBuffer(this, client_fd, RPL_ISUPPORT(it->second.getNickname(), "CHANNELLEN=32 NICKLEN=9 TOPICLEN=307"));
-					if (this->getMotd().empty() == false)
-						addToClientBuffer(this, client_fd, this->getMotd());
+					sendClientRegistration(this, client_fd, it);
 					it->second.isWelcomeSent() = true;
 					it->second.isRegistrationDone() = true;
 				}		
@@ -333,7 +289,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 			break;
 		index++;
 	}
-	// std::cout << "sortie de parse command" << std::endl;
+
 	switch (index + 1)
 	{
 		case 1: invite(this, client_fd, cmd_infos); break;

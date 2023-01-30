@@ -6,6 +6,7 @@ void	sendServerRpl(int const client_fd, std::string client_buffer);
 
 # define user_id(nickname, username) (":" + nickname + "!" + username + "@localhost")
 
+# define RPL_WELCOME(user_id, nickname) (":localhost 001 " + nickname + " :Welcome to the Internet Relay Network " + user_id + "\r\n")
 # define RPL_YOURHOST(client, servername, version) (":localhost 002 " + client + " :Your host is " + servername + " (localhost), running version " + version + "\r\n")
 # define RPL_CREATED(client, datetime) (":localhost 003 " + client + " :This server was created " + datetime + "\r\n")
 # define RPL_MYINFO(client, servername, version, user_modes, chan_modes, chan_param_modes) (":localhost 004 " + client + " " + servername + " " + version + " " + user_modes + " " + chan_modes + " " + chan_param_modes + "\r\n")
@@ -51,7 +52,7 @@ void	sendServerRpl(int const client_fd, std::string client_buffer);
 // MOTD
 #define ERR_NOSUCHSERVER(client, servername) (":localhost 402 " + client + " " + servername + " :No such server\r\n")
 #define ERR_NOMOTD(client) (":localhost 422 " + client + " :MOTD File is missing\r\n")
-#define RPL_MOTDSTART(client, server) (":localhost 375 " + client + " :- " + servername + " Message of the day - \r\n")
+#define RPL_MOTDSTART(client, servername) (":localhost 375 " + client + " :- " + servername + " Message of the day - \r\n")
 #define RPL_MOTD(client, motd_line) (":localhost 372 " + client + " :" + motd_line + "\r\n")
 #define RPL_ENDOFMOTD(client) (":localhost 376 " + client + " :End of /MOTD command.\r\n")
 

@@ -24,6 +24,8 @@ bool		isAlreadyUsed(Server *server, int client_fd, std::string new_nickname);
 std::string	getReason(std::string msg_to_parse);
 Client*		getClient(Server *server, int const client_fd);
 std::string	getSymbol(Channel &channel);
+void		sendClientRegistration(Server *server, int const client_fd, std::map<const int, Client>::iterator &it);
+
 
 // #######################
 // ###### COMMANDS #######

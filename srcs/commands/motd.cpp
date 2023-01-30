@@ -46,8 +46,6 @@ void	motd(Server *server, int const client_fd, cmd_struct cmd_infos)
 	data.open(filepath);
 	if (!data)
 	{
-		// TODO : mettre dans la classe et attribuer les erreurs à motd
-		// quand on fera un getMOtd, on pourra avoir la ERR_NOMOTD par expl
 		addToClientBuffer(server, client_fd, ERR_NOMOTD(client));
 		return ;
 	}
@@ -56,14 +54,6 @@ void	motd(Server *server, int const client_fd, cmd_struct cmd_infos)
 		std::string		motd_lines;
 		std::string		buf;
 		
-		// // Motd START
-		// addToClientBuffer(server, client_fd, RPL_MOTDSTART(client, servername));
-
-		// while (getline(data, motd_lines))
-		// 	addToClientBuffer(server, client_fd, RPL_MOTD(client, motd_lines));
-		// // Motd END
-		// addToClientBuffer(server, client_fd, RPL_ENDOFMOTD(client));
-
 		buf = RPL_MOTDSTART(client, servername);
 		while (getline(data, motd_lines))
 		{
