@@ -82,7 +82,7 @@ static void  broadcastToChannel(Server *server, int const client_fd, std::map<co
 	{
 		if (*it == it_client->second.getNickname())
 		{
-			std::cout << it_client->second.getNickname() << " is kicked from the channel and can't send message anymore" << std::endl;
+			std::cout << "[Server] " << it_client->second.getNickname() << " is kicked from the channel and can't send messages anymore" << std::endl;
 			return ;
 		}
 	}
@@ -91,7 +91,7 @@ static void  broadcastToChannel(Server *server, int const client_fd, std::map<co
    std::map<std::string, Client>::iterator member = it_channel->second.getClientList().begin(); // debut de la liste des clients du channel
    while (member != it_channel->second.getClientList().end())
    {
-      if (member->second.getClientFd() != client_fd)   // prevent to send the message to the sender
+      if (member->second.getClientFd() != client_fd)   // preventing from sending the message to the sender
          addToClientBuffer(server, member->second.getClientFd(), RPL_PRIVMSG(it_client->second.getNickname(), it_client->second.getUsername(), target, msg_to_send));
       member++;
    }
