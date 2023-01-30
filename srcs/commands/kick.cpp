@@ -44,9 +44,9 @@ void				kick(Server *server, int const client_fd, cmd_struct cmd_infos)
 	reason = (reason.empty()) ? ":Kicked by the channel's operator" : reason;
 
 	// DEBUG
-	std::cout << "Requester : |" << requester_name << "|" << std::endl;
-	std::cout << "Reason : |" << reason << "|" << std::endl;
-	std::cout << "Kicked : |" << kicked_name << "|" << std::endl;
+	// std::cout << "Requester : |" << requester_name << "|" << std::endl;
+	// std::cout << "Reason : |" << reason << "|" << std::endl;
+	// std::cout << "Kicked : |" << kicked_name << "|" << std::endl;
 
 	if (channel_name.empty() || kicked_name.empty())
 	{
