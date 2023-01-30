@@ -27,11 +27,13 @@ class Server
 		std::map<std::string, Channel>	_channels;
 		std::string						_port;
 		std::string						_password;
+		std::string						_datetime;
 		std::vector<server_op>			_irc_operators;
+		std::string						_motd;
 	
 	public:
 		// Constructor & destructor
-		Server(std::string port, std::string password);
+		Server(std::string port, std::string password, struct tm *timeinfo);
 		Server();
 		~Server();
 		// Accessors
@@ -39,9 +41,13 @@ class Server
 		std::string							getPort() const;
 		std::string							getPassword() const;
 		void								setPassword(std::string new_pwd);
+		std::string							getDatetime() const;
+		void								setDatetime(struct tm *timeinfo);
 		std::map<std::string, Channel>& 	getChannels();
 		std::map<const int, Client>&		getClients();
-		std::vector<server_op>&				getIrcOperators(); 
+		std::vector<server_op>&				getIrcOperators();
+		std::string							getMotd() const;
+		void								setMotd(std::string buffer);
 		
 		// Running Server functions
 		int 		readFromConfigFile(char *filename);

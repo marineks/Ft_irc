@@ -2,11 +2,13 @@
 #include "Commands.hpp"
 
 // Server::Server()
-Server::Server(std::string port, std::string password)
+Server::Server(std::string port, std::string password, struct tm *timeinfo)
 : _servinfo(NULL), _server_socket_fd(0) , _port(port), _password(password)
 {
-	std::cout << YELLOW << "Server Constructor" << RESET << std::endl;
+	std::cout << YELLOW << "Server running..." << RESET << std::endl;
+	std::cout << YELLOW << "Server listening" << RESET << std::endl;
 	memset(&_hints, 0, sizeof(_hints));
+	this->setDatetime(timeinfo);
 }
 
 Server::~Server()
@@ -34,15 +36,34 @@ std::string 					Server::getPort()	  const { return (_port); }
 
 std::string 					Server::getPassword() const { return (_password); }
 
+std::string 					Server::getDatetime() const { return (_datetime); }
+
 std::map<std::string, Channel>&	Server::getChannels()		{ return (_channels); }
 
 std::map<const int, Client>&	Server::getClients()		{ return (_clients); }
 
 std::vector<server_op>&			Server::getIrcOperators()	{ return (_irc_operators); }
 
+std::string 					Server::getMotd() const 	{ return (_motd); }
+
 void							Server::setPassword(std::string new_pwd)
 {
 	_password = new_pwd;
+}
+
+void							Server::setDatetime(struct tm *timeinfo)
+{
+	char buffer[80];
+
+	strftime(buffer,sizeof(buffer),"%d-%m-%Y %H:%M:%S",timeinfo);
+  	std::string str(buffer);
+
+	_datetime = str;
+}
+
+void							Server::setMotd(std::string buffer)
+{
+	_motd =  buffer;
 }
 
 /**
@@ -163,49 +184,14 @@ void Server::delClient(std::vector<pollfd> &poll_fds, std::vector<pollfd>::itera
 	std::cout << "[Server] " << PURPLE << "Client deleted. Total Client is now: " << (unsigned int)(poll_fds.size() - 1) << RESET << std::endl;
 }
 
-/**
- * @brief Returns a dynamic Welcome version compliant with the templates below
- * 		 ":127.0.0.1 001 tmanolis :Welcome tmanolis!tmanolis@127.0.0.1\r\n"
- * 		FYI, the doc :
- * 		001    RPL_WELCOME
- *      "Welcome to the Internet Relay Network
- *       <nick>!<user>@<host>"
- */
-std::string getWelcomeReply(std::map<const int, Client>::iterator &it)
-{
-	std::stringstream	rpl_welcome;
-	std::string			host = "localhost";
-	std::string			space = " ";
-	std::string			welcome = " :Welcome to the Internet Relay Network ";
-	std::string			rpl_code = "001";
-	std::string			user_id = it->second.getNickname() + "!" + it->second.getUsername() + "@" + host;
-	std::string			end = "\r\n";
-	
-	// reset the stringstream
-	rpl_welcome.str(std::string());
-	// write in the stream to append everything in one line and properly terminate it with a NULL operator
-	rpl_welcome << ":" << host << space << rpl_code << space << it->second.getNickname() << welcome << user_id << end;
-	// convert the stream in the required std::string
-	return (rpl_welcome.str());
-}
-
-std::string	cleanStr(std::string str)
-{
-	// Erase the space at the beginning of the str (i.e " marine sanjuan" must be "marine sanjuan")
-	if (str.find(' ') != std::string::npos && str.find(' ') == 0)
-		str.erase(str.find(' '), 1);
-	// Erase any Carriage Returns in the str. Note : the '\n' has already be dealt with in the function SplitMessage
-	if (str.find('\r') != std::string::npos)
-		str.erase(str.find('\r'), 1);
-	return (str);
-}
-
 void Server::fillClients(std::map<const int, Client> &client_list, int client_fd, std::string cmd)
 {
 	std::map<const int, Client>::iterator it = client_list.find(client_fd);
 	cmd_struct cmd_infos;
-	parseCommand(cmd, cmd_infos);
+	if (parseCommand(cmd, cmd_infos) == FAILURE)
+		return ;
 
+	// std::cout << "OH OH JE SUIS LA" << std::endl;
 	if (cmd.find("NICK") != std::string::npos)
 		nick(this, client_fd, cmd_infos);
 	else if (cmd.find("USER") != std::string::npos)
@@ -217,6 +203,7 @@ void Server::fillClients(std::map<const int, Client> &client_list, int client_fd
 		else
 			it->second.setConnexionPassword(false);
 	}
+	// std::cout << "sortie des commandes" << std::endl;
 }
 
 static void splitMessage(std::vector<std::string> &cmds, std::string msg)
@@ -247,14 +234,14 @@ void Server::parseMessage(int const client_fd, std::string message)
 			if (it->second.hasAllInfo() == false)
 			{
 				fillClients(_clients, client_fd, cmds[i]);
-				if (cmds[i].find("USER") != std::string::npos)
+				if (it->second.getNbInfo() == 3)
 					it->second.hasAllInfo() = true;
 			}
 			if (it->second.hasAllInfo() == true && it->second.isWelcomeSent() == false)
 			{
 				if (it->second.is_valid() == SUCCESS)
 				{
-					addToClientBuffer(this, client_fd, getWelcomeReply(it));
+					sendClientRegistration(this, client_fd, it);
 					it->second.isWelcomeSent() = true;
 					it->second.isRegistrationDone() = true;
 				}		
@@ -276,6 +263,7 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		"KILL",
 		"LIST",
 		"MODE",
+		"MOTD",
 		"NAMES",
 		"NICK",
 		"NOTICE",
@@ -292,7 +280,8 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 	cmd_struct cmd_infos;
 	int index = 0;
 
-	parseCommand(cmd_line, cmd_infos);
+	if (parseCommand(cmd_line, cmd_infos) == FAILURE)
+		return ;
 
 	while (index < VALID_LEN)
 	{
@@ -309,16 +298,17 @@ void Server::execCommand(int const client_fd, std::string cmd_line)
 		case 4: kill(this, client_fd, cmd_infos); break;
 		case 5: list(this, client_fd, cmd_infos); break;
 		case 6: modeFunction(this, client_fd, cmd_infos); break;
-		case 7: names(this, client_fd, cmd_infos); break;
-		case 8: nick(this, client_fd, cmd_infos); break;
-    	case 9: notice(this, client_fd, cmd_infos); break;
-		case 10: oper(this, client_fd, cmd_infos); break;
-		case 11: part(this, client_fd, cmd_infos); break;
-		case 12: ping(this, client_fd, cmd_infos); break;
-		case 13: privmsg(this, client_fd, cmd_infos); break;
-		case 14: quit(this, client_fd, cmd_infos); break;
-		case 15: topic(this, client_fd, cmd_infos); break;
-		case 16: user(this, client_fd, cmd_infos); break;
+		case 7: motd(this, client_fd, cmd_infos); break;
+		case 8: names(this, client_fd, cmd_infos); break;
+		case 9: nick(this, client_fd, cmd_infos); break;
+    	case 10: notice(this, client_fd, cmd_infos); break;
+		case 11: oper(this, client_fd, cmd_infos); break;
+		case 12: part(this, client_fd, cmd_infos); break;
+		case 13: ping(this, client_fd, cmd_infos); break;
+		case 14: privmsg(this, client_fd, cmd_infos); break;
+		case 15: quit(this, client_fd, cmd_infos); break;
+		case 16: topic(this, client_fd, cmd_infos); break;
+		case 17: user(this, client_fd, cmd_infos); break;
 		default:
 			addToClientBuffer(this, client_fd, ERR_UNKNOWNCOMMAND(client->getNickname(), cmd_infos.name));
 	}

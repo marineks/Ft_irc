@@ -64,7 +64,10 @@ void	invite(Server *server, int const client_fd, cmd_struct cmd_infos)
 std::string	findNickname(std::string msg_to_parse)
 {
 	std::string nickname;
+	nickname.clear();
 	
+	if (msg_to_parse.empty() == true)
+		return (nickname);
 	char *str = const_cast<char *>(msg_to_parse.data());
 	nickname = strtok(str, " ");
 	

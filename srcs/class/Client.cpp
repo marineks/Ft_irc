@@ -7,7 +7,7 @@
 */
 Client::Client(int client_fd)
 : _client_fd(client_fd), _to_deconnect(false), _connexion_password(false),\
- _registrationDone(false), _welcomeSent(false), _hasAllInfo(false)
+ _registrationDone(false), _welcomeSent(false), _hasAllInfo(false), _nbInfo(0)
 {
 	std::cout << YELLOW << "Client constructor for Client #" << client_fd << RESET << std::endl;
 }
@@ -33,10 +33,24 @@ bool&			Client::isRegistrationDone() 	{ return (_registrationDone); }
 bool&			Client::isWelcomeSent()			{ return (_welcomeSent); }
 bool&			Client::hasAllInfo() 			{ return (_hasAllInfo); }
 bool&			Client::getDeconnexionStatus()	{ return (_to_deconnect); }
+int				Client::getNbInfo() const 		{ return (_nbInfo); }
 
 void	Client::setReadBuffer(std::string const &buf)
 {
 	_readbuf += buf;
+	// if (_readbuf.empty() == false && _readbuf[0] == ' \r')
+	// {
+	// 	if (_readbuf[1] && _readbuf[1] == '\n')
+	// 		_readbuf.erase(0, 2);
+	// 	else
+	// 		_readbuf.erase(0,1);
+	// }
+}
+
+void	Client::resetReadBuffer(std::string const &str)
+{
+	_readbuf.clear();
+	_readbuf = str;
 }
 
 void	Client::setSendBuffer(std::string const &buf)
@@ -104,6 +118,13 @@ void	Client::sethasAllInfo(bool boolean)
 	_hasAllInfo = boolean;
 }
 
+void	Client::setNbInfo(int n)
+{
+	_nbInfo += n;
+	if (_nbInfo <= 0)
+		_nbInfo = 0;
+}
+
 /*
 *					##############################
 *					### OTHER MEMBER FUNCTIONS ###
@@ -128,6 +149,8 @@ int	Client::is_valid() const
 	if (_realname.empty())
 		return (FAILURE);
 	if (_connexion_password == false)
+		return (FAILURE);
+	if (this->getNbInfo() < 3)
 		return (FAILURE);
 	return (SUCCESS);
 }

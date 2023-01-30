@@ -46,16 +46,23 @@ void	nick(Server *server, int const client_fd, cmd_struct cmd_infos)
 	{
 		client.setNickname(nickname);
 		client.setOldNickname(nickname);
+		client.setNbInfo(+1);
 	}
 
 	if (nickname.empty()) {
 		addToClientBuffer(server, client_fd, ERR_NONICKNAMEGIVEN(client.getNickname()));
+		if (client.isRegistrationDone() == false)
+			client.setNbInfo(-1);
 	} 
 	else if (containsInvalidCharacters(nickname)) {
 		addToClientBuffer(server, client_fd,  ERR_ERRONEUSNICKNAME(client.getNickname(), nickname));
+		if (client.isRegistrationDone() == false)
+			client.setNbInfo(-1);
 	} 
 	else if (isAlreadyUsed(server, client_fd, nickname) == true) {
 			addToClientBuffer(server, client_fd, ERR_NICKNAMEINUSE(client.getNickname(), nickname));
+		if (client.isRegistrationDone() == false)
+			client.setNbInfo(-1);
 	} else {
 		
 		if (client.isRegistrationDone() == true)
@@ -64,9 +71,10 @@ void	nick(Server *server, int const client_fd, cmd_struct cmd_infos)
 			std::cout << "[Server] Nickname change registered. Old nickname is now : " << client.getOldNickname() << std::endl;
 		
 			client.setNickname(nickname);
-			addToClientBuffer(server, client_fd, RPL_NICK(client.getOldNickname(), client.getUsername(), client.getNickname()));
+			
 		}
 	}
+	addToClientBuffer(server, client_fd, RPL_NICK(client.getOldNickname(), client.getUsername(), client.getNickname()));
 }
 
 std::string	retrieveNickname(std::string msg_to_parse)
@@ -76,9 +84,9 @@ std::string	retrieveNickname(std::string msg_to_parse)
 	nickname.clear();
 	if (msg_to_parse.empty())
 		return (nickname);
-	if (msg_to_parse[0] == ' ')
+	if (msg_to_parse.empty() == false && msg_to_parse[0] == ' ')
 		msg_to_parse.erase(0, 1);
-	if (msg_to_parse.find(' '))
+	if (msg_to_parse.empty() == false && msg_to_parse.find(' '))
 	{
 		char *str = const_cast<char *>(msg_to_parse.data());
 		nickname = strtok(str, " ");
