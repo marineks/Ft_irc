@@ -29,6 +29,7 @@ class Server
 		std::string						_password;
 		std::string						_datetime;
 		std::vector<server_op>			_irc_operators;
+		std::string						_motd;
 	
 	public:
 		// Constructor & destructor
@@ -44,7 +45,9 @@ class Server
 		void								setDatetime(struct tm *timeinfo);
 		std::map<std::string, Channel>& 	getChannels();
 		std::map<const int, Client>&		getClients();
-		std::vector<server_op>&				getIrcOperators(); 
+		std::vector<server_op>&				getIrcOperators();
+		std::string							getMotd() const;
+		void								setMotd(std::string buffer);
 		
 		// Running Server functions
 		int 		readFromConfigFile(char *filename);

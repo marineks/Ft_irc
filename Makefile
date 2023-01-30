@@ -20,7 +20,8 @@ SRCS		= main.cpp ManageServer.cpp ManageServerUtils.cpp parsing.cpp utils.cpp \
 				commands/kick.cpp 	\
 				commands/oper.cpp	\
 				commands/user.cpp 	\
-				commands/kill.cpp
+				commands/kill.cpp	\
+				commands/motd.cpp
 
 DIR_SRCS	= srcs/
 

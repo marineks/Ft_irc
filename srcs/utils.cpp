@@ -90,3 +90,36 @@ std::string	getSymbol(Channel &channel)
 	}
 	return (symbol); 
 }
+
+void	sendClientRegistration(Server *server, int const client_fd, std::map<const int, Client>::iterator &it)
+{
+	addToClientBuffer(server, client_fd, RPL_WELCOME(user_id(it->second.getNickname(), it->second.getUsername()), it->second.getNickname()));
+	addToClientBuffer(server, client_fd, RPL_YOURHOST(it->second.getNickname(), "42_Ftirc", "1.1"));
+	addToClientBuffer(server, client_fd, RPL_CREATED(it->second.getNickname(), server->getDatetime()));
+	addToClientBuffer(server, client_fd, RPL_MYINFO(it->second.getNickname(), "localhost", "1.1", "io", "kost", "k"));
+	addToClientBuffer(server, client_fd, RPL_ISUPPORT(it->second.getNickname(), "CHANNELLEN=32 NICKLEN=9 TOPICLEN=307"));
+	
+	std::ifstream		data;
+	char				filepath[24] = "srcs/config/motd.config";
+
+	data.open(filepath);
+	if (!data)
+	{
+		addToClientBuffer(server, client_fd, ERR_NOMOTD(it->second.getNickname()));
+		return ;
+	}
+	else
+	{
+		std::string		motd_lines;
+		std::string		buf;
+		
+		buf = RPL_MOTDSTART(it->second.getNickname(), "42_Ftirc (localhost)");
+		while (getline(data, motd_lines))
+		{
+			buf += RPL_MOTD(it->second.getNickname(), motd_lines);
+		}
+		buf += RPL_ENDOFMOTD(it->second.getNickname());
+		addToClientBuffer(server, client_fd, buf);
+	}
+	data.close();
+}
