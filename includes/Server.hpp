@@ -54,6 +54,8 @@ class Server
 		int			fillServinfo(char *port);
 		int			launchServer();
 		int			manageServerLoop();
+		int			createClientConnexion(std::vector<pollfd>& poll_fds, std::vector<pollfd>& new_pollfds);
+		int			handleExistingConnexion(std::vector<pollfd>& poll_fds, std::vector<pollfd>::iterator &it);
 		int			handlePolloutEvent(std::vector<pollfd>& poll_fds, std::vector<pollfd>::iterator &it, const int current_fd);
 		int			handlePollerEvent(std::vector<pollfd>& poll_fds, std::vector<pollfd>::iterator &it);
 

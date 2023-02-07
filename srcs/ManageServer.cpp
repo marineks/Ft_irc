@@ -2,27 +2,6 @@
 #include "Colors.hpp"
 #include "Commands.hpp"
 
-static int acceptSocket(int listenSocket)
-{
-	sockaddr_in client;
-	socklen_t addr_size = sizeof(sockaddr_in);
-	return (accept(listenSocket, (sockaddr *)&client, &addr_size));
-}
-
-static void	tooManyClients(int client_socket)
-{
-	std::cout << RED << ERR_FULL_SERV << RESET << std::endl;
-	send(client_socket, ERR_FULL_SERV, strlen(ERR_FULL_SERV) + 1, 0);
-	close(client_socket);
-}
-
-static void print(std::string type, int client_socket, char *message)
-{
-	if (message)
-		std::cout  << type << client_socket << " << "\
-		 << BLUE << message << RESET << std::endl;
-}
-
 int Server::manageServerLoop()
 {
 	std::vector<pollfd> poll_fds;
@@ -46,75 +25,80 @@ int Server::manageServerLoop()
 		}
 
 		std::vector<pollfd>::iterator it = poll_fds.begin();
-		Client *client;
+		// Client *client;
 		while (it != poll_fds.end())
 		{
 			if (it->revents & POLLIN) // => If the event that occured is a POLLIN (aka "data is ready to recv() on this socket")
 			{
 				if (it->fd == _server_socket_fd)
 				{
-					int client_sock = acceptSocket(_server_socket_fd); // Accepts the socket and returns a dedicated fd for this new Client-Server connexion
-					if (client_sock == -1)
-					{
-						std::cerr << RED << "[Server] Accept() failed" << RESET << std::endl;
+					if (this->createClientConnexion(poll_fds, new_pollfds) == CONTINUE)
 						continue;
-					}
-					if (poll_fds.size() - 1 < MAX_CLIENT_NB)
-						addClient(client_sock, new_pollfds); // Beware, here we push the new client_socket in NEW_pollfds
-					else
-						tooManyClients(client_sock);
+					// int client_sock = acceptSocket(_server_socket_fd); // Accepts the socket and returns a dedicated fd for this new Client-Server connexion
+					// if (client_sock == -1)
+					// {
+					// 	std::cerr << RED << "[Server] Accept() failed" << RESET << std::endl;
+					// 	continue;
+					// }
+					// if (poll_fds.size() - 1 < MAX_CLIENT_NB)
+					// 	addClient(client_sock, new_pollfds); // Beware, here we push the new client_socket in NEW_pollfds
+					// else
+					// 	tooManyClients(client_sock);
 					it++;
 				}
 				else // => If the dedicated fd for the Client/Server connection already exists
 				{
-					client = getClient(this, it->fd);
-					char message[BUF_SIZE_MSG];
-					int read_count;
-					
-					memset(message, 0, sizeof(message));
-					read_count = recv(it->fd, message, BUF_SIZE_MSG, 0); // Retrieves the Client's message
-
-					if (read_count <= FAILURE) // when recv returns an error
-					{
-						std::cerr << RED << "[Server] Recv() failed [456]" << RESET << std::endl;
-						delClient(poll_fds, it, it->fd);
-						break;
-					}
-					else if (read_count == 0) // when a client disconnects
-					{
-						std::cout << "[Server] A client just disconnected\n";
-						delClient(poll_fds, it, it->fd);
+					std::cout << "coucou jarrive" << std::endl;
+					if (this->handleExistingConnexion(poll_fds, it) == BREAK)
 						break ;
-					}
-					else
-					{
-						print("[Client] Message received from client ", it->fd, message); // si affichage incoherent regarder ici
-						// if (message)
-							client->setReadBuffer(message);
+					// client = getClient(this, it->fd);
+					// char message[BUF_SIZE_MSG];
+					// int read_count;
+					
+					// memset(message, 0, sizeof(message));
+					// read_count = recv(it->fd, message, BUF_SIZE_MSG, 0); // Retrieves the Client's message
 
-						if (client->getReadBuffer().find("\r\n") != std::string::npos)
-						{
-							try 
-							{
-								parseMessage(it->fd, client->getReadBuffer());
-								if (client->getReadBuffer().find("\r\n"))
-								{
-									client->getReadBuffer().clear();
-								}
-							}
-							catch(const std::exception& e) 
-							{ 
-								std::cout << "[SERVER] Caught exception : ";
-								std::cerr << e.what() << std::endl;
-								if (client->isRegistrationDone() == true)
-									client->setDeconnexionStatus(true);
-								break ;
-							}
-						}
-						it++;
-					}
+					// if (read_count <= FAILURE) // when recv returns an error
+					// {
+					// 	std::cerr << RED << "[Server] Recv() failed [456]" << RESET << std::endl;
+					// 	delClient(poll_fds, it, it->fd);
+					// 	break;
+					// }
+					// else if (read_count == 0) // when a client disconnects
+					// {
+					// 	std::cout << "[Server] A client just disconnected\n";
+					// 	delClient(poll_fds, it, it->fd);
+					// 	break ;
+					// }
+					// else
+					// {
+					// 	print("[Client] Message received from client ", it->fd, message); // si affichage incoherent regarder ici
+					// 	// if (message)
+					// 		client->setReadBuffer(message);
+
+					// 	if (client->getReadBuffer().find("\r\n") != std::string::npos)
+					// 	{
+					// 		try 
+					// 		{
+					// 			parseMessage(it->fd, client->getReadBuffer());
+					// 			if (client->getReadBuffer().find("\r\n"))
+					// 			{
+					// 				client->getReadBuffer().clear();
+					// 			}
+					// 		}
+					// 		catch(const std::exception& e) 
+					// 		{ 
+					// 			std::cout << "[SERVER] Caught exception : ";
+					// 			std::cerr << e.what() << std::endl;
+					// 			if (client->isRegistrationDone() == true)
+					// 				client->setDeconnexionStatus(true);
+					// 			break ;
+					// 		}
+					// 	}
+					it++;
 				}
 			}
+			// }
 			else if (it->revents & POLLOUT) // = "Alert me when I can send() data to this socket without blocking."
 			{
 				if (handlePolloutEvent(poll_fds, it, it->fd) == BREAK)
