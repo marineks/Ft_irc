@@ -28,15 +28,14 @@ int	Server::createClientConnexion(std::vector<pollfd>& poll_fds, std::vector<pol
 		addClient(client_sock, new_pollfds); // Beware, here we push the new client_socket in NEW_pollfds
 	else
 		tooManyClients(client_sock);
-	std::cout << "bonjour jai fini" << std::endl;
 	return (SUCCESS);
 }
 
 static void print(std::string type, int client_socket, char *message)
 {
 	if (message)
-		std::cout  << type << client_socket << " << "\
-		 << BLUE << message << RESET << std::endl;
+		std::cout << std::endl << type << client_socket << " << "\
+		 << BLUE << message << RESET;
 }
 
 int	Server::handleExistingConnexion(std::vector<pollfd>& poll_fds, std::vector<pollfd>::iterator &it)
@@ -46,7 +45,6 @@ int	Server::handleExistingConnexion(std::vector<pollfd>& poll_fds, std::vector<p
 	char message[BUF_SIZE_MSG];
 	int read_count;
 	
-	std::cout << "Bonjour je suis dedans" << std::endl;
 	memset(message, 0, sizeof(message));
 	read_count = recv(it->fd, message, BUF_SIZE_MSG, 0); // Retrieves the Client's message
 

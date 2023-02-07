@@ -58,8 +58,6 @@ class Server
 		int			handleExistingConnexion(std::vector<pollfd>& poll_fds, std::vector<pollfd>::iterator &it);
 		int			handlePolloutEvent(std::vector<pollfd>& poll_fds, std::vector<pollfd>::iterator &it, const int current_fd);
 		int			handlePollerEvent(std::vector<pollfd>& poll_fds, std::vector<pollfd>::iterator &it);
-
-		
 		// Manage Clients functions
 		void		addClient(int client_socket, std::vector<pollfd> &poll_fds);
 		// void 		delClient(std::vector<pollfd> &poll_fds, int current_fd);
@@ -78,7 +76,6 @@ class Server
 		};
 		void	addChannel(std::string &channelName);
 		void	addClientToChannel(std::string &channelName, Client &client);
-
 };
 
 #endif

@@ -33,21 +33,17 @@ int Server::manageServerLoop()
 				{
 					if (this->createClientConnexion(poll_fds, new_pollfds) == CONTINUE)
 						continue;
-					it++;
 				}
 				else // => If the dedicated fd for the Client/Server connection already exists
 				{
-					std::cout << "coucou jarrive" << std::endl;
 					if (this->handleExistingConnexion(poll_fds, it) == BREAK)
 						break ;
-					it++;
 				}
 			}
 			else if (it->revents & POLLOUT) // = "Alert me when I can send() data to this socket without blocking."
 			{
 				if (handlePolloutEvent(poll_fds, it, it->fd) == BREAK)
 					break;
-				it++;
 			}
 			else if (it->revents & POLLERR)
 			{
@@ -56,8 +52,7 @@ int Server::manageServerLoop()
 				else
 					return (FAILURE);
 			}
-			else
-				it++;
+			it++;
 		}
 		poll_fds.insert(poll_fds.end(), new_pollfds.begin(), new_pollfds.end()); // Add the range of NEW_pollfds in poll_fds (helps recalculating poll_fds.end() in the for loop)
 	}
