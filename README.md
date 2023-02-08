@@ -6,6 +6,17 @@
 ##### *Proudly coded by [@tmanolis](https://github.com/tmanolis), [@QnYosa](https://github.com/QnYosa) and @marineks :heart:*
 
 ___
+
+## :dizzy: Summary
+
+1. [About the project](https://github.com/marineks/Ft_irc#school_satchel-about-this-project)
+* [Definition](https://github.com/marineks/Ft_irc#_-crystal_ball-definition)
+* [Subject requirements](https://github.com/marineks/Ft_irc#_-floppy_disk-subject-requirements)
+* [Commands that we implemented](https://github.com/marineks/Ft_irc#high_brightness-commands-that-we-implemented-)
+2. [Some tips, graphs and other ressources](https://github.com/marineks/Ft_irc#gift-some-tips-graphs-and-other-ressources)
+* [Helpful links](https://github.com/marineks/Ft_irc#_-books-helpful-links)
+* [Tips](https://github.com/marineks/Ft_irc#_-books-helpful-links)
+___
 ## :school_satchel: About this project
 
 
