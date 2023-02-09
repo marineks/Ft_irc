@@ -50,4 +50,19 @@ void	quit(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	topic(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	user(Server *server, int const client_fd, cmd_struct cmd_infos);
 
+// CHANNEL MODES
+
+struct mode_struct
+{
+	std::string	target;
+	std::string	mode;
+	std::string	params;
+};
+
+void	broadcastToAllChannelMembers(Server *server, Channel &channel, std::string reply);
+void	keyChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string mode_str);
+void	operatorChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string str);
+void	secretChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string mode_str);
+void	topicChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string mode_str);
+
 #endif
