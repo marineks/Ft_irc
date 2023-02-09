@@ -16,7 +16,10 @@ static void    banClientFromChannel(Server *server, int const client_fd, std::st
 			std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
 			std::string	RPL_BAN = ":" + operator_nickname + "!" + it_client->second.getUsername() \
 			+ "@localhost MODE #" + channelName + " +b " + client_nickname + "\r\n";
-			broadcastToAllChannelMembers(server, it->second, RPL_BAN); 
+			broadcastToAllChannelMembers(server, it->second, RPL_BAN);
+			// add flag +b to channel mode if not already
+			if (it->second.getMode().find("b") != std::string::npos)
+				it->second.addMode("b");
         }
         else
             std::cout << YELLOW << client_nickname << " is already banned\n" << RESET;
