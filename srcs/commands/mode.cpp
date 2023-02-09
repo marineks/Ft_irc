@@ -177,6 +177,14 @@ static void	changeChannelMode(Server *server, mode_struct mode_infos, int const 
 	for (std::vector<std::string>::iterator it = vector_modes.begin(); it != vector_modes.end(); it++)
 	{
 		std::string str = *it;
+		std::cout << "str dans le vector : " << str << std::endl;
+		std::string datas[4];
+		datas[0] = it_client->second.getNickname();
+		datas[1] = mode_infos.target;
+		datas[2] = str;
+		datas[3] = mode_infos.params;
+		if (str.find("b") != std::string::npos)
+			banChannelMode(server, datas, client_fd);
 		if (str.find("o") != std::string::npos)
 			operatorChannelMode(server, mode_infos, client_fd, str);
 		if (str.find("t") != std::string::npos)

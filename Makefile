@@ -22,6 +22,7 @@ SRCS		= main.cpp ManageServer.cpp ManageServerUtils.cpp parsing.cpp utils.cpp \
 				commands/user.cpp 	\
 				commands/kill.cpp	\
 				commands/motd.cpp	\
+				commands/channel_modes/ban.cpp 		\
 				commands/channel_modes/key.cpp 		\
 				commands/channel_modes/operator.cpp \
 				commands/channel_modes/secret.cpp 	\
