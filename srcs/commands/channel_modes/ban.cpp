@@ -6,7 +6,6 @@
 static void    banClientFromChannel(Server *server, int const client_fd, std::string &channelName, std::string client_nickname, std::string operator_nickname)
 {
 	std::map<std::string, Channel>::iterator it = server->getChannels().find(channelName);
-    std::cout << it->first << std::endl;
     if (it->second.doesClientExist(client_nickname) == true) // si client dans la client_list
     {
         it->second.removeClientFromChannel(client_nickname);
@@ -15,11 +14,9 @@ static void    banClientFromChannel(Server *server, int const client_fd, std::st
         {
             it->second.addToBanned(client_nickname);
 			std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
-			// :tiff!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #jojo +b dim!*@*
-			std::string	RPL_BAN = ":" + it_client->second.getNickname() + "!" + it_client->second.getUsername() \
+			std::string	RPL_BAN = ":" + operator_nickname + "!" + it_client->second.getUsername() \
 			+ "@localhost MODE #" + channelName + " +b " + client_nickname + "\r\n";
 			broadcastToAllChannelMembers(server, it->second, RPL_BAN); 
-            std::cout << client_nickname << " has been banned from " << channelName << " by " << operator_nickname <<std::endl; 
         }
         else
             std::cout << YELLOW << client_nickname << " is already banned\n" << RESET;
@@ -39,11 +36,13 @@ static void    unbanClientFromChannel(Server *server, int const client_fd, std::
 	if (it != server->getClients().end()) // si client dans la client_list du server
     {
 		std::map<std::string, Channel>::iterator it_channel = server->getChannels().find(channelName);
-    	std::cout << it_channel->first << std::endl;
 		if (it_channel->second.isBanned(client_nickname) == true)
 		{
 			it_channel->second.removeFromBanned(client_nickname);
-			std::cout << client_nickname << " is now unbanned from " << channelName << " by " << operator_nickname <<std::endl;
+			std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
+			std::string	RPL_BAN = ":" + operator_nickname + "!" + it_client->second.getUsername() \
+			+ "@localhost MODE #" + channelName + " -b " + client_nickname + "\r\n";
+			broadcastToAllChannelMembers(server, it_channel->second, RPL_BAN); 
 		}
 	}
 	else // si client n'est pas dans la client list
