@@ -18,7 +18,7 @@ static void    banClientFromChannel(Server *server, int const client_fd, std::st
 			+ "@localhost MODE #" + channelName + " +b " + client_nickname + "\r\n";
 			broadcastToAllChannelMembers(server, it->second, RPL_BAN);
 			// add flag +b to channel mode if not already
-			if (it->second.getMode().find("b") != std::string::npos)
+			if (it->second.getMode().find("b") == std::string::npos)
 				it->second.addMode("b");
         }
         else
