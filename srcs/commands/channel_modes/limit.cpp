@@ -13,11 +13,11 @@ void   limitChannelMode(Server *server, std::string datas[4], int const client_f
     std::map<std::string, Channel>::iterator it;
     it = server->getChannels().find(datas[1]);
     int limit = atoi(datas[3].c_str());
-	// check limit is valid
-	if (limit < 0 || (int)it->second.getClientList().size() > limit)
-		return ;
     if (datas[2][0] == '+')
     {
+		// check limit is valid
+		if (limit < 0 || (int)it->second.getClientList().size() > limit)
+			return ;
         it->second.setCapacityLimit(limit);
 		size_t pos = it->second.getMode().find("l");
 		if (pos != std::string::npos) // le mode est deja présent
