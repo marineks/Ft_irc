@@ -95,7 +95,7 @@ static std::string	getRplList(std::string client_nick, std::map<std::string, Cha
 {
 	std::stringstream concat;
 	
-	if (channel->second.getMode().find('p') != std::string::npos \
+	if (channel->second.getMode().find("p") != std::string::npos \
 		&& channel->second.doesClientExist(client_nick) == false) // do not display topic if private chan and user not in it
 	{
 		concat << "322 " << client_nick << " #" << channel->second.getName() << " " \
