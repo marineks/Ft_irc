@@ -190,6 +190,8 @@ static void	changeChannelMode(Server *server, mode_struct mode_infos, int const 
 			limitChannelMode(server, datas, client_fd);
 		if (str.find("o") != std::string::npos)
 			operatorChannelMode(server, mode_infos, client_fd, str);
+		if (str.find("p") != std::string::npos)
+			privateChannelMode(server, mode_infos, client_fd, str);
 		if (str.find("s") != std::string::npos)
 			secretChannelMode(server, mode_infos, client_fd, str);
 		if (str.find("t") != std::string::npos)
