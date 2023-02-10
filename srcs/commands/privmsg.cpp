@@ -97,11 +97,12 @@ static void  broadcastToChannel(Server *server, int const client_fd, std::map<co
    // check si client est autorisé à parler (+m et +v)
    if (it_channel->second.getMode().find("m") != std::string::npos)
    {
-      // si il est pas operator et si il a pas +v, RETURN SA MERE
-      
-      // RPL_ERR a broadcoast quand user pas +v ou operator veut parler
-      // dans notre cas c'était tiff (client) qui voulait send a message
-      // :lair.nl.eu.dal.net 404 tiff #pop :Cannot send to channel
+      // si il est pas operator et si il a pas +v : so can't speak
+      if (it_channel->second.isOperator(it_client->second.getNickname()) == false && it_channel->second.isVoiced(it_client->second.getNickname()) == false)
+      {
+         addToClientBuffer(server, client_fd, ERR_CANNOTSENDTOCHAN(it_client->second.getNickname(), it_channel->second.getName()));
+         return ;
+      }
    }
    // Envoi le message aux users du channel 
    std::map<std::string, Client>::iterator member = it_channel->second.getClientList().begin(); // debut de la liste des clients du channel

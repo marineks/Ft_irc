@@ -1,6 +1,3 @@
-// RPL a broadcoast quand operator : /mode #pop +v dim
-// >> :tiff!~tiffanyma@ad79-38a4-bacb-f04d-f060.abo.wanadoo.fr MODE #pop +v dim
-
 #include "Irc.hpp"
 #include "Channel.hpp"
 #include "Server.hpp"
