@@ -75,6 +75,8 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 			}
 		}
 
+		// vérifier si le channel est full (METTRE UN PUTAIN DE RETURN avec l'error)
+
 		// vérifier si le client est banned avant de le join au channel
 		std::map<std::string, Channel>::iterator it_chan = server->getChannels().find(channel_name);
 		if (it_chan->second.isBanned(client_nickname) == true && it_chan->second.getMode().find("b") != std::string::npos)

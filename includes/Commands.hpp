@@ -62,6 +62,7 @@ struct mode_struct
 void	broadcastToAllChannelMembers(Server *server, Channel &channel, std::string reply);
 void    banChannelMode(Server *server, std::string datas[4], int const client_fd);
 void	keyChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string mode_str);
+void	limitChannelMode(Server *server, std::string datas[4], int const client_fd);
 void	operatorChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string str);
 void	secretChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string mode_str);
 void	topicChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string mode_str);

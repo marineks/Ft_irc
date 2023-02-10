@@ -186,6 +186,8 @@ static void	changeChannelMode(Server *server, mode_struct mode_infos, int const 
 			banChannelMode(server, datas, client_fd);
 		if (str.find("k") != std::string::npos)
 			keyChannelMode(server, mode_infos, client_fd, str);
+		if (str.find("l") != std::string::npos)
+			limitChannelMode(server, datas, client_fd);
 		if (str.find("o") != std::string::npos)
 			operatorChannelMode(server, mode_infos, client_fd, str);
 		if (str.find("s") != std::string::npos)

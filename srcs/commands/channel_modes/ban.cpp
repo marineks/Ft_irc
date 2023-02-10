@@ -54,7 +54,6 @@ static void    unbanClientFromChannel(Server *server, int const client_fd, std::
         addToClientBuffer(server, client_fd, ERR_NOSUCHNICK(client_nickname, channelName));
 }
 
-
 void    banChannelMode(Server *server, std::string datas[4], int const client_fd)
 {
     // check si channel existe
