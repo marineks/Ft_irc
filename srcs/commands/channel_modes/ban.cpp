@@ -8,11 +8,11 @@ static void    banClientFromChannel(Server *server, int const client_fd, std::st
 	std::map<std::string, Channel>::iterator it = server->getChannels().find(channelName);
     if (it->second.doesClientExist(client_nickname) == true) // si client dans la client_list
     {
-        it->second.removeClientFromChannel(client_nickname);
         // condition is banned ? 
         if (it->second.isBanned(client_nickname) == false)
         {
             it->second.addToBanned(client_nickname);
+			// send RPL to every member of the channel 
 			std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
 			std::string	RPL_BAN = ":" + operator_nickname + "!" + it_client->second.getUsername() \
 			+ "@localhost MODE #" + channelName + " +b " + client_nickname + "\r\n";
@@ -42,9 +42,11 @@ static void    unbanClientFromChannel(Server *server, int const client_fd, std::
 		if (it_channel->second.isBanned(client_nickname) == true)
 		{
 			it_channel->second.removeFromBanned(client_nickname);
+			// send RPL to every member of the channel
 			std::map<const int, Client>::iterator it_client = server->getClients().find(client_fd);
 			std::string	RPL_BAN = ":" + operator_nickname + "!" + it_client->second.getUsername() \
 			+ "@localhost MODE #" + channelName + " -b " + client_nickname + "\r\n";
+			
 			broadcastToAllChannelMembers(server, it_channel->second, RPL_BAN); 
 		}
 	}
