@@ -12,6 +12,7 @@ class Channel
 		std::vector<std::string>		_kicked_users;
 		std::vector<std::string>		_banned_users;
 		std::vector<std::string>		_operators;
+		std::vector<std::string>		_voiced_users;
 		std::string 					_name;
 		std::string						_operatorPassword;
 		std::string						_topic;
@@ -31,6 +32,7 @@ class Channel
 		std::vector<std::string>&		getOperators() ;
 		std::vector<std::string>&		getKickedUsers() ;
 		std::vector<std::string>&		getBannedUsers() ;
+		std::vector<std::string>&		getVoicedUsers() ;
 		std::map <std::string, Client>&	getClientList();
 		void							setTopic(std::string& newTopic);
 		void							setChannelPassword(std::string password);
@@ -53,6 +55,10 @@ class Channel
 		void							addToBanned(std::string &banned_name);
 		void							removeFromBanned(std::string &banned_name);
 		bool							isBanned(std::string &banned_name);
+		void							addToVoiced(std::string &voiced_name);
+		void							removeFromVoiced(std::string &voiced_name);
+		bool							isVoiced(std::string &voiced_name);
+
 };
 
 #endif

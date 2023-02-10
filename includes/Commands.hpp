@@ -68,5 +68,6 @@ void	operatorChannelMode(Server *server, mode_struct mode_infos, int const clien
 void	privateChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string mode_str);
 void	secretChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string mode_str);
 void	topicChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string mode_str);
+void	voiceChannelMode(Server *server, mode_struct mode_infos, int const client_fd, std::string str);
 
 #endif

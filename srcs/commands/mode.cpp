@@ -198,6 +198,8 @@ static void	changeChannelMode(Server *server, mode_struct mode_infos, int const 
 			secretChannelMode(server, mode_infos, client_fd, str);
 		if (str.find("t") != std::string::npos)
 			topicChannelMode(server, mode_infos, client_fd, str);
+		if (str.find("v") != std::string::npos)
+			voiceChannelMode(server, mode_infos, client_fd, str);
 	}
 }
 

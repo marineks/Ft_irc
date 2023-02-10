@@ -29,6 +29,7 @@ int&								Channel::getCapacityLimit()	{ return (_capacity_limit); }
 std::map <std::string, Client>&		Channel::getClientList()	{ return (_clientList); }
 std::vector<std::string>&			Channel::getBannedUsers()	{ return (_banned_users); }
 std::vector<std::string>&			Channel::getKickedUsers()	{ return (_kicked_users); }
+std::vector<std::string>&			Channel::getVoicedUsers()	{ return (_voiced_users); }
 std::vector<std::string>&			Channel::getOperators() 	{ return (_operators); }
 
 void		Channel::setTopic(std::string& newTopic)
@@ -144,6 +145,49 @@ bool	Channel::isBanned(std::string &banned_name)
 	for (user = _banned_users.begin(); user != _banned_users.end(); user++)
 	{
 		if (*user == banned_name)
+			return (true);
+	}
+	return (false);	
+}
+
+void	Channel::addToVoiced(std::string &voiced_name)
+{
+	std::vector<std::string>::iterator it;
+	for (it = _voiced_users.begin(); it != _voiced_users.end(); it++)
+	{
+		if (*it == voiced_name)
+		{
+			std::cout << voiced_name << " is already voiced from the channel " << getName() << std::endl;
+			return ;
+		}
+	}
+	_voiced_users.push_back(voiced_name);
+	std::cout << RED << voiced_name << " is now voiced from the channel " << getName() << RESET << std::endl;
+}
+
+void	Channel::removeFromVoiced(std::string &voiced_name)
+{
+	std::vector<std::string>::iterator user;
+	for (user = _voiced_users.begin(); user != _voiced_users.end(); user++)
+	{
+		if (*user == voiced_name)
+		{
+			_voiced_users.erase(user);
+			std::cout << voiced_name << " is not voiced anymore from the channel " << getName() << std::endl;
+			return ;
+		}
+	}
+	std::cout << "No need! " << voiced_name << " has never been voiced from the channel " << getName() << std::endl;
+}
+
+bool	Channel::isVoiced(std::string &voiced_name)
+{
+	std::vector<std::string>::iterator user;
+	if (_voiced_users.empty() == true) // work
+		return (false);
+	for (user = _voiced_users.begin(); user != _voiced_users.end(); user++)
+	{
+		if (*user == voiced_name)
 			return (true);
 	}
 	return (false);	
