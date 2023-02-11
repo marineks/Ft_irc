@@ -23,7 +23,8 @@ void   limitChannelMode(Server *server, std::string datas[4], int const client_f
 		if (pos != std::string::npos) // le mode est deja présent
 			return;
 		it->second.addMode("l");
-		broadcastToAllChannelMembers(server, it->second, MODE_CHANNELMSGWITHPARAM(datas[1], "+l", std::to_string(limit)));
+        std::string param = std::to_string(limit);
+		broadcastToAllChannelMembers(server, it->second, MODE_CHANNELMSGWITHPARAM(datas[1], "+l", param));
     }
     else if (datas[2][0] == '-')
     {
@@ -33,6 +34,7 @@ void   limitChannelMode(Server *server, std::string datas[4], int const client_f
 		if (pos == std::string::npos) // le mode est pas présent
 			return;
 		it->second.removeMode("l");
-		broadcastToAllChannelMembers(server, it->second, MODE_CHANNELMSGWITHPARAM(datas[1], "-l", std::to_string(limit)));
+        std::string param = std::to_string(limit);
+		broadcastToAllChannelMembers(server, it->second, MODE_CHANNELMSGWITHPARAM(datas[1], "-l", param));
     }
 }
