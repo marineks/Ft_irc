@@ -23,8 +23,10 @@ void   limitChannelMode(Server *server, std::string datas[4], int const client_f
 		if (pos != std::string::npos) // le mode est deja présent
 			return;
 		it->second.addMode("l");
-        std::string param = std::to_string(limit);
-		broadcastToAllChannelMembers(server, it->second, MODE_CHANNELMSGWITHPARAM(datas[1], "+l", param));
+        // convert integer in a string because can't use std::tostring in C++98
+        std::ostringstream ss; 
+        ss << limit;
+		broadcastToAllChannelMembers(server, it->second, MODE_CHANNELMSGWITHPARAM(datas[1], "+l", ss.str()));
     }
     else if (datas[2][0] == '-')
     {
@@ -34,7 +36,6 @@ void   limitChannelMode(Server *server, std::string datas[4], int const client_f
 		if (pos == std::string::npos) // le mode est pas présent
 			return;
 		it->second.removeMode("l");
-        std::string param = std::to_string(limit);
-		broadcastToAllChannelMembers(server, it->second, MODE_CHANNELMSGWITHPARAM(datas[1], "-l", param));
+		broadcastToAllChannelMembers(server, it->second, MODE_CHANNELMSG(datas[1], "-l"));
     }
 }
