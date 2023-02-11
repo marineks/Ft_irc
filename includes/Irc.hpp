@@ -7,6 +7,7 @@
 # include <arpa/inet.h>
 # include <netdb.h>
 # include <cstring>
+# include <cstdlib>
 # include <iostream>
 # include <vector>
 # include <map>
