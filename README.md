@@ -60,7 +60,7 @@ ___
 | Kick | The `KICK` command can be used to request the forced removal of a user from a channel. |
 | Kill | The `KILL` command is used to close the connection between a given client and the server they are connected to. `KILL` is a privileged command and is available only to IRC Operators. |
 | List | The `LIST` command is used to get a list of channels along with some information about each channel. |
-| Mode | The `MODE` command is used to set or remove options (or modes) from a given target. Our user modes : i, o. Our channels modes: k,o,s,t |
+| Mode | The `MODE` command is used to set or remove options (or modes) from a given target. Our user modes : i, o. Our channels modes: b,k,m,o,p,s,t,v |
 | Motd | The `MOTD` command is used to get the “Message of the Day” of the given server. |
 | Names | The `NAMES` command is used to view the nicknames joined to a channel and their channel membership prefixes. |
 | Nick | The `NICK` command is used to give the client a nickname or change the previous one. |
