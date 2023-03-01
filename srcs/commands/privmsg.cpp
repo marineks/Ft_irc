@@ -74,10 +74,18 @@
 
 static void  broadcastToChannel(Server *server, int const client_fd, std::map<const int, Client>::iterator it_client, std::map<std::string, Channel>::iterator it_channel, std::string target, std::string msg_to_send)
 {
-   
+   // check si client est banned du channel
+   std::vector<std::string> banned_users = it_channel->second.getBannedUsers();
+   for (std::vector<std::string>::iterator it = banned_users.begin(); it != banned_users.end(); it++)
+	{
+		if (*it == it_client->second.getNickname())
+		{
+			std::cout << "[Server] " << it_client->second.getNickname() << " is banned from the channel and can't send messages anymore" << std::endl;
+			return ;
+		}
+	}
    // check si client est kick du channel
    std::vector<std::string> kicked_users = it_channel->second.getKickedUsers();
-
 	for (std::vector<std::string>::iterator it = kicked_users.begin(); it != kicked_users.end(); it++)
 	{
 		if (*it == it_client->second.getNickname())
@@ -86,7 +94,16 @@ static void  broadcastToChannel(Server *server, int const client_fd, std::map<co
 			return ;
 		}
 	}
-
+   // check si client est autorisé à parler (+m et +v)
+   if (it_channel->second.getMode().find("m") != std::string::npos)
+   {
+      // si il est pas operator et si il a pas +v : so can't speak
+      if (it_channel->second.isOperator(it_client->second.getNickname()) == false && it_channel->second.isVoiced(it_client->second.getNickname()) == false)
+      {
+         addToClientBuffer(server, client_fd, ERR_CANNOTSENDTOCHAN(it_client->second.getNickname(), it_channel->second.getName()));
+         return ;
+      }
+   }
    // Envoi le message aux users du channel 
    std::map<std::string, Client>::iterator member = it_channel->second.getClientList().begin(); // debut de la liste des clients du channel
    while (member != it_channel->second.getClientList().end())

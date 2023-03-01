@@ -209,3 +209,15 @@ void Server::addClientToChannel(std::string &channelName, Client &client)
 	else 
 		std::cout << YELLOW << client.getNickname() << "already here\n" << RESET;
 }
+
+bool    Server::isChannel(std::string &channelName)
+{
+    std::map<std::string, Channel>::iterator it;
+    it = _channels.find(channelName);
+    if (it == _channels.end())
+    {
+        std::cout << RED << "This channel does not exists\n" << RESET;
+        return (false);
+    }
+    return (true);
+}

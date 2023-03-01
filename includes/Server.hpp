@@ -74,8 +74,10 @@ class Server
 			public :
 					const char *	what (void) const throw();
 		};
+		// Channel functions
 		void	addChannel(std::string &channelName);
 		void	addClientToChannel(std::string &channelName, Client &client);
+		bool	isChannel(std::string &channelName);
 };
 
 #endif
