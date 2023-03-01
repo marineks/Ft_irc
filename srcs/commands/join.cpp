@@ -76,11 +76,11 @@ void	join(Server *server, int const client_fd, cmd_struct cmd_infos)
 		}
 
 		std::map<std::string, Channel>::iterator it_chan = server->getChannels().find(channel_name);
-		// vérifier si le channel est full (METTRE UN PUTAIN DE RETURN avec l'error)
+		// vérifier si le channel est full
 		if (it_chan->second.getCapacityLimit() != -1 && (int)it_chan->second.getClientList().size() == it_chan->second.getCapacityLimit())
 		{
 			addToClientBuffer(server, client_fd, ERR_CHANNELISFULL(client_nickname, channel_name));
-			return ;
+			continue ; // on passe la suite, au prochain channel à ajouter síl y en a un
 		}
 		// vérifier si le client est banned avant de le join au channel
 		if (it_chan->second.getMode().find("b") != std::string::npos && it_chan->second.isBanned(client_nickname) == true)
