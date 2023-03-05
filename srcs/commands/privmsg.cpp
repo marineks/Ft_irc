@@ -149,7 +149,7 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
    delimiter = target.find(" ");
    if (delimiter != std::string::npos) // permet de gérer le double :: et les espaces de la fin
       target.erase(delimiter);  
-  
+   
    // Channel case
    if (target[0] == '#')
    {
@@ -173,7 +173,12 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
          it_target++;
       }
       if (it_target == client_list.end() && it_channel == channel_list.end()) // user and channel doesn't exist
-         addToClientBuffer(server, client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), target));   
+      {
+         if (target == "BOT")
+            bot(server, client_fd, it_client, msg_to_send);
+         else
+            addToClientBuffer(server, client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), target));   
+      }
       else
       {
          if (it_target == client_list.end()) // si le user n'existe pas mais le channel oui (gestion channel actif)

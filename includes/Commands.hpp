@@ -31,6 +31,7 @@ void		sendClientRegistration(Server *server, int const client_fd, std::map<const
 // ###### COMMANDS #######
 // #######################
 
+void	bot(Server *server, int const client_fd, std::map<const int, Client>::iterator it_client, std::string bot_cmd);
 void	invite(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	join(Server *server, int const client_fd, cmd_struct cmd_infos);
 void	kick(Server *server, int const client_fd, cmd_struct cmd_infos);

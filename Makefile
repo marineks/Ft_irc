@@ -4,6 +4,7 @@ SRCS		= main.cpp ManageServer.cpp ManageServerUtils.cpp parsing.cpp utils.cpp \
 				class/Client.cpp	\
 				class/Channel.cpp	\
 				class/Server.cpp	\
+				commands/bot.cpp 	\
 				commands/join.cpp 	\
 				commands/ping.cpp 	\
 				commands/privmsg.cpp	\
