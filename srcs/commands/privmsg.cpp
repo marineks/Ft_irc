@@ -174,7 +174,7 @@ void	privmsg(Server *server, int const client_fd, cmd_struct cmd_infos)
       }
       if (it_target == client_list.end() && it_channel == channel_list.end()) // user and channel doesn't exist
       {
-         if (target == "BOT")
+         if (target == "chatGPT")
             bot(server, client_fd, it_client, msg_to_send);
          else
             addToClientBuffer(server, client_fd, ERR_NOSUCHNICK(it_client->second.getNickname(), target));   
