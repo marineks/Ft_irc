@@ -5,12 +5,14 @@
 
 static void	botHour(Server *server, int const client_fd, std::map<const int, Client>::iterator it_client, std::string bot)
 {
-	time_t curr_time;
-	curr_time = std::time(NULL);
+	std::stringstream ss;
+    std::time_t t = std::time(NULL);
+    std::tm* tm_local = std::localtime(&t);
 
-	tm *tm_local = localtime(&curr_time);
-	std::string time = "Current local time: " + std::to_string(tm_local->tm_hour) + ":" + std::to_string(tm_local->tm_min) + ":" + std::to_string(tm_local->tm_sec);
-	
+    ss << "Current local time: " << tm_local->tm_hour << ":" 
+       << tm_local->tm_min << ":" << tm_local->tm_sec;
+    
+    std::string time = ss.str();
 	addToClientBuffer(server, client_fd, RPL_PRIVMSG(bot, bot, it_client->second.getNickname(), time));
 }
 
