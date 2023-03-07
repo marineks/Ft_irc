@@ -40,7 +40,7 @@ static void	botRandom(Server *server, int const client_fd, std::map<const int, C
 
 void	bot(Server *server, int const client_fd, std::map<const int, Client>::iterator it_client, std::string bot_cmd)
 {
-	std::string bot = "chatGPT";
+	std::string bot = "chatGTP";
 	std::string	validCmds[4] = {
 		":HELP",
 		":HOUR",

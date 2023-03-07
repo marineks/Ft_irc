@@ -26,7 +26,8 @@ int main (int argc, char **argv)
 		
 		// The three following functions calls are just set up
 		server.setHints();
-		server.fillServinfo(argv[1]);
+		if (server.fillServinfo(argv[1]) == FAILURE)
+			return (FAILURE);
 		server.launchServer();
 		// Below, the main loop for server/client connection
 		try
